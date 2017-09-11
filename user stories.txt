@@ -1,0 +1,25 @@
+As a user i want to add files to an event so that it will be easily retrievable at any point in time.
+
+As a user i want to see several calendars merged in one view so that i can get an overview.
+
+As a user i want to be able to share my events with non-users so that they dont need to login.
+
+As a user i want to be able to reset my password so that if i forget my password i can still access the system.
+
+As a user i want to be able to create an organization so that i can manage several groups and users easily.
+
+As a user i want to be able to add other users to my calendars so that they can share the events in that calendar.
+
+As a user i want to be able to manage the users that have accepted invites to my calendars.
+
+As a user i want to be able to search events i have acccess to so that i can easily find what im looking for.
+
+As a user i want to have a home screen when i login so that i easily can view messages/notifications and edit my user profile.
+
+As a user i want to get and set notifications on my events so that i am reminded about them.
+
+As a user i want to get APIs from this system so that i can integrate it with other calendar applications i use.
+
+As a user i want to be able to integrate with APIs from other calendar systems so that i can import events from them.
+
+As a organization owner i want to be able to get stats and reports on the usage by the users in my organizations calendars so that i can follow my organizations activities.
