@@ -1,0 +1,8 @@
+Referat fra møte 12.09.17 kl. 12-14
+
+Vi brukte den første delen av tiden til å lage noen sketcher av hvordan vi ville at noen av hovedside skulle se ut og hva de skulle inneholde.
+Vi skal nå bruke de tegningene vi lagde til å lage noen litt mer håndpåtakelige design.
+
+Vi brukte også tre kvarter på å løse opp i en misforståelse der noen snakket om en funksjon fra bruker siden og de andre fra database siden.
+Misforståelsen angikk implementasjonen av hvordan en skal dele enkelthendelser. 
+Dette ble løst da vi fant ut at vi hadde forskjellige utgangspunkt.
