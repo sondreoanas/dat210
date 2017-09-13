@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
 	
-	version			: 0.0
+	version			: 0.1
 	last updated	: 12.09.2017
 	start date		: 10.09.2017
 	name			: Markus Fjellheim
@@ -81,10 +81,10 @@ Timeline.prototype.touchStart = function(event){
 			return;
 		}
 		this.touchList.push({
-			x: e.clientX - e.target.offsetLeft,
-			y: this.canvas.height - (e.clientY - e.target.offsetTop),
-			x0: e.clientX - e.target.offsetLeft,
-			y0: this.canvas.height - (e.clientY - e.target.offsetTop),
+			x: e.clientX - e.target.parentElement.offsetLeft,
+			y: this.canvas.height - (e.clientY - e.target.parentElement.offsetTop),
+			x0: e.clientX - e.target.parentElement.offsetLeft,
+			y0: this.canvas.height - (e.clientY - e.target.parentElement.offsetTop),
 			xR: e.radiusX,
 			yR: e.radiusY,
 			id: e.identifier
@@ -101,8 +101,8 @@ Timeline.prototype.touchMove = function(event){
 		for(var j=0; j<this.touchList.length; j++){
 			var t = this.touchList[j];
 			if(e.identifier == t.id){
-				t.x = e.clientX - e.target.offsetLeft;
-				t.y = this.canvas.height - (e.clientY - e.target.offsetTop);
+				t.x = e.clientX - e.target.parentElement.offsetLeft;
+				t.y = this.canvas.height - (e.clientY - e.target.parentElement.offsetTop);
 				t.xR = e.radiusX;
 				t.yR = e.radiusY;
 			}
@@ -143,7 +143,8 @@ Timeline.prototype.render = function(){
 	// debug
 	for(var i=0; i<this.touchList.length; i++){
 		var t = this.touchList[i];
-		this.drawText ("id: " + t.id + " yPos: " + t.y, ( t.x - t.xR), t.y - t.yR);
+		this.drawText ("id: " + t.id + " yPos: " + t.y, t.x, t.y);
+		//this.drawText ("x", t.x, t.y);
 	}
 	
 	// calcuate touchMotion
@@ -184,7 +185,7 @@ Timeline.prototype.render = function(){
 		this.drawIntervall(
 			function(top, bottom, date){
 				this.drawVLine(1, 25, this.canvas.width * 0.5, top);
-				this.drawText(date.getMinutes(), this.canvas.width * 0.45, (top + bottom) * 0.5, "center");
+				this.drawText(date.getMinutes(), this.canvas.width * 0.45, (top + bottom) * 0.5, 24, "center");
 			}.bind(this),
 			function(date){
 				date.setMilliseconds(0);
@@ -200,7 +201,7 @@ Timeline.prototype.render = function(){
 		this.drawIntervall(
 			function(top, bottom, date){
 				this.drawVLine(2, 50, this.canvas.width * 0.5, top);
-				this.drawText(date.getHours(), this.canvas.width * 0.4, (top + bottom) * 0.5 + 600000000 / this.zoom, "center");
+				this.drawText(date.getHours(), this.canvas.width * 0.4, (top + bottom) * 0.5 + 600000000 / this.zoom, 24, "center");
 			}.bind(this),
 			function(date){
 				date.setMilliseconds(0);
@@ -217,8 +218,8 @@ Timeline.prototype.render = function(){
 		this.drawIntervall(
 			function(top, bottom, date){
 				this.drawVLine(3, 100, this.canvas.width * 0.5, top);
-				this.drawText(this.days[date.getDay()], this.canvas.width * 0.5, (top + bottom) * 0.5, "center");
-				this.drawText(date.getDate(), this.canvas.width * 0.6, (top + bottom) * 0.5, "right");
+				this.drawText(this.days[date.getDay()], this.canvas.width * 0.5, (top + bottom) * 0.5, 24, "center");
+				this.drawText(date.getDate(), this.canvas.width * 0.6, (top + bottom) * 0.5, 24, "right");
 			}.bind(this),
 			function(date){
 				date.setMilliseconds(0);
@@ -237,7 +238,7 @@ Timeline.prototype.render = function(){
 			function(top, bottom, date){
 				this.drawVLine(4, 150, this.canvas.width * 0.5, top);
 				
-				this.drawText("week: " + getWeekNumber(date), this.canvas.width * 0.9, (top + bottom) * 0.5, "right");
+				this.drawText("week: " + getWeekNumber(date), this.canvas.width * 0.9, (top + bottom) * 0.5, 24, "right");
 				
 				function getWeekNumber(date){
 					var date2 = new Date(date.getTime());
@@ -267,7 +268,7 @@ Timeline.prototype.render = function(){
 		this.drawIntervall(
 			function(top, bottom, date){
 				this.drawVLine(5, 200, this.canvas.width * 0.5, top);
-				this.drawText(this.months[date.getMonth()], this.canvas.width * 0.9, top, "right");
+				this.drawText(this.months[date.getMonth()], this.canvas.width * 0.9, top, 24, "right");
 			}.bind(this),
 			function(date){
 				date.setMilliseconds(0);
@@ -286,7 +287,7 @@ Timeline.prototype.render = function(){
 		this.drawIntervall(
 			function(top, bottom, date){
 				this.drawVLine(6, 250, this.canvas.width * 0.5, top);
-				this.drawText(date.getFullYear(), this.canvas.width * 0.95, top, "right");
+				this.drawText(date.getFullYear(), this.canvas.width * 0.95, top, 24, "right");
 			}.bind(this),
 			function(date){
 				date.setMilliseconds(0);
@@ -355,8 +356,9 @@ Timeline.prototype.drawIntervall = function(drawFunction, resetTimeFuntion, incr
 		incrementTimeFunction(date);
 	}
 }
-Timeline.prototype.drawText = function(string, xPos, yPos, alignment = "center"){
+Timeline.prototype.drawText = function(string, xPos, yPos, fontSize = 24, alignment = "center"){
 	this.ctx.textAlign = alignment;
+	this.ctx.font = fontSize + "px Arial";
 	this.ctx.fillText(string, xPos, this.canvas.height - yPos);
 }
 Timeline.prototype.drawVLine = function(width, length, xPos, yPos){
