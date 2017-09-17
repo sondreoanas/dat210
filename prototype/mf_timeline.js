@@ -31,6 +31,17 @@ window.onload = function (){
 		mf_timeline.timelines.push(newTimeline);
 	}
 }
+// Event
+function Event(start, end, name, color){
+	this.id = Event.nrOfEvents;
+	Event.nrOfEvents++;
+	this.start = start;
+	this.end = end;
+	this.name = name;
+	this.color = color;
+	this.horizontalOffset = 0;
+}
+Event.nrOfEvents = 0;
 // Timeline
 function Timeline(container){
 	//this.zoom = 10; // how much time is visible
@@ -40,7 +51,8 @@ function Timeline(container){
 	this.position = new Date().getTime() + 1000 * 60 * 60 * 24 * 0.5; // what time is centered // "+" starts half a day behind
 	this.targetPosition = this.position; // what day is centered
 	
-	this.loop = setInterval(this.render.bind(this), 1000/mf_timeline.fps);
+	this.tick = 0;
+	this.loop = setInterval(this.loop.bind(this), 1000/mf_timeline.fps);
 	this.container = container;
 	this.id = container.id;
 	this.touchList = [];
@@ -63,8 +75,72 @@ function Timeline(container){
 	container.addEventListener("touchmove", this.touchMove.bind(this), false);
 	container.addEventListener("touchend", this.touchEnd.bind(this), false);
 	
-	this.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	this.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 	this.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	
+	// dummydata
+	this.events = [
+		new Event(
+			start = new Date(2017, 8, 17, 0, 0).getTime(),
+			end = new Date(2017, 8, 19, 0, 0).getTime(),
+			name = "LAN",
+			color = "red"
+		),
+		new Event(
+			start = new Date(2017, 8, 18, 0, 0).getTime(),
+			end = new Date(2017, 8, 20, 0, 0).getTime(),
+			name = "Festival",
+			color = "green"
+		),
+		new Event(
+			start = new Date(2017, 8, 20, 9, 0).getTime(),
+			end = new Date(2017, 8, 20, 13, 0).getTime(),
+			name = "Exam",
+			color = "blue"
+		)
+	];
+	// calculate horizontalOffsets
+	this.horizontalOffsets = [];
+	var nrOfOffsets = 10;
+	var offsets = [];
+	for(var i=0; i<nrOfOffsets; i++){
+		offsets.push(i);
+	}
+	for(var i=0; i<10; i++){
+		var random = Math.random();
+		if(i == 0){
+			random = 0.5;
+		}
+		var offset = offsets.splice(Math.floor(random * offsets.length), 1);
+		this.horizontalOffsets.push(offset / nrOfOffsets);
+	}
+	//
+	this.calcuateEventOffset();
+}
+Timeline.prototype.calcuateEventOffset = function(event){
+	for(var i=0; i<this.events.length; i++){
+		this.events[i].horizontalOffset = 0;
+	}
+	var isDone;
+	while(!isDone){
+		isDone = true;
+		for(var i=0; i<this.events.length; i++){
+			var e1 = this.events[i];
+			for(var j=i+1; j<this.events.length; j++){
+				var e2 = this.events[j];
+				// is outside of view
+				if(e1.end > e2.start && e1.start < e2.end && // is colliding and...
+					e1.horizontalOffset == e2.horizontalOffset){ // ...has same offset
+					if(e1.id < e2.id){
+						e2.horizontalOffset++;
+					}else{
+						e1.horizontalOffset++;
+					}
+					isDone = false;
+				}
+			}
+		}
+	}
 }
 Timeline.prototype.touchStart = function(event){
 	outer:
@@ -136,7 +212,8 @@ Timeline.prototype.scroll = function(event){
 	
 	event.preventDefault();
 }
-Timeline.prototype.render = function(){
+Timeline.prototype.loop = function(){
+	this.tick++;
 	// clear
 	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
@@ -176,132 +253,10 @@ Timeline.prototype.render = function(){
 		this.zoom += differenceX * 2;
 	}
 	// calcuate motion
-	this.position = (this.targetPosition - this.position) * 0.2 + this.position
+	this.position = (this.targetPosition - this.position) * 0.2 + this.position;
 	
 	// render
-	var maxRender = 100;
-	// // minutes
-	if(this.utcToDays(this.zoom) < (maxRender * 2) / (24 * 60)){ // 24 * 60 minutes per day
-		this.drawIntervall(
-			function(top, bottom, date){
-				this.drawVLine(1, 25, this.canvas.width * 0.5, top);
-				this.drawText(date.getMinutes(), this.canvas.width * 0.45, (top + bottom) * 0.5, 24, "center");
-			}.bind(this),
-			function(date){
-				date.setMilliseconds(0);
-				date.setSeconds(0);
-			},
-			function(date){
-				date.setTime(date.getTime() + 1000 * 60);
-			}
-		);
-	}
-	// // hours
-	if(this.utcToDays(this.zoom) < maxRender / 24){ // 24 hours per day
-		this.drawIntervall(
-			function(top, bottom, date){
-				this.drawVLine(2, 50, this.canvas.width * 0.5, top);
-				this.drawText(date.getHours(), this.canvas.width * 0.4, (top + bottom) * 0.5 + 600000000 / this.zoom, 24, "center");
-			}.bind(this),
-			function(date){
-				date.setMilliseconds(0);
-				date.setSeconds(0);
-				date.setMinutes(0);
-			},
-			function(date){
-				date.setTime(date.getTime() + 1000 * 60 * 60);
-			}
-		);
-	}
-	// // days
-	if(this.utcToDays(this.zoom) < maxRender / 1){ // 1 / 1 day per day
-		this.drawIntervall(
-			function(top, bottom, date){
-				this.drawVLine(3, 100, this.canvas.width * 0.5, top);
-				this.drawText(this.days[date.getDay()], this.canvas.width * 0.5, (top + bottom) * 0.5, 24, "center");
-				this.drawText(date.getDate(), this.canvas.width * 0.6, (top + bottom) * 0.5, 24, "right");
-			}.bind(this),
-			function(date){
-				date.setMilliseconds(0);
-				date.setSeconds(0);
-				date.setMinutes(0);
-				date.setHours(0);
-			},
-			function(date){
-				date.setDate(date.getDate() + 1);
-			}
-		);
-	}
-	// weeks
-	if(this.utcToDays(this.zoom) < maxRender * 7){ // 1 / 7 weeks per day
-		this.drawIntervall(
-			function(top, bottom, date){
-				this.drawVLine(4, 150, this.canvas.width * 0.5, top);
-				
-				this.drawText("week: " + getWeekNumber(date), this.canvas.width * 0.9, (top + bottom) * 0.5, 24, "right");
-				
-				function getWeekNumber(date){
-					var date2 = new Date(date.getTime());
-					date2.setMilliseconds(0);
-					date2.setSeconds(0);
-					date2.setMinutes(0);
-					date2.setHours(0);
-					date2.setDate(1);
-					date2.setMonth(0);
-					return Math.floor((date.getTime() - date2.getTime()) / 1000 / 60 / 60 / 24 / 7) + 1;
-				}
-			}.bind(this),
-			function(date){
-				date.setMilliseconds(0);
-				date.setSeconds(0);
-				date.setMinutes(0);
-				date.setHours(0);
-				date.setDate(date.getDate() - (date.getDay() + 6) % 7);
-			},
-			function(date){
-				date.setDate(date.getDate() + 7);
-			}
-		);
-	}
-	// // months
-	if(this.utcToDays(this.zoom) < maxRender * 31){ // 1 / 31 months per day
-		this.drawIntervall(
-			function(top, bottom, date){
-				this.drawVLine(5, 200, this.canvas.width * 0.5, top);
-				this.drawText(this.months[date.getMonth()], this.canvas.width * 0.9, top, 24, "right");
-			}.bind(this),
-			function(date){
-				date.setMilliseconds(0);
-				date.setSeconds(0);
-				date.setMinutes(0);
-				date.setHours(0);
-				date.setDate(1);
-			},
-			function(date){
-				date.setMonth(date.getMonth() + 1);
-			}
-		);
-	}
-	// // years
-	if(this.utcToDays(this.zoom) < maxRender * 365){ // 1 / 31 months per day
-		this.drawIntervall(
-			function(top, bottom, date){
-				this.drawVLine(6, 250, this.canvas.width * 0.5, top);
-				this.drawText(date.getFullYear(), this.canvas.width * 0.95, top, 24, "right");
-			}.bind(this),
-			function(date){
-				date.setMilliseconds(0);
-				date.setSeconds(0);
-				date.setMinutes(0);
-				date.setHours(0);
-				date.setDate(1);
-				date.setMonth(0);
-			},
-			function(date){
-				date.setFullYear(date.getFullYear() + 1);
-			}
-		);
-	}
+	this.render();
 	
 	// endstuff
 	// // save last touch positions
@@ -310,6 +265,230 @@ Timeline.prototype.render = function(){
 		t.x0 = t.x;
 		t.y0 = t.y;
 	}
+}
+Timeline.prototype.render = function(){
+	var unitNameHeight = 100;
+	
+	var yearWidth = 30;
+	var monthWidth = 30;
+	var weekWidth = 30;
+	var dayWidth = 30;
+	var hourWidth = 30;
+	var minuteWidth = 30;
+	
+	var horizontalRulerWidth = yearWidth + monthWidth + weekWidth + dayWidth + hourWidth + minuteWidth;
+	
+	var maxRender = 100;
+	
+	var accumulatedWidth = 0;
+	
+	// draw events
+	for(var i=0; i<this.events.length; i++){
+		var e = this.events[i];
+		// is outside of view
+		if(e.end < this.position - this.zoom * 0.5 || e.start > this.position + this.zoom * 0.5){
+			continue;
+		}
+		//
+		
+		var boxWidth = this.canvas.width * 0.3;
+		var horizontalPosition = this.horizontalOffsets[e.horizontalOffset] * (this.canvas.width - boxWidth - horizontalRulerWidth);
+		this.drawBox(horizontalRulerWidth + horizontalPosition, this.timeToCanvasCoords(e.end),
+			horizontalRulerWidth + boxWidth + horizontalPosition, this.timeToCanvasCoords(e.start),
+			e.color, true, 1);
+		var font = "24px Arial";
+		var top = this.timeToCanvasCoords(e.start) - parseInt(font);
+		var bottom = this.timeToCanvasCoords(e.end) + parseInt(font) * 0.2;
+		if(top > this.canvas.height){
+			top = this.canvas.height;
+		}
+		if(bottom < 0){
+			bottom = 0;
+		}
+		
+		var yPos = (top + bottom) * 0.5;
+		
+		// opacity
+		var font = "24px Arial";
+		var nameSize = parseInt(font);
+		// // calcuate opacity value
+		var opacity;
+		if(nameSize > top - bottom){
+			opacity = 2 - nameSize / (top - bottom < 1e-10 ? 1e-10: top - bottom);
+		}else{
+			opacity = 1;
+		}
+		
+		this.drawText(e.name, horizontalRulerWidth + boxWidth * 0.5 + horizontalPosition, yPos, Tool.rgba(255,255,255,opacity), font, alignment = "center", orientation = 0)
+	}
+	
+	// draw date structure
+	// // year
+	this.drawUnit(yearWidth, "YEAR", unitNameHeight, 0, horizontalRulerWidth,
+		function getNameFunction(date){
+			return date.getFullYear();
+		},
+		function resetTimeFuntion(date){
+			date.setMilliseconds(0);
+			date.setSeconds(0);
+			date.setMinutes(0);
+			date.setHours(0);
+			date.setDate(1);
+			date.setMonth(0);
+		},
+		function incrementTimeFunction(date){
+			date.setFullYear(date.getFullYear() + 1);
+		}
+	);
+	// // month
+	this.drawUnit(monthWidth, "MONTH", unitNameHeight, yearWidth, horizontalRulerWidth,
+		function getNameFunction(date){
+			return this.months[date.getMonth()];
+		}.bind(this),
+		function resetTimeFuntion(date){
+			date.setMilliseconds(0);
+			date.setSeconds(0);
+			date.setMinutes(0);
+			date.setHours(0);
+			date.setDate(1);
+		},
+		function incrementTimeFunction(date){
+			date.setMonth(date.getMonth() + 1);
+		}
+	);
+	// // week
+	this.drawUnit(weekWidth, "WEEK", unitNameHeight, yearWidth + monthWidth, horizontalRulerWidth,
+		function getNameFunction(date){
+			var date2 = new Date(date.getTime());
+			date2.setMilliseconds(0);
+			date2.setSeconds(0);
+			date2.setMinutes(0);
+			date2.setHours(0);
+			date2.setDate(1);
+			date2.setMonth(0);
+			var weekNumber =  Math.floor((date.getTime() - date2.getTime()) / 1000 / 60 / 60 / 24 / 7) + 1;
+			
+			return "week " + weekNumber;
+		}.bind(this),
+		function resetTimeFuntion(date){
+			date.setMilliseconds(0);
+			date.setSeconds(0);
+			date.setMinutes(0);
+			date.setHours(0);
+			date.setDate(date.getDate() - (date.getDay() + 6) % 7);
+		},
+		function incrementTimeFunction(date){
+			date.setDate(date.getDate() + 7);
+		}
+	);
+	// // day
+	this.drawUnit(dayWidth, "DAY", unitNameHeight, yearWidth + monthWidth + weekWidth, horizontalRulerWidth,
+		function getNameFunction(date){
+			return this.days[date.getDay()] + " #" + date.getDate();
+		}.bind(this),
+		function resetTimeFuntion(date){
+			date.setMilliseconds(0);
+			date.setSeconds(0);
+			date.setMinutes(0);
+			date.setHours(0);
+		},
+		function incrementTimeFunction(date){
+			date.setDate(date.getDate() + 1);
+		}
+	);
+	// // hour
+	this.drawUnit(hourWidth, "HOUR", unitNameHeight, yearWidth + monthWidth + weekWidth + dayWidth, horizontalRulerWidth,
+		function getNameFunction(date){
+			var hours = date.getHours().toString();
+			if(hours.length == 1){
+				hours = "0" + hours;
+			}
+			return hours + ":00";
+		}.bind(this),
+		function resetTimeFuntion(date){
+			date.setMilliseconds(0);
+			date.setSeconds(0);
+			date.setMinutes(0);
+		},
+		function incrementTimeFunction(date){
+			date.setTime(date.getTime() + 1000 * 60 * 60);
+		}
+	);
+	// // minute
+	this.drawUnit(minuteWidth, "Minute", unitNameHeight, yearWidth + monthWidth + weekWidth + dayWidth + hourWidth, horizontalRulerWidth,
+		function getNameFunction(date){
+			var minutes = date.getMinutes().toString();
+			if(minutes.length == 1){
+				minutes = "0" + minutes;
+			}
+			return "" + ":" + minutes;
+		}.bind(this),
+		function resetTimeFuntion(date){
+			date.setMilliseconds(0);
+			date.setSeconds(0);
+		},
+		function incrementTimeFunction(date){
+			date.setTime(date.getTime() + 1000 * 60);
+		}
+	);
+}
+Timeline.prototype.drawUnit = function(width, unitName, unitNameHeight, horizontalOffset, horizontalRulerWidth, getNameFunction, resetTimeFuntion, incrementTimeFunction){
+	// calculate fading
+	// // calcuate approximate interval width
+	var date = new Date();
+	resetTimeFuntion(date);
+	var time0 = date.getTime();
+	incrementTimeFunction(date);
+	var intervalPeriod = date.getTime() - time0;
+	var periodSize = intervalPeriod / this.zoom * this.canvas.height; // [this.zoom] = time / canvas height
+	// // calcuate name size
+	var unitValueName = getNameFunction(date);
+	var font = "24px Arial";
+	this.canvas.font = font;
+	var nameSize = this.ctx.measureText(unitValueName).width;;
+	// // calcuate opacity value
+	var opacity;
+	if(nameSize * 2 > periodSize){
+		//opacity = 1 - (nameSize * 2 - periodSize) * 0.01;
+		opacity = 2 - nameSize * 2 / periodSize;
+	}else{
+		opacity = 1;
+	}
+	
+	// draw intervals
+	if(opacity > 0){
+		this.drawIntervall(
+			function(top, bottom, date){
+				// calcuate vertical position of unit value. For example day = tuesday.
+				var font = "24px Arial"; // TODO: abstract this outside function
+				var unitValueName = getNameFunction(date); // eksample: 'week: 5'
+				this.ctx.font = font;
+				var margin = this.ctx.measureText(unitValueName).width;
+				var yPos = this.clamp(this.canvas.height * 0.5, top - margin, bottom + margin);
+				// draw unit name
+				this.drawText(unitValueName, parseInt(font) + horizontalOffset, yPos, Tool.rgba(0,0,0,opacity), font, "center", Math.PI * 0.5);
+				// draw horizontal ruler to seperate the units
+				this.drawLine(horizontalRulerWidth, bottom, this.canvas.width, bottom, Tool.rgba(0,0,0,opacity), 1);
+				this.drawLine(horizontalOffset, bottom, horizontalOffset + width, bottom, Tool.rgba(0,0,0,opacity), 1);
+			}.bind(this),
+			resetTimeFuntion,
+			incrementTimeFunction
+		);
+	}
+	// unit name box
+	var positions = [ // x, y, x2, y2,... coordiates.
+		horizontalOffset, this.canvas.height,
+		horizontalOffset, this.canvas.height - unitNameHeight,
+		horizontalOffset + width, this.canvas.height - unitNameHeight,
+		horizontalOffset + width, this.canvas.height
+	];
+	//this.drawPolygon(positions); // draw outline
+	this.drawPolygon(positions, "#74984A", true); // draw fill
+	// unit name
+	this.drawText(unitName, parseInt(font) + horizontalOffset, this.canvas.height - unitNameHeight * 0.5, "black", font, "center", Math.PI * 0.5);
+	// draw vertical ruler
+	//this.drawLine(this.canvas.width - width - horizontalOffset, this.canvas.height, this.canvas.width - width - horizontalOffset, 0, "black", 1);
+	this.drawLine(horizontalOffset + width, this.canvas.height, horizontalOffset + width, 0, "black", 1);
 }
 Timeline.prototype.drawIntervall = function(drawFunction, resetTimeFuntion, incrementTimeFunction){
 	// function to call to print a block, function that floor a time object to desired unit, increment function that will add a desiret time unit
@@ -356,10 +535,36 @@ Timeline.prototype.drawIntervall = function(drawFunction, resetTimeFuntion, incr
 		incrementTimeFunction(date);
 	}
 }
-Timeline.prototype.drawText = function(string, xPos, yPos, fontSize = 24, alignment = "center"){
+Timeline.prototype.timeToCanvasCoords = function(time){
+	return -(time - this.position) / this.zoom * this.canvas.height + this.canvas.height * 0.5;
+}
+Timeline.prototype.drawText = function(string, xPos, yPos, color = "black", font = "24px Arial", alignment = "center", orientation = 0){
 	this.ctx.textAlign = alignment;
-	this.ctx.font = fontSize + "px Arial";
-	this.ctx.fillText(string, xPos, this.canvas.height - yPos);
+	this.ctx.font = font;
+	this.ctx.rotate(-orientation);
+	yPos = this.canvas.height - yPos;
+	var x = xPos * Math.cos(orientation) - yPos * Math.sin(orientation);
+	var y = yPos * Math.cos(orientation) + xPos * Math.sin(orientation);
+	this.ctx.fillStyle = color;
+	this.ctx.fillText(string, x, y);
+	this.ctx.rotate(orientation);
+}
+Timeline.prototype.drawBox = function(x1, y1, x2, y2, color = "black", fill = false, width = 1){
+	this.ctx.beginPath();
+	this.ctx.lineWidth = width;
+	if(fill){
+		this.ctx.fillStyle = color;
+	}else{
+		this.ctx.strokeStyle = color;
+	}
+	
+	this.ctx.rect(x1, this.canvas.height - y1, x2 - x1, -(y2 - y1));
+	
+	if(fill){
+		this.ctx.fill();
+	}else{
+		this.ctx.stroke();
+	}
 }
 Timeline.prototype.drawVLine = function(width, length, xPos, yPos){
 	this.ctx.beginPath();
@@ -370,14 +575,70 @@ Timeline.prototype.drawVLine = function(width, length, xPos, yPos){
 	this.ctx.lineWidth = width;
 	this.ctx.stroke();
 }
+Timeline.prototype.drawLine = function(x1, y1, x2, y2, color = "black", width = 1){
+	this.ctx.beginPath();
+	this.ctx.moveTo(x1, this.canvas.height - y1);
+	this.ctx.lineTo(x2, this.canvas.height - y2);
+	this.ctx.strokeStyle = color;
+	this.ctx.lineWidth = width;
+	this.ctx.stroke();
+}
+Timeline.prototype.drawPolygon = function(corners, color = "black", fill = false, width = 1){
+	if(corners.length == 0){
+		return;
+	}
+	this.ctx.beginPath();
+	this.ctx.moveTo(corners[0], this.canvas.height - corners[1]);
+	for (var i = 3; i < corners.length; i += 2){
+		this.ctx.lineTo(corners[i-1], this.canvas.height - corners[i]);
+	}
+	if(fill){
+		this.ctx.fillStyle = color;
+	}else{
+		this.ctx.strokeStyle = color;
+	}
+	this.ctx.lineWidth = width;
+	if(fill){
+		this.ctx.fill();
+	}else{
+		this.ctx.stroke();
+	}
+}
 Timeline.prototype.utcToDays = function(utc){
 	return utc / 1000 / 60 / 60 / 24;
 }
-
+Timeline.prototype.softRange = function(value, range, slope){
+	// will clamp the value in between +- range. The slope tells the derivative of the function at value = 0.
+	return range * value / (range / slope + Math.abs(value));
+}
+Timeline.prototype.softCenter = function(value, range, slope){
+	// will make values closer to 0 roughly within range. 'slope' is the slope of the derivative at value = 0.
+	return value * ((1 - 1 / (1 + Math.pow(Math.abs(value / range),5))) * (1 - slope) + slope);
+}
+Timeline.prototype.clamp = function(value, max, min){
+	if(max < min){
+		return (max + min) * 0.5;
+	}
+	if(value > max){
+		return max;
+	}
+	if(value < min){
+		return min;
+	}
+	return value;
+}
 // Button
 function Button(){
 	
 }
+// Tool
+function Tool(){
+	
+}
+Tool.rgba = function(r, g, b, a){
+	return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+}
+
 
 
 
