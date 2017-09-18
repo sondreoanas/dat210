@@ -35,13 +35,63 @@ window.onload = function (){
 function Event(start, end, name, color){
 	this.id = Event.nrOfEvents;
 	Event.nrOfEvents++;
-	this.start = start;
-	this.end = end;
+	this.start = start; // Unix milliseconds
+	this.end = end; // Unix milliseconds
+	this.nameBoxes = [{start:start, end:end}]; // list of x and y coordinates of possible name placements. Coordiantes are in Unix milliseconds
 	this.name = name;
 	this.color = color;
 	this.horizontalOffset = 0;
+	this.collisionGroup = []; // all colliding events
 }
 Event.nrOfEvents = 0;
+Event.prototype.getBiggestNameBoxInView = function(top, bottom){
+	// return index of the biggest index. -1 if none exist.
+	var biggestIndex = -1;
+	var biggestSize = 0;
+	for(var i=0; i<this.nameBoxes.length; i++){
+		var start = this.nameBoxes[i].start;
+		var end = this.nameBoxes[i].end;
+		start = Math.max(start, top);
+		end = Math.min(end, bottom);
+		var size = end - start;
+		if(size > biggestSize){
+			biggestSize = size;
+			biggestIndex = i;
+		}
+	}
+	return biggestIndex;
+}
+Event.prototype.clipNameBoxes = function(otherStart, otherEnd){
+	// will clip, remove or split nameBoxes by the range given as the argument.
+	var originalLength = this.nameBoxes.length;
+	for(var i=0; i<originalLength; i++){
+		var bStart = this.nameBoxes[i].start;
+		var bEnd = this.nameBoxes[i].end;
+		if(otherEnd < bStart || bEnd < otherStart){ // no collision
+			continue;
+		}
+		if(otherStart < bStart){
+			if(bEnd < otherEnd){ // nameBox is completely inside the other Event
+				this.nameBoxes.splice(i, 1);
+				i--;
+				originalLength--;
+				continue;
+			}else{
+				this.nameBoxes[i].start = otherEnd;
+				continue;
+			}
+		}else{
+			if(bEnd <= otherEnd){
+				this.nameBoxes[i].end = otherStart;
+				continue;
+			}else{
+				this.nameBoxes[i].end = otherStart;
+				this.nameBoxes.push({start:otherEnd, end:bEnd});
+				continue;
+			}
+		}
+	}
+}
 // Timeline
 function Timeline(container){
 	//this.zoom = 10; // how much time is visible
@@ -93,50 +143,123 @@ function Timeline(container){
 			color = "green"
 		),
 		new Event(
+			start = new Date(2017, 8, 19, -11, 0).getTime(),
+			end = new Date(2017, 8, 20, -11, 0).getTime(),
+			name = "Prepare for exam",
+			color = "turquoise"
+		),
+		new Event(
 			start = new Date(2017, 8, 20, 9, 0).getTime(),
 			end = new Date(2017, 8, 20, 13, 0).getTime(),
 			name = "Exam",
 			color = "blue"
 		)
 	];
-	// calculate horizontalOffsets
-	this.horizontalOffsets = [];
-	var nrOfOffsets = 10;
-	var offsets = [];
-	for(var i=0; i<nrOfOffsets; i++){
-		offsets.push(i);
+	
+	
+	var str = "var rdn = [";
+	for(var i=0; i<200; i++){
+		str += i==0? "" : ",";
+		str += Math.random();
 	}
-	for(var i=0; i<10; i++){
-		var random = Math.random();
-		if(i == 0){
-			random = 0.5;
-		}
-		var offset = offsets.splice(Math.floor(random * offsets.length), 1);
-		this.horizontalOffsets.push(offset / nrOfOffsets);
+	str += "];";
+	//console.log(str);
+	
+	var rdn = [0.32091453606388765,0.03206568377567365,0.3582179991756387,0.6919647023359796,0.9277414709881198,0.1878549956056026,0.9056281703927045,0.4626597451558703,0.5603963111769608,0.08769583685026228,0.7476976797361483,0.15133994929167915,0.4812818863149493,0.5935659110966249,0.3105901148557275,0.7238256921925468,0.8253647252690817,0.8352167281954577,0.6826171756934569,0.05211486372678453,0.8747450708549991,0.15166559154583892,0.45201576834383395,0.5575859848337765,0.17369986234531143,0.9274806156723976,0.7004275231734771,0.00226869919390027,0.32858180623740174,0.848748269698046,0.7770070190666452,0.26799323751491344,0.9822197669458366,0.9845105162511418,0.7695170988977229,0.8322995943024287,0.8896724661456432,0.08380532116394113,0.15389161516315686,0.39152371497892213,0.9187531083963374,0.5474927481591381,0.4500478734352087,0.3270705445782336,0.7256600585646922,0.9811885726281304,0.6659078195992849,0.2512703169992314,0.3643836639967972,0.3147959775647937,0.9549722668254184,0.23420852824479876,0.25487780136528104,0.7304896433900245,0.03999929739561048,0.02614203380097324,0.5123379877984102,0.14694742844321618,0.28224368177486325,0.0005717396430620081,0.11948223333779895,0.761102396058158,0.012529662477431591,0.14097423650072405,0.47343452697815724,0.263679491511259,0.09638919764876208,0.0582333916363631,0.6634555069744275,0.5444733878098607,0.39184290175790437,0.19024180256613898,0.05549863219884199,0.9928477582268154,0.5285475769054433,0.42784166883181474,0.7586026325584181,0.6032173344120284,0.1858102557288317,0.4765120707691066,0.8514278469194196,0.5896723535572421,0.7434457525527942,0.7216953574743372,0.3595161937442324,0.5628305488572791,0.0008395672460932424,0.560791117384166,0.376861815885561,0.3351901136099673,0.22556003893286158,0.7128174390010737,0.3019321775668322,0.7066722947189927,0.7737224538162835,0.6371952817188353,0.3753928499607191,0.7870533423775159,0.8114543609320384,0.786566703427489,0.5018160952054622,0.9610271151800713,0.290880115271305,0.9967969391681728,0.11169989330827823,0.08480474899449919,0.6646640535424471,0.32758077986829215,0.03894345354763962,0.5183790710694218,0.5460349405237099,0.7460481848904692,0.7632632178502687,0.8646618336497505,0.5164221414259629,0.9585963152232895,0.5737211854275002,0.5794242637290241,0.31007507775216014,0.5303529890943663,0.19386005529774875,0.6720988744291712,0.24357631516840428,0.8180806949086219,0.9276035376288725,0.717384298007997,0.42761950789830205,0.2723558619886739,0.6810900667188267,0.1349126994865868,0.06659100494582271,0.5873446109201699,0.4831039944618536,0.04106353536959828,0.28548481980172324,0.9466083598114006,0.4907976175377595,0.38594697040386805,0.3579374934171824,0.58183723261734,0.8615560961875963,0.06481501626329234,0.4713223845862782,0.4803742092877754,0.18982265415977717,0.34251041884602085,0.5056774142119413,0.42401322916370665,0.4077466131565164,0.8017810637586136,0.04916610917777664,0.7494972355457852,0.18222981625973067,0.867662124357546,0.7811952722712492,0.26401771517655614,0.6631435512657844,0.4153301670462275,0.48076560975462046,0.0033216550319603577,0.6602784212759316,0.8589224462901395,0.6987097854455528,0.13371064721961967,0.2114954930329871,0.138442866876489,0.30637531300433474,0.271054250665411,0.9315865668074672,0.5490010820797617,0.5438181413476193,0.5929372747971187,0.9671730734198702,0.39049792443901055,0.5371380026193171,0.4103452890187307,0.06769911482994817,0.7838268429818469,0.14372902162549583,0.863848863515033,0.2378638641488593,0.044866301313351675,0.039815862695010695,0.308117831886215,0.8600651610205416,0.2840144294867344,0.8218627321041876,0.2432903708362768,0.4145398188035678,0.013500493218422616,0.5951741938574022,0.9196628754992722,0.5623302072069456,0.8448115786490631,0.4154645990550636,0.514147869764914,0.9673763364403436,0.8031230688978386,0.7789393590522597,0.0077992653276159896]
+	
+	
+	var origo = new Date().getTime();
+	for(var i=0; i<30; i++){
+		//var radius = Math.pow(Math.random(), 2) * 1000 * 60 * 60 * 24 * 5 + 1000 * 60;
+		var radius = Math.pow(rdn[i * 2], 0.5) * 1000 * 60 * 60 * 24 * 2 + 1000 * 60;
+		//var t = origo + (0.5 - Math.random()) * 1000 * 60 * 60 * 24 * 100;
+		var t = origo + (0.5 - rdn[i * 2 + 1]) * 1000 * 60 * 60 * 24 * 100;
+		this.events.push(new Event(
+			start = new Date(t - radius).getTime(),
+			end = new Date(t + radius).getTime(),
+			name = "event nr:" + Event.nrOfEvents,
+			color = Tool.randomColor(1)
+		));
 	}
 	//
-	this.calcuateEventOffset();
+	this.calcuateEventCollisions();
 }
-Timeline.prototype.calcuateEventOffset = function(event){
+Timeline.prototype.calcuateEventCollisions = function(event){
+	// reset all
 	for(var i=0; i<this.events.length; i++){
-		this.events[i].horizontalOffset = 0;
+		var e = this.events[i];
+		e.horizontalOffset = 0;
+		e.nameBoxes = [{start:e.start, end:e.end}];
+		e.collisionGroup = [e];
 	}
-	var isDone;
+	// horizontal offset
+	/*var isDone;
 	while(!isDone){
 		isDone = true;
 		for(var i=0; i<this.events.length; i++){
 			var e1 = this.events[i];
 			for(var j=i+1; j<this.events.length; j++){
 				var e2 = this.events[j];
-				// is outside of view
-				if(e1.end > e2.start && e1.start < e2.end && // is colliding and...
-					e1.horizontalOffset == e2.horizontalOffset){ // ...has same offset
-					if(e1.id < e2.id){
-						e2.horizontalOffset++;
-					}else{
-						e1.horizontalOffset++;
+				if(e1.end > e2.start && e1.start < e2.end){ // is colliding
+					// offset calculation
+					if(e1.horizontalOffset == e2.horizontalOffset){ // has same offset
+						if(e1.id < e2.id){
+							e2.horizontalOffset++;
+						}else{
+							e1.horizontalOffset++;
+						}
+						isDone = false;
 					}
-					isDone = false;
+				}
+			}
+		}
+	}*/
+	// // create collision groups
+	var collisionGroups = []; // 2d array of colliding objects
+	for(var i=0; i<this.events.length; i++){
+		var e1 = this.events[i];
+		for(var j=i+1; j<this.events.length; j++){
+			var e2 = this.events[j];
+			if(e1.end > e2.start && e1.start < e2.end){ // is colliding
+				// remove old group(s)
+				var index;
+				if((index = collisionGroups.indexOf(e1.collisionGroup)) != -1){
+					collisionGroups.splice(index, 1);
+				}
+				if((index = collisionGroups.indexOf(e2.collisionGroup)) != -1){
+					collisionGroups.splice(index, 1);
+				}
+				// create new group
+				var newGroup = e1.collisionGroup;
+				if(e2.collisionGroup != e1.collisionGroup){
+					newGroup = newGroup.concat(e2.collisionGroup);
+				}
+				// assign group
+				for(var k=0; k<newGroup.length; k++){
+					newGroup[k].collisionGroup = newGroup;
+				}
+				collisionGroups.push(newGroup);
+			}
+		}
+	}
+	// // calculate offset
+	for(var i=0; i<collisionGroups.length; i++){
+		var group = collisionGroups[i];
+		for(var j=0; j<group.length; j++){
+			group[j].horizontalOffset = j - (group.length - 1) * 0.5;
+		}
+	}
+	// name boxes
+	for(var i=0; i<this.events.length; i++){
+		var e1 = this.events[i];
+		for(var j=i+1; j<this.events.length; j++){
+			var e2 = this.events[j];
+			if(e1.end > e2.start && e1.start < e2.end){ // is colliding
+				// name box calculation
+				if(e1.id > e2.id){ // highest id is on top
+					e2.clipNameBoxes(e1.start, e1.end);
+				}else{
+					e1.clipNameBoxes(e2.start, e2.end);
 				}
 			}
 		}
@@ -292,9 +415,10 @@ Timeline.prototype.render = function(){
 		//
 		
 		var boxWidth = this.canvas.width * 0.3;
-		var horizontalPosition = this.horizontalOffsets[e.horizontalOffset] * (this.canvas.width - boxWidth - horizontalRulerWidth);
-		this.drawBox(horizontalRulerWidth + horizontalPosition, this.timeToCanvasCoords(e.end),
-			horizontalRulerWidth + boxWidth + horizontalPosition, this.timeToCanvasCoords(e.start),
+		var horizontalPosition = e.horizontalOffset * (this.canvas.width - horizontalRulerWidth) * 0.05 +
+			horizontalRulerWidth + (this.canvas.width - horizontalRulerWidth) * 0.5;
+		this.drawBox(horizontalPosition - boxWidth * 0.5, this.timeToCanvasCoords(e.end),
+			horizontalPosition + boxWidth * 0.5, this.timeToCanvasCoords(e.start),
 			e.color, true, 1);
 		var font = "24px Arial";
 		var top = this.timeToCanvasCoords(e.start) - parseInt(font);
@@ -304,6 +428,19 @@ Timeline.prototype.render = function(){
 		}
 		if(bottom < 0){
 			bottom = 0;
+		}
+		
+		// calcuate yPos
+		var nameBoxIndex = e.getBiggestNameBoxInView(this.canvasCoordsToTime(this.canvas.height), this.canvasCoordsToTime(0));
+		if(nameBoxIndex != -1){
+			max = this.timeToCanvasCoords(e.nameBoxes[nameBoxIndex].start);
+			min = this.timeToCanvasCoords(e.nameBoxes[nameBoxIndex].end);
+			if(max < top){
+				top = max;
+			}
+			if(min > bottom){
+				bottom = min;
+			}
 		}
 		
 		var yPos = (top + bottom) * 0.5;
@@ -318,8 +455,8 @@ Timeline.prototype.render = function(){
 		}else{
 			opacity = 1;
 		}
-		
-		this.drawText(e.name, horizontalRulerWidth + boxWidth * 0.5 + horizontalPosition, yPos, Tool.rgba(255,255,255,opacity), font, alignment = "center", orientation = 0)
+		// draw name
+		this.drawText(e.name, horizontalPosition, yPos, Tool.rgba(255,255,255,opacity), font, alignment = "center", orientation = 0)
 	}
 	
 	// draw date structure
@@ -535,7 +672,10 @@ Timeline.prototype.drawIntervall = function(drawFunction, resetTimeFuntion, incr
 		incrementTimeFunction(date);
 	}
 }
-Timeline.prototype.timeToCanvasCoords = function(time){
+Timeline.prototype.canvasCoordsToTime = function(coords){ // TODO: rename to 'pixels to time'
+	return this.zoom * (0.5 - coords / this.canvas.height) + this.position;
+}
+Timeline.prototype.timeToCanvasCoords = function(time){ // TODO: rename to 'time to pixels'
 	return -(time - this.position) / this.zoom * this.canvas.height + this.canvas.height * 0.5;
 }
 Timeline.prototype.drawText = function(string, xPos, yPos, color = "black", font = "24px Arial", alignment = "center", orientation = 0){
@@ -637,6 +777,16 @@ function Tool(){
 }
 Tool.rgba = function(r, g, b, a){
 	return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+}
+Tool.randomColor = function(brightness = Math.random()){
+	var r = Math.random() * 256;
+	var g = Math.random() * 256;
+	var b = Math.random() * 256;
+	var f = brightness / (r + g + b) * 255;
+	r *= f;
+	g *= f;
+	b *= f;
+	return "rgba(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ",1)";
 }
 
 
