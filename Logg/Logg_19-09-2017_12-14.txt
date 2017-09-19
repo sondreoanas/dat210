@@ -2,4 +2,4 @@ Referat fra møte 19.09.17 kl. 12-14
 
 Front-end: HTML, CSS og JavaScript
 
-Back-end: Python(flask), MySQL 
+Back-end: Python(flask), MySQL
