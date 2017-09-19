@@ -1,5 +1,5 @@
 ﻿HTML,JS/JSON,Python Front,Python Back,DB,BL
-Design,Timeline,Sette opp Flask,kommunikasjon med DB,ER-Diagram,,,ER-diagram til database
+Design,Timeline,Sette opp Flask,kommunikasjon med DB,ER-Diagram,ER-diagram til database
 ,,Login,,SQL,Login
 ,,Communikasjonmed Back,,,Home
 ,,User,,,Create/Edit Event
