@@ -3,6 +3,8 @@
 #     Siste oppdateret: 19.09.2017 12:52
 #
 
+import JSON
+
 
 
 # Login
@@ -15,3 +17,18 @@
 
 
 # Sjekke alt!
+
+
+def pass_event(event):
+    if checker(event):
+        new_event = converter(event)
+        #back.new_event(new_event)
+    #else:
+        #send error back
+
+
+
+def converter(event):
+    pass
+def checker(event):
+    pass
