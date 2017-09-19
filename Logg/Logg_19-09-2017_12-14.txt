@@ -1,0 +1,12 @@
+Referat fra møte 19.09.17 kl. 12-14
+
+Front-end: HTML, CSS og JavaScript
+
+Back-end: Python(flask), MySQL
+
+Ansvarsområder:
+HTML & CSS:       Nils
+Javascript:       Markus #1
+Python -> Front:  Sondre
+Python -> DB:     Markus #2
+DB:               Vebjørn
