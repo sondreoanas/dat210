@@ -28,6 +28,11 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = "any random string"
 
 
+def get():
+
+    return void
+
+
 def get_db():
     if not hasattr(g, "_db"):
         g.db = mysql.connector.connect(host=app.config["DATABASE_HOST"], user=app.config["DATABASE_USER"],
