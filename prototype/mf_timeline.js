@@ -351,7 +351,6 @@ Timeline.prototype.render = function(){
 			visibleNameBoxBottom = Math.max(nameBoxBottom, 0);
 			visibleNameBoxHeight = visibleNameBoxTop - visibleNameBoxBottom;
 		}
-		//if(nameBoxIndex == -1 || visibleNameBoxHeight < nameHeight && visibleNameBoxHeight < visibleHeight){ // vertical
 		if(nameBoxIndex == -1 || visibleNameBoxHeight - nameHeight < visibleHeight - nameWidth && visibleNameBoxHeight < nameHeight){ // vertical
 			xPos = left + nameHeight;
 			yPos = visibleBottom + visibleHeight * 0.5;
