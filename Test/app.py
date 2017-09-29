@@ -7,7 +7,7 @@
 """
 import back     #Back-end python script
 import front    #Front-end python script
-import JSON
+import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
 
