@@ -21,7 +21,7 @@ def index():
         }
     }
     
-    json.dumps(data)
+    return json.dumps(data)
 
 if __name__ == "__main__":
     app.run()
