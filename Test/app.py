@@ -10,9 +10,11 @@ import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
 
-@app.route("/test")
-def test():
-    data = test_db()
+@app.route("/getHTML")
+def test(html):
+    data = test_db(html)
+    with open('html/' + hmtl , 'r') as f:
+        template = f.read()
     return json.dumps(data)
 
 @app.route("/")
