@@ -9,12 +9,18 @@ import back_test     #Back-end python script
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
-
+    
+    
 @app.route("/getHTML")
 def test(html):
-    data = test_db(html)
     with open('html/' + hmtl , 'r') as f:
         template = f.read()
+        
+    data = {
+        'template' : template,
+        'data' : {}
+    }
+    
     return json.dumps(data)
 
 @app.route("/")
