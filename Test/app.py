@@ -2,7 +2,7 @@
     Flask
     this file is the core of the Calendar
 
-    Sist oppdatert: Sondre 27.09.2017
+    Sist oppdatert: Sondre 02.10.2017
 
 """
 import back_test     #Back-end python script
