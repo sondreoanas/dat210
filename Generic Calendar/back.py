@@ -43,47 +43,53 @@ def teardown_db(error):
         db.close()
 
 
-with app.app_context():
-    def valid_login(username, password):
-        """Checks if username-password combination is valid."""
-        db = get_db()
-        cur = db.cursor()
-        user_exist = False
-        sql = "SELECT Password " \
-              "FROM user " \
-              "WHERE Email = %s "
-
-        cur.execute(sql, (username,))
-
-        for (pw,) in cur:
-            user_exist = True
-            user_password = pw
-        cur.close()
-
-        """
-        Use this when the raw password is not stored in the database
-
-        if user_exist:
-            return check_password_hash(user_password, password)
-        return user_exist
-        """
-
-        if user_exist:
-            return password == user_password
-        return user_exist
-
-
-def valid_register_user(username):
+def valid_login(username, password):
+    """Checks if username-password combination is valid."""
     db = get_db()
     cur = db.cursor()
     user_exist = False
-    sql = "SELECT Email " \
+    sql = "SELECT Password " \
           "FROM user " \
           "WHERE Email = %s "
 
     cur.execute(sql, (username,))
 
-    if cur.fetchall():
+    for (pw,) in cur:
         user_exist = True
+        user_password = pw
+    cur.close()
 
+    """
+    Use this when the raw password is not stored in the database
+
+    if user_exist:
+        return check_password_hash(user_password, password)
     return user_exist
+    """
+
+    if user_exist:
+        return password == user_password
+    return user_exist
+
+
+def valid_register_user(username, password, name):
+    db = get_db()
+    cur = db.cursor()
+    success = False
+    sql1 = "SELECT Email " \
+          "FROM user " \
+          "WHERE Email = %s "
+
+    cur.execute(sql1, (username,))
+    if cur.fetchall():
+        return success
+
+    sql2 = "INSERT INTO products " \
+          "(Email, Password, Name) " \
+          "VALUES (%s, %s, %s) "
+    cur.execute(sql2, (username, password, name))
+    cur.execute(sql1, (username,))
+    if cur.fetchall():
+        success == True
+        return success
+    return success
