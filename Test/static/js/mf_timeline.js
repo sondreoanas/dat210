@@ -3,15 +3,12 @@
 	
 	version			: 0.0.0
 	last updated	: 26.09.2017
-	start date		: 10.09.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
-			This will make a window for displaying events in a calendar.
+			This will manage timelines on the page.
 		How to use it?
-			In the header, point to this file "<script src='mf_timeline.js'></script>".
-			All divs with class 'mf_timeline' will turn into a calendar window.
-			(Not yet implemented)The div's ids is used to communicate with the window.
+			TODO: ...
 */
 
 function mf_TimelineHandler(){
@@ -20,18 +17,16 @@ function mf_TimelineHandler(){
 	this.timelines;
 }
 var mf_timeline;
-window.addEventListener("load", init);
+
 function init(){
 	mf_timeline = new mf_TimelineHandler();
 	mf_timeline.loops = {};
 	mf_timeline.fps = 30;
 	mf_timeline.timelines = [];
-	
-	var arr = document.getElementsByClassName("mf_timeline");
-	for(var i=0; i<arr.length; i++){
-		var newTimeline = new Timeline(arr[i]);
-		mf_timeline.timelines.push(newTimeline);
-	}
+}
+function addTimeline(element){
+	var newTimeline = new Timeline(element);
+	mf_timeline.timelines.push(newTimeline);
 }
 // Event
 function Event(start, end, name, color){
@@ -100,6 +95,8 @@ function Timeline(container){
 	//this.position = 0; // what time is centered
 	//this.targetPosition = this.position; // what day is centered
 	this.zoom = 1000 * 60 * 60 * 24 * 10; // 10 days // how much time is visible
+	this.maxZoom = 1000 * 60 * 60 * 24 * 365 * 10; // 10 years
+	this.minZoom = 1000 * 60 * 2; // 2 min
 	this.position = new Date().getTime() + 1000 * 60 * 60 * 24 * 0.5; // what time is centered // "+" starts half a day behind
 	this.targetPosition = this.position; // what day is centered
 	
@@ -130,6 +127,7 @@ function Timeline(container){
 		- parseFloat(style.paddingRight) - parseFloat(style.paddingLeft);
 	this.canvas.height = container.clientHeight
 		- parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+	container.innerHTML = "";
 	container.appendChild(this.canvas);
 	
 	this.ctx = this.canvas.getContext("2d");
@@ -729,13 +727,14 @@ Timeline.prototype.calculateTouchMotionOneFinger = function(){
 		deltaX += -(t.x - t.x0) / this.canvas.width * this.zoom * scrollSensitivity;
 		// movement
 		deltaY += (t.y - t.y0) / this.canvas.height * this.zoom * zoomSensitivity + deltaX * (t.y - this.canvas.height * 0.5) / this.canvas.height;
-		console.log(t.y);
 		
 	}
 	if(this.disableDefaultTouch && this.getNrOfTouches() != 0){
 		// // zoom
 		deltaX /= this.getNrOfTouches();
 		this.zoom += deltaX;
+		this.zoom = Tool.clamp(this.zoom, this.maxZoom, this.minZoom);
+		console.log(this.zoom);
 		// movement
 		deltaY /= this.getNrOfTouches();
 		this.targetPosition += deltaY;
@@ -801,9 +800,6 @@ Timeline.prototype.touchMoveOneFinger = function(event){
 		t.y = this.getTouchY(e);
 		t.xR = e.radiusX;
 		t.yR = e.radiusY;
-		console.log("screen:" + e.screenY);
-		console.log("client:" + e.clientY);
-		console.log("page  :" + e.pageY);
 	}
 	
 	if(this.disableDefaultTouch){
@@ -949,7 +945,6 @@ Tool.widthOfString = function(string, font){
 	ctx.font = font;
 	return ctx.measureText(string).width;
 }
-
 
 
 

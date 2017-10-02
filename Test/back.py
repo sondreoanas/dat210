@@ -43,6 +43,20 @@ def teardown_db(error):
         db.close()
 
 
+def existing_user(username):
+    db = get_db()
+    cur = db.cursor()
+    user_exist = False
+    sql = "SELECT Email " \
+           "FROM user " \
+           "WHERE Email = %s "
+
+    cur.execute(sql, (username,))
+    if cur.fetchall():
+        user_exist = True
+    return user_exist
+
+
 def valid_login(username, password):
     """Checks if username-password combination is valid."""
     db = get_db()
@@ -76,20 +90,13 @@ def valid_register_user(username, password, name):
     db = get_db()
     cur = db.cursor()
     success = False
-    sql1 = "SELECT Email " \
-          "FROM user " \
-          "WHERE Email = %s "
-
-    cur.execute(sql1, (username,))
-    if cur.fetchall():
-        return success
+    if existing_user(username):
+        success = False
 
     sql2 = "INSERT INTO products " \
-          "(Email, Password, Name) " \
-          "VALUES (%s, %s, %s) "
+           "(Email, Password, Name) " \
+           "VALUES (%s, %s, %s) "
     cur.execute(sql2, (username, password, name))
-    cur.execute(sql1, (username,))
-    if cur.fetchall():
-        success == True
-        return success
+    if existing_user(username):
+        success = True
     return success
