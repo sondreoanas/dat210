@@ -5,15 +5,16 @@
     Sist oppdatert: Sondre 02.10.2017
 
 """
-#Back-end python script
-import back
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
     
     
 @app.route("/getHTML")
-def test(html):
+
+def getHTML(html):
+    html = request.args.get('html')
+
     with open('html/' + html , 'r') as f:
         template = f.read()
         
