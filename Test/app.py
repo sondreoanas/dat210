@@ -14,11 +14,7 @@ app = Flask(__name__)
     
 @app.route("/getHTML")
 def test(html):
-<<<<<<< Updated upstream
     with open('html/' + html , 'r') as f:
-=======
-    with open('html/' + html, 'r') as f:
->>>>>>> Stashed changes
         template = f.read()
         
     data = {
