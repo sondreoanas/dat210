@@ -13,7 +13,7 @@ app = Flask(__name__)
     
 @app.route("/getHTML")
 def test(html):
-    with open('html/' + hmtl , 'r') as f:
+    with open('html/' + html , 'r') as f:
         template = f.read()
         
     data = {
