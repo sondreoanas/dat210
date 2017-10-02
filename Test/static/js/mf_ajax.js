@@ -20,7 +20,7 @@ function findAjaxData(element){
 	if(element.dataset.ajax){
 		if(element.dataset.ajax == "/timeline"){ // load "mf_timeline.js"
 			if(!mf_ajaxHandler.hasLoadedTimeline){
-				ajax("/static/mf_timeline.js", function(responseText){
+				ajax("/static/js/mf_timeline.js", function(responseText){
 					eval(responseText);
 					init();
 					addTimeline(element);
@@ -45,6 +45,11 @@ function findAjaxData(element){
 function loadInContent(element, data){
 	//data.template = template(data.data, data.template);
 	element.innerHTML = data.template;
+	// check children
+	for(var i=0; i<element.children.length; i++){
+		var child = element.children[i];
+		searchChildren(child);
+	}
 }
 function ajax(address, callback){
 	var xhttp = new XMLHttpRequest();
@@ -57,6 +62,10 @@ function ajax(address, callback){
 		xhttp.send();
 }
 
+
+/*var form = document.getElementById("form id");
+var inputs = form.getElementByType("input");
+inputs[2].value;*/
 
 
 
