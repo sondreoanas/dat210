@@ -15,6 +15,7 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+
       <file leaf-file-name="back.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/back.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -40,6 +41,13 @@
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
