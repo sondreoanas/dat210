@@ -43,7 +43,9 @@ function findAjaxData(element){
 	}
 }
 function loadInContent(element, data){
-	//data.template = template(data.data, data.template);
+
+
+	data.template = templater(data.template, data.data);
 	element.innerHTML = data.template;
 	// check children
 	for(var i=0; i<element.children.length; i++){
