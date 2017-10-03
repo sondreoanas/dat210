@@ -1,9 +1,7 @@
 """
     Flask
     this file is the core of the Calendar
-
-    Sist oppdatert: Sondre 02.10.2017
-
+    Sist oppdatert: Nils 03.10.2017
 """
 import back
 import json
