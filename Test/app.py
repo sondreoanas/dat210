@@ -5,14 +5,16 @@
     Sist oppdatert: Sondre 02.10.2017
 
 """
-import back_test     #Back-end python script
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
     
     
 @app.route("/getHTML")
-def test(html):
+
+def getHTML(html):
+    html = request.args.get('html')
+
     with open('html/' + html , 'r') as f:
         template = f.read()
         
@@ -22,6 +24,12 @@ def test(html):
     }
     
     return json.dumps(data)
+
+@app.route("/login")
+def login(username, password):
+    data = request.json
+    bolean = back.valid_login(data['username'],data['password'])
+    return json.dumps(bolean)
 
 @app.route("/")
 def index():

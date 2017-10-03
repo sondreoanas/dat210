@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wiel</title>
+
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="stylesheet" href="css/sections.css">
+    <link rel="stylesheet" href="css/elements.css">
+
+
+    <script src="js/test.js"></script>
+
+
+</head>
+
+<body>
+
+    <header>
+        <div class="page">
+            <h1>Wiel</h1>
+        </div>
+    </header>
+
+    <nav id="mainmenu">
+        <div class="page">
+            <input type="checkbox" id="navcheck">
+            <label for="navcheck"></label>
+            <ul class="ffix">
+
+                <li><a href="" title="Goto frontpage">Frontpage</a></li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <main id="front">
+
+        <section id="login" class="ffix">
+
+            <div class="ghost">
+                <div class="box form_login ffix">
+
+                    <h2>Login</h2>
+
+                    <input data-forms="login" type="text" id="form_userid" placeholder="your@email.com">
+                    <input data-forms="login" type="password" id="form_userpass" placeholder="*****">
+
+                    <button data-forms="login" data-forms-action="submit" class="button_login">Login</button>
+
+                    <button class="button_newuser button_underline">Create new User</button>
+                    <button class="button_forgot button_underline">Forgot password?</button>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="newuser" class="ffix">
+
+            <div class="ghost">
+                <div class="box form_newuser ffix">
+
+                    <h2>Create new user</h2>
+
+                    <label for="form_new_userid">Enter email:</label>
+                    <input data-forms="new_userid" type="text" id="form_new_userid" placeholder="your@email.com">
+
+                    <label for="form_new_username">Enter nickname:</label>
+                    <input data-forms="new_userid" type="text" id="form_new_username" placeholder="Nicky McNickface">
+
+                    <label for="form_new_userpass">Enter password:</label>
+                    <input data-forms="new_userid" type="password" id="form_new_userpass" placeholder="yourpassword123">
+
+                    <label for="form_new_userpass_repeat">Repeat password:</label>
+                    <input data-forms="new_userid" type="password" id="form_new_userpass_repeat" placeholder="yourpassword123">
+
+                    <button data-forms="new_userid" data-forms-action="submit" class="button_newuser">Create new User</button>
+
+                </div>
+            </div>
+
+        </section>
+
+
+        <section id="forgotpass" class="ffix">
+
+            <div class="ghost">
+                <div class="box form_forgotpass ffix">
+
+                    <h2>Forgot password?</h2>
+
+                    <input data-forms="forgotpass" type="text" id="form_userid" placeholder="your@email.com">
+                    <button data-forms="forgotpass" data-forms-action="submit" class="button_newpass">Make new password</button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="page">
+
+            <section id="contact">
+                <h2>Customer service</h2>
+                <p>+47 40 40 40 40</p>
+                <a href="mailto:customer@service.com" title="Customer service email">customer@service.com</a>
+            </section>
+
+            <section id="social">
+                <h2>Social media</h2>
+                <ul>
+                    <li><a href="http://www.facebook.com/" title="Facebook link" class="facebook">Facebook</a></li>
+                    <li><a href="http://www.twitter.com/" title="Twitter link" class="twitter">Twitter</a></li>
+                    <li><a href="http://www.linkedin.com/" title="LinkedIn link" class="linkedin">LinkedIn</a></li>
+                </ul>
+            </section>
+
+        </div>
+    </footer>
+
+</body>
+
+</html>
