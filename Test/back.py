@@ -61,29 +61,21 @@ def valid_login(username, password):
     """Checks if username-password combination is valid."""
     db = get_db()
     cur = db.cursor()
-    user_exist = False
-    sql = "SELECT Password " \
-          "FROM user " \
-          "WHERE Email = %s "
-
-    cur.execute(sql, (username,))
-
-    for (pw,) in cur:
-        user_exist = True
-        user_password = pw
-    cur.close()
-
-    """
-    Use this when the raw password is not stored in the database
-
-    if user_exist:
+    if existing_user(username):
+        sql = "SELECT Password " \
+              "FROM user " \
+              "WHERE Email = %s "
+        cur.execute(sql, (username,))
+        for (pw,) in cur:
+            user_password = pw
+        cur.close()
+        """
+        Use this when the raw password is not stored in the database
+    
         return check_password_hash(user_password, password)
-    return user_exist
-    """
-
-    if user_exist:
+        """
         return password == user_password
-    return user_exist
+    return False
 
 
 def valid_register_user(username, password, name):
@@ -92,11 +84,12 @@ def valid_register_user(username, password, name):
     success = False
     if existing_user(username):
         success = False
-
-    sql2 = "INSERT INTO products " \
-           "(Email, Password, Name) " \
-           "VALUES (%s, %s, %s) "
-    cur.execute(sql2, (username, password, name))
-    if existing_user(username):
-        success = True
+    else:
+        sql2 = "INSERT INTO user " \
+               "(Email, Password, Name) " \
+               "VALUES (%s, %s, %s) "
+        cur.execute(sql2, (username, password, name))
+        db.commit()
+        if existing_user(username):
+            success = True
     return success
