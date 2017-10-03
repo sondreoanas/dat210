@@ -83,7 +83,7 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 // data is of format {template:someTemplate, data:someData}
 mf_AjaxHandler.prototype.fillElement = function(elementId, html){
 	var element = document.getElementById(elementId);
-	this.loadInContent(element, {data:null, template: html});
+	this.loadInContent(element, {data:{}, template: html});
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, data){
 	data.template = templater(data.template, data.data);
