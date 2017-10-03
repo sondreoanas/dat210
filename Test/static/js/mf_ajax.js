@@ -78,6 +78,7 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 		return false;
 	}
 }
+
 // Fill element width data.
 // data is of format {template:someTemplate, data:someData}
 mf_AjaxHandler.prototype.fillElement = function(elementId, html){
@@ -85,7 +86,7 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, html){
 	this.loadInContent(element, {data:null, template: html});
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, data){
-	//data.template = template(data.data, data.template);
+	data.template = templater(data.template, data.data);
 	element.innerHTML = data.template;
 	// check children
 	for(var i=0; i<element.children.length; i++){
