@@ -1,3 +1,16 @@
+/*
+	mf_ajax.js
+	
+	version			: 0.0.0
+	last updated	: 03.10.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			This will manage ajax calls from the html
+		How to use it?
+			TODO: ...
+*/
+
 function mf_AjaxHandler(){
 	
 }
@@ -33,16 +46,20 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			}.bind(this));
 		}.bind(this));
 	}else if(button.dataset.target){ // fill/replace
-		if(!(button.dataset.fill || button.dataset.replace)){
-			console.error("button " + button.id + " is missing 'data-target' attribute. It needs a target to fill/replace.");
+		if(!(button.dataset.fill || button.dataset.replace || button.dataset.before || button.dataset.after)){
+			console.error("button " + button.id + " is missing 'data-fill/replace/before/after' attribute. It needs a target to fill/replace.");
 			return -1;
 		}
 		button.addEventListener("click", function(){
 			var targetId = button.dataset.target;
 			if(button.dataset.fill){
 				this.fillElement(targetId, button.dataset.fill);
-			}else{ // button.dataset.replace
+			}else if(button.dataset.replace){
 				this.replaceElement(targetId, button.dataset.replace);
+			}else if(button.dataset.before){
+				this.placeBeforeElement(targetId, button.dataset.before);
+			}else{ // button.dataset.after
+				this.placeAfterElement(targetId, button.dataset.after);
 			}
 		}.bind(this));
 	}
@@ -79,7 +96,6 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 				this.replaceElementArgElement(element, element.dataset.replace);
 			}
 		}
-		
 		return true;
 	}else{
 		return false;
@@ -87,13 +103,59 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 }
 // Fill element width data.
 // data is of format {template:someTemplate, data:someData}
+mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
+	var element = document.getElementById(elementId);
+	this.placeAfterElementArgElement(element, url);
+}
+mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
+	var dummy = document.createElement("DIV");
+	this.loadInContent(dummy, url, function(){
+		// empty dummy into parent of element
+		var parent = element.parentElement;
+		
+		var elementsToCheck = [];
+		while(dummy.children.length > 0){
+			var child = dummy.children[0];
+			parent.insertBefore(child, element.nextSibling);
+			elementsToCheck.push(child);
+		}
+		
+		// check children
+		for(var i=0; i<elementsToCheck.length; i++){
+			this.searchElement(elementsToCheck[i]);
+		}
+	}.bind(this));
+}
+mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url){
+	var element = document.getElementById(elementId);
+	this.placeBeforeElementArgElement(element, url);
+}
+mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
+	var dummy = document.createElement("DIV");
+	this.loadInContent(dummy, url, function(){
+		// empty dummy into parent of element
+		var parent = element.parentElement;
+		
+		var elementsToCheck = [];
+		while(dummy.children.length > 0){
+			var child = dummy.children[0];
+			parent.insertBefore(child, element);
+			elementsToCheck.push(child);
+		}
+		
+		// check children
+		for(var i=0; i<elementsToCheck.length; i++){
+			this.searchElement(elementsToCheck[i]);
+		}
+	}.bind(this));
+}
 mf_AjaxHandler.prototype.replaceElement = function(elementId, url){
 	var element = document.getElementById(elementId);
 	this.replaceElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
 	this.loadInContent(element, url, function(){
-		// empty element into parent
+		// empty element into parent of element
 		var parent = element.parentElement;
 		
 		var elementsToCheck = [];
@@ -108,7 +170,7 @@ mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
 		for(var i=0; i<elementsToCheck.length; i++){
 			this.searchElement(elementsToCheck[i]);
 		}
-		}.bind(this));
+	}.bind(this));
 }
 mf_AjaxHandler.prototype.fillElement = function(elementId, url){
 	var element = document.getElementById(elementId);
