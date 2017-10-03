@@ -40,6 +40,10 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 		}
 		button.addEventListener("click", function(){
 			var form = document.getElementById(button.dataset.formid);
+			if(!form){
+				console.error("no form of id: \"" + button.dataset.formid + "\" is found.");
+				return -1;
+			}
 			this.ajaxPost(form, form.action, function(responseText){
 				var callback = eval(button.dataset.callback);
 				callback(JSON.parse(responseText));
@@ -105,6 +109,10 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 // data is of format {template:someTemplate, data:someData}
 mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
 	var element = document.getElementById(elementId);
+	if(!element){
+		console.error("no element of id: \"" + elementId + "\" is found.");
+		return -1;
+	}
 	this.placeAfterElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
@@ -128,6 +136,10 @@ mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
 }
 mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url){
 	var element = document.getElementById(elementId);
+	if(!element){
+		console.error("no element of id: \"" + elementId + "\" is found.");
+		return -1;
+	}
 	this.placeBeforeElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
@@ -151,6 +163,10 @@ mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
 }
 mf_AjaxHandler.prototype.replaceElement = function(elementId, url){
 	var element = document.getElementById(elementId);
+	if(!element){
+		console.error("no element of id: \"" + elementId + "\" is found.");
+		return -1;
+	}
 	this.replaceElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
@@ -174,6 +190,10 @@ mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
 }
 mf_AjaxHandler.prototype.fillElement = function(elementId, url){
 	var element = document.getElementById(elementId);
+	if(!element){
+		console.error("no element of id: \"" + elementId + "\" is found.");
+		return -1;
+	}
 	this.fillElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.fillElementArgElement = function(element, url){
