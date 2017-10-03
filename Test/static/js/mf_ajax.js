@@ -1,57 +1,101 @@
-window.addEventListener("load", initAjax);
 function mf_AjaxHandler(){
-	this.hasLoadedTimeline = false;
+	
 }
-var mf_ajaxHandler = new mf_AjaxHandler();
-
-function initAjax(){
+mf_AjaxHandler.prototype.initAjax = function(){
+	// load js files
+	mf_init();
+	// scan document for ajax templates
 	var body = document.getElementsByTagName("body")[0];
-	searchChildren(body);
+	this.searchChildren(body);
+	
+	// check form buttons
+	this.findFormButtons(body);
 }
-function searchChildren(element){
-	if(!findAjaxData(element)){
+// check for form buttons
+mf_AjaxHandler.prototype.findFormButtons = function(element){
+	var buttons = element.getElementsByTagName("button");
+	for(var i=0;i<buttons.length; i++){
+		this.checkFormButton(buttons[i]);
+	}
+}
+mf_AjaxHandler.prototype.checkFormButton = function(button){
+	if(button.dataset.formid){
+		if(!button.dataset.callback){
+			console.error("button " + button.id + " is missing 'data-callback' attribute. It needs a callback function to recieve and handle " +
+				"the response from the server.");
+			return -1;
+		}
+		button.addEventListener("click", function(){
+			var form = document.getElementById(button.dataset.formid);
+			if(!form){
+				console.error("No form of id \"" + button.dataset.formid + "\" could not be found.");
+				return -1;
+			}
+			var inputs = form.getElementsByTagName("input");
+			var url = "/" + form.action.split("/").pop() + "?";
+			
+			if(url == "/?"){
+				console.error("The from \"" + form.id + "\" must have an action attribute.");
+				return -1;
+			}
+			
+			for(var i=0; i<inputs.length; i++){
+				url += inputs[i].name + "=" + inputs[i].value;
+				if(i != inputs.length - 1){
+					url += "&";
+				}
+			}
+			this.ajax(url, function(responseText){
+				var callback = eval(button.dataset.callback);
+				callback(JSON.parse(responseText));
+			}.bind(this));
+		}.bind(this));
+	}
+}
+// search element and all children for ajax templates
+mf_AjaxHandler.prototype.searchChildren = function(element){
+	if(!this.findAjaxData(element)){
 		for(var i=0; i<element.children.length; i++){
 			var child = element.children[i];
-			searchChildren(child);
+			this.searchChildren(child);
 		}
 	}
 }
-function findAjaxData(element){
-	if(element.dataset.ajax){
-		if(element.dataset.ajax == "/timeline"){ // load "mf_timeline.js"
-			if(!mf_ajaxHandler.hasLoadedTimeline){
-				ajax("/static/js/mf_timeline.js", function(responseText){
-					eval(responseText);
-					init();
-					addTimeline(element);
-				});
-				mf_ajaxHandler.hasLoadedTimeline = true;
-			}else{
-				addTimeline(element)
-			}
+mf_AjaxHandler.prototype.findAjaxData = function(element){
+	if(element.dataset.fill){
+		if(element.dataset.fill == "/timeline"){ // load "mf_timeline.js"
+			mf_addTimeline(element);
 		}else{ // load in other content
-			ajax(element.dataset.ajax, function(responseText){
-				loadInContent(element, JSON.parse(responseText));
-			});
+			this.ajax(element.dataset.fill, function(responseText){
+				this.loadInContent(element, JSON.parse(responseText));
+			}.bind(this));
+			// loading graphic?
+			element.innerHTML = "loading...";
 		}
-		// loading graphic?
-		element.innerHTML = "loading...";
 		
 		return true;
 	}else{
 		return false;
 	}
 }
-function loadInContent(element, data){
+// Fill element width data.
+// data is of format {template:someTemplate, data:someData}
+mf_AjaxHandler.prototype.fillElement = function(elementId, html){
+	var element = document.getElementById(elementId);
+	this.loadInContent(element, {data:null, template: html});
+}
+mf_AjaxHandler.prototype.loadInContent = function(element, data){
 	//data.template = template(data.data, data.template);
 	element.innerHTML = data.template;
 	// check children
 	for(var i=0; i<element.children.length; i++){
 		var child = element.children[i];
-		searchChildren(child);
+		this.searchChildren(child);
 	}
+	// check buttons
+	this.findFormButtons(element);
 }
-function ajax(address, callback){
+mf_AjaxHandler.prototype.ajax = function(address, callback){
 	var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if(this.readyState == 4 && this.status == 200){
@@ -62,6 +106,8 @@ function ajax(address, callback){
 		xhttp.send();
 }
 
+var mf_ajaxHandler = new mf_AjaxHandler();
+window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));
 
 /*var form = document.getElementById("form id");
 var inputs = form.getElementByType("input");
