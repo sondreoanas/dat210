@@ -1,3 +1,17 @@
+/*
+	htmlAjaxInstructions.txt
+	
+	version			: 0.0.0
+	last updated	: 03.10.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			TODO: ...
+		How to use it?
+			TODO: ...
+		What is new?
+			line 43, 70-73
+*/
 
 HTML ajax instructions:
 	Include theese js files in header:
@@ -26,7 +40,19 @@ HTML ajax instructions:
 			Some h1 to be replaced
 		</h1>
 	
-	To make a button submit a form and recieve a responce
+	To make a button place html content before or after an other element:
+		before:
+			<button data-target="toBePreceded" data-before="/getHTML?html=mf_sucsess.html">Some button to create element to precede the first h1</button>
+			<h1 id="toBePreceded">
+				Some h1 to be preceded
+			</h1>
+		after:
+			<button data-target="toBeFollowed" data-after="/getHTML?html=mf_sucsess.html">Some button to create element to follow the second h1</button>
+			<h1 id="toBeFollowed">
+				Some h1 to be followed
+			</h1>
+	
+	To make a button submit a form and recieve a response
 		
 		In an html file:
 			<form id="someForm" action="/handleLogin">
@@ -41,6 +67,10 @@ HTML ajax instructions:
 				mf_ajaxHandler.fillElement(elementid = "someId", url = "/getHTML?html=someFile.html");
 				// to replace an element
 				mf_ajaxHandler.replaceElement(elementid = "someOtherId", url = "/getHTML?html=someOtherFile.html");
+				// to place before
+				mf_ajaxHandler.placeBeforeElement(elementid = "someOtherId", url = "/getHTML?html=someOtherFile.html");
+				// to place after
+				mf_ajaxHandler.placeAfterElement(elementid = "someOtherId", url = "/getHTML?html=someOtherFile.html");
 			}
 
 

@@ -1,8 +1,8 @@
 /*
 	mf_timeline.js
 	
-	version			: 0.0.0
-	last updated	: 26.09.2017
+	version			: 0.0.1
+	last updated	: 03.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -887,6 +887,9 @@ Timeline.prototype.touchEndTwoFingers = function(event){
 	event.preventDefault();
 }
 Timeline.prototype.scroll = function(event){
+	if(!this.disableDefaultTouch){
+		return;
+	}
 	if(event.ctrlKey){ // zoom
 		this.zoom *= 1 + event.deltaY * 0.001;
 	}else{ // scroll
