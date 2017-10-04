@@ -1,1 +1,4 @@
 *.pyc
+Test/.cache/v/cache/lastfailed
+*.iml
+*.xml

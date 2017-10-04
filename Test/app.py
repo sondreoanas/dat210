@@ -28,21 +28,42 @@ def getTMPL():
         template = f.read()
     data = {
         'template' : template,
-        'data' : {
-                "skills": ["js", "html", "css"],
-                "showSkills": 1
-                }
+        "data": {
+            "success": "true",
+            "data": {
+                "email": "din@epost.com",
+                "nick": "Ditt nick"
+            }
+        }
     }
     return json.dumps(data)
 
 
 
+@app.route("/login", methods=["POST"])
+def login():
+	username = request.form.get('username', 0)
+	password = request.form.get('password', 0)
 
-@app.route("/login")
-def login(username, password):
-    data = request.json
-    bolean = back.valid_login(data['username'],data['password'])
-    return json.dumps(bolean)
+	return json.dumps({
+		'successLogin': back.valid_login(username,password)
+	})
+
+
+@app.route("/newuser", methods=["POST"])
+def newuser():
+    form_new_email = request.form.get('form_new_email', 0)
+    form_new_nick = request.form.get('form_new_nick', 0)
+    form_new_pass = request.form.get('form_new_pass', 0)
+    form_new_pass_repeat = request.form.get('form_new_pass_repeat', 0)
+
+    return json.dumps({
+        "success": "true",
+        "data": {
+            "email": "din@epost.com",
+            "nick": "Ditt nick"
+        }
+    })
 
 @app.route("/")
 def index():
