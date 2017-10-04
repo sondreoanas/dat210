@@ -10,7 +10,6 @@ cb.prototype.login = function(response){
 	}else{
 		//document.getElementById("login").innerHTML = "<h1>FAIL</h1>";
 		mf_ajaxHandler.replaceElement(elementid = "login", url = "getHTML?html=form_login");
-		
 	}
 }
 

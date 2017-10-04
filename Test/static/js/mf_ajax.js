@@ -204,14 +204,13 @@ mf_AjaxHandler.prototype.ajaxGet = function(address, callback){
 }
 mf_AjaxHandler.prototype.ajaxPost = function(form, address, callback){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function(e) {
+	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200){
 			callback(this.responseText);
 		}
 	}
-	xhttp.open("post", address, false);
+	xhttp.open("post", address, true);
 	//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
 	var formData = new FormData(form);
 	xhttp.send(formData);
 }
