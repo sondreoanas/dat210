@@ -1,8 +1,8 @@
 /*
 	mf_timeline.js
 	
-	version			: 0.0.0
-	last updated	: 26.09.2017
+	version			: 0.0.1
+	last updated	: 03.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -18,20 +18,20 @@ function mf_TimelineHandler(){
 }
 var mf_timeline;
 
-function init(){
+function mf_init(){
 	mf_timeline = new mf_TimelineHandler();
 	mf_timeline.loops = {};
 	mf_timeline.fps = 30;
 	mf_timeline.timelines = [];
 }
-function addTimeline(element){
+function mf_addTimeline(element){
 	var newTimeline = new Timeline(element);
 	mf_timeline.timelines.push(newTimeline);
 }
 // Event
-function Event(start, end, name, color){
+function mf_Event(start, end, name, color){
 	this.id = Event.nrOfEvents;
-	Event.nrOfEvents++;
+	mf_Event.nrOfEvents++;
 	this.start = start; // Unix milliseconds
 	this.end = end; // Unix milliseconds
 	this.nameBoxes = [{start:start, end:end}]; // list of x and y coordinates of possible name placements. Coordiantes are in Unix milliseconds
@@ -40,8 +40,8 @@ function Event(start, end, name, color){
 	this.horizontalOffset = 0;
 	this.collisionGroup = []; // all colliding events
 }
-Event.nrOfEvents = 0;
-Event.prototype.getBiggestNameBoxInView = function(top, bottom){
+mf_Event.nrOfEvents = 0;
+mf_Event.prototype.getBiggestNameBoxInView = function(top, bottom){
 	// return index of the biggest index. -1 if none exist.
 	var biggestIndex = -1;
 	var biggestSize = 0;
@@ -58,7 +58,7 @@ Event.prototype.getBiggestNameBoxInView = function(top, bottom){
 	}
 	return biggestIndex;
 }
-Event.prototype.clipNameBoxes = function(otherStart, otherEnd){
+mf_Event.prototype.clipNameBoxes = function(otherStart, otherEnd){
 	// will clip, remove or split nameBoxes by the range given as the argument.
 	var originalLength = this.nameBoxes.length;
 	for(var i=0; i<originalLength; i++){
@@ -149,25 +149,25 @@ function Timeline(container){
 	
 	// dummydata
 	this.events = [
-		new Event(
+		new mf_Event(
 			start = new Date(2017, 8, 17, 0, 0).getTime(),
 			end = new Date(2017, 8, 19, 0, 0).getTime(),
 			name = "LAN",
 			color = "red"
 		),
-		new Event(
+		new mf_Event(
 			start = new Date(2017, 8, 18, 0, 0).getTime(),
 			end = new Date(2017, 8, 20, 0, 0).getTime(),
 			name = "Festival",
 			color = "green"
 		),
-		new Event(
+		new mf_Event(
 			start = new Date(2017, 8, 19, -11, 0).getTime(),
 			end = new Date(2017, 8, 20, -11, 0).getTime(),
 			name = "Prepare for exam",
 			color = "turquoise"
 		),
-		new Event(
+		new mf_Event(
 			start = new Date(2017, 8, 20, 9, 0).getTime(),
 			end = new Date(2017, 8, 20, 13, 0).getTime(),
 			name = "Exam",
@@ -191,10 +191,10 @@ function Timeline(container){
 	for(var i=0; i<50; i++){
 		var radius = Math.pow(rdn[i * 2], 0.5) * 1000 * 60 * 60 * 24 * 2 + 1000 * 60;
 		var t = origo + (0.5 - rdn[i * 2 + 1]) * 1000 * 60 * 60 * 24 * 100;
-		this.events.push(new Event(
+		this.events.push(new mf_Event(
 			start = new Date(t - radius).getTime(),
 			end = new Date(t + radius).getTime(),
-			name = "event nr:" + Event.nrOfEvents,
+			name = "event nr:" + mf_Event.nrOfEvents,
 			color = Tool.randomColor(1)
 		));
 	}
@@ -887,6 +887,9 @@ Timeline.prototype.touchEndTwoFingers = function(event){
 	event.preventDefault();
 }
 Timeline.prototype.scroll = function(event){
+	if(!this.disableDefaultTouch){
+		return;
+	}
 	if(event.ctrlKey){ // zoom
 		this.zoom *= 1 + event.deltaY * 0.001;
 	}else{ // scroll

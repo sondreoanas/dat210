@@ -1,0 +1,23 @@
+
+<section id="login" class="ffix">
+    
+    <div class="ghost">
+        <div class="box form_login ffix">
+
+            <h2>Login</h2>
+
+            <form id="forms_login" action="login">
+
+                <input type="text" id="username" name="username" placeholder="your@email.com">
+                <input type="password" id="password" name="password" placeholder="*****">
+
+                <button data-formid="forms_login" data-callback="cb.login" class="button_login">Login</button>
+
+            </form>
+
+            <button class="button_newuser button_underline" data-target="login" data-replace="getHTML?html=form_newuser">Create new User</button>
+            <button class="button_forgot button_underline" data-target="login" data-replace="getHTML?html=form_forgotpass">Forgot password?</button>
+        </div>
+    </div>
+
+</section>

@@ -1,46 +1,3 @@
-var testJSON = {
-    "template": "<div><h1>{{0}}</h1>, {{1}} and <h2>{{2}}</h2></div>",
-    "data": [
-        ["test1", "test2", "test3"],
-        ["test1_1", "test2_1", "test3_1"],
-        ["test1_2", "test2_2", "test3_2"]
-    ]
-}
-
-
-window.onload = function() {
-    var event = new Event("ajaxload"),
-        testobject = document.getElementById("test");
-
-
-    testobject.addEventListener("ajaxload", function() {
-        this.innerHTML = templater(testJSON);
-    }, false);
-
-    testobject.dispatchEvent(event);
-};
-
-
-
-
-
-function templater(json) {
-    var template = json.template,
-        data = json.data,
-        output = "";
-
-    for (i = 0; i < data.length; i++) {
-        var temp = template;
-        for (k = 0; k < data[i].length; k++) {
-            temp = temp.replace("{{" + k + "}}", data[i][k]);
-        }
-        output += temp;
-    }
-    return output
-}
-
-
-
 var template =
     'My skills:' +
     '<%if(this.showSkills) {%>' +
@@ -50,13 +7,13 @@ var template =
     '<%} else {%>' +
     '<p>none</p>' +
     '<%}%>';
-console.log(templater2(template, {
+console.log(templater(template, {
     skills: ["js", "html", "css"],
     showSkills: true
 }));
 
 
-function templater2(html, options) {
+function templater(html, options) {
 
     var re = /<%(.+?)%>/g,
         reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g,
