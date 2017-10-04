@@ -206,6 +206,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 	this.ajaxGet(url, function(responseText){
 		var data = JSON.parse(responseText);
 		data.template = templater(data.template, data.data);
+		//notification(data.notification);
 		element.innerHTML = data.template;
 		callback();
 	}.bind(this));
