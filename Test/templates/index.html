@@ -15,6 +15,7 @@
     <script src="{{ url_for("static", filename="js/templater.js") }}"></script>
     <script src="{{ url_for("static", filename="js/mf_timeline.js") }}"></script>
     <script src="{{ url_for("static", filename="js/mf_ajax.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/nm_callbacks.js") }}"></script>
 
 
 </head>
@@ -40,13 +41,9 @@
         </div>
     </nav>
     
-    <main id="front" data-ajax="getHTML?html=form_login">
+    <main id="front" data-fill="getHTML?html=form_login">
     
     </main>
-
-    <div id="test" data-ajax="getTMPL?tmpl=test">
-            
-    </div>
     
     <footer>
         <div class="page">
@@ -68,6 +65,7 @@
     
         </div>
     </footer>
+
     
 
 </body>

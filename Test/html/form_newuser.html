@@ -5,19 +5,23 @@
 
             <h2>Create new user</h2>
 
-            <label for="form_new_userid">Enter email:</label>
-            <input data-forms="new_userid" type="text" id="form_new_userid" placeholder="your@email.com">
+            <form id="forms_newuser" action="newuser">
 
-            <label for="form_new_username">Enter nickname:</label>
-            <input data-forms="new_userid" type="text" id="form_new_username" placeholder="Nicky McNickface">
+                <label for="form_new_email">Enter email:</label>
+                <input type="text" id="form_new_email" placeholder="your@email.com">
 
-            <label for="form_new_userpass">Enter password:</label>
-            <input data-forms="new_userid" type="password" id="form_new_userpass" placeholder="yourpassword123">
+                <label for="form_new_nick">Enter nickname:</label>
+                <input type="text" id="form_new_nick" placeholder="Nicky McNickface">
 
-            <label for="form_new_userpass_repeat">Repeat password:</label>
-            <input data-forms="new_userid" type="password" id="form_new_userpass_repeat" placeholder="yourpassword123">
+                <label for="form_new_pass">Enter password:</label>
+                <input type="password" id="form_new_pass" placeholder="yourpassword123">
 
-            <button data-forms="new_userid" data-forms-action="submit" class="button_newuser">Create new User</button>
+                <label for="form_new_pass_repeat">Repeat password:</label>
+                <input type="password" id="form_new_pass_repeat" placeholder="yourpassword123">
+
+                <button data-formid="forms_newuser" data-callback="cb.newuser" class="button_newuser">Create new User</button>
+        
+            </form>
 
         </div>
     </div>
