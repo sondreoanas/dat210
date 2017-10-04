@@ -1,6 +1,0 @@
-Ansvarsområder:
-HTML & CSS:       Nils
-Javascript:       Markus #1
-Python -> Front:  Sondre
-Python -> DB:     Markus #2
-DB:               Vebjørn
