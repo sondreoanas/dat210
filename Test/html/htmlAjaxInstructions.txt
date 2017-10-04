@@ -1,8 +1,8 @@
 /*
 	htmlAjaxInstructions.txt
 	
-	version			: 0.0.0
-	last updated	: 03.10.2017
+	version			: 0.0.1
+	last updated	: 04.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -10,7 +10,7 @@
 		How to use it?
 			TODO: ...
 		What is new?
-			line 43, 70-73
+			line 54, 80
 */
 
 HTML ajax instructions:
@@ -40,16 +40,21 @@ HTML ajax instructions:
 			Some h1 to be replaced
 		</h1>
 	
-	To make a button place html content before or after an other element:
-		before:
+	To make a button modify an element
+		add html content before:
 			<button data-target="toBePreceded" data-before="/getHTML?html=mf_sucsess.html">Some button to create element to precede the first h1</button>
 			<h1 id="toBePreceded">
 				Some h1 to be preceded
 			</h1>
-		after:
+		add html content after:
 			<button data-target="toBeFollowed" data-after="/getHTML?html=mf_sucsess.html">Some button to create element to follow the second h1</button>
 			<h1 id="toBeFollowed">
 				Some h1 to be followed
+			</h1>
+		remove element:
+			<button data-target="toBeRemoved" data-remove="">Some button to remove h1</button>
+			<h1 id="toBeRemoved">
+				Some h1 to be removed
 			</h1>
 	
 	To make a button submit a form and recieve a response
@@ -71,6 +76,8 @@ HTML ajax instructions:
 				mf_ajaxHandler.placeBeforeElement(elementid = "someOtherId", url = "/getHTML?html=someOtherFile.html");
 				// to place after
 				mf_ajaxHandler.placeAfterElement(elementid = "someOtherId", url = "/getHTML?html=someOtherFile.html");
+				// to remove
+				mf_ajaxHandler.removeElement(elementid = "someOtherId");
 			}
 
 
