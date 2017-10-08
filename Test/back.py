@@ -20,8 +20,8 @@ ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passordetmitt"
-app.config["DATABASE_DB"] = "annualcycle_v0.1.0"
+app.config["DATABASE_PASSWORD"] = "root"
+app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -71,7 +71,7 @@ def valid_login(username, password):
         cur.close()
         """
         Use this when the raw password is not stored in the database
-    
+
         return check_password_hash(user_password, password)
         """
         return password == user_password
