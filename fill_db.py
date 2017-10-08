@@ -15,7 +15,7 @@ import tempfile
 
 connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='Stavanger1996',
+                             password='psw',
                              db='annualcycle',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
