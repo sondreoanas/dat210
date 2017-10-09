@@ -5,12 +5,15 @@
 """
 import back
 import json
+import time
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
     
-    
+lag = 0.4
+
 @app.route("/getHTML")
 def getHTML():
+    time.sleep(lag)
     html = request.args.get('html')
     with open('html/' + html +'.html', 'r') as f:
         template = f.read()
@@ -23,6 +26,7 @@ def getHTML():
 
 @app.route("/getTMPL")
 def getTMPL():
+    time.sleep(lag)
     tmpl = request.args.get('tmpl')
     with open('tmpl/' + tmpl +'.tmpl', 'r') as f:
         template = f.read()
@@ -42,16 +46,18 @@ def getTMPL():
 
 @app.route("/login", methods=["POST"])
 def login():
-	username = request.form.get('username', 0)
-	password = request.form.get('password', 0)
+    time.sleep(lag)
+    username = request.form.get('username', 0)
+    password = request.form.get('password', 0)
 
-	return json.dumps({
-		'successLogin': back.valid_login(username,password)
-	})
+    return json.dumps({
+        'successLogin': back.valid_login(username,password)
+    })
 
 
 @app.route("/newuser", methods=["POST"])
 def newuser():
+    time.sleep(lag)
     form_new_email = request.form.get('form_new_email', 0)
     form_new_nick = request.form.get('form_new_nick', 0)
     form_new_pass = request.form.get('form_new_pass', 0)
@@ -67,6 +73,7 @@ def newuser():
 
 @app.route("/")
 def index():
+    time.sleep(lag)
     return render_template('index.html')
 
 if __name__ == "__main__":

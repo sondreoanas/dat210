@@ -1,0 +1,29 @@
+/*
+	mf_testHandelerInstructions.txt
+	
+	version			: 0.0.0
+	last updated	: 04.10.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			TODO: ...
+		How to use it?
+			TODO: ...
+		What is new?
+			...
+*/
+
+step 1
+	Do the thing you want to record.
+step 2
+	Run the function "mf_testHandeler.getRecord()" in the console.
+step 3
+	Copy-paste the list into "mf_testerData.js". Replace the list that is already there. This file should only contain one list.
+step 4
+	Refresh page and set the state  of the page to what it was before the recording started. Run "mf_testHandeler.start()" in the console.
+	This should start the test.
+	When the test finishes is is successful, if not, it fails. Success/fail message will display in console.
+	"mf_testHandeler.start()" also has two optional agruments. "mf_testHandeler.start(acceleration, noiseFactor)".
+	By deafault theese are 10 and 0. The acceleration says how fast the test will run,
+	while the noiseFactor says if there should be noise added to the controls.
+
