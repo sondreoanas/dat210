@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.0.0
-	last updated	: 03.10.2017
+	version			: 0.0.1
+	last updated	: 04.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -15,21 +15,13 @@ function mf_AjaxHandler(){
 	
 }
 mf_AjaxHandler.prototype.initAjax = function(){
+	// start recording
+	mf_testHandeler.init();
 	// load js files
 	mf_init();
 	// scan document for ajax templates
 	var body = document.getElementsByTagName("body")[0];
 	this.searchElement(body);
-}
-// check for form buttons
-mf_AjaxHandler.prototype.findFormButtons = function(element){
-	var buttons = Array.prototype.slice.call(element.getElementsByTagName("button"));
-	if(element.tagName == "BUTTON"){
-		buttons.push(element);
-	}
-	for(var i=0;i<buttons.length; i++){
-		this.checkButton(buttons[i]);
-	}
 }
 mf_AjaxHandler.prototype.checkButton = function(button){
 	if(button.dataset.formid){ // form
@@ -38,23 +30,30 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				"the response from the server.");
 			return -1;
 		}
-		button.addEventListener("click", function(){
+		button.addEventListener("click", function(e){
+			e.preventDefault();
 			var form = document.getElementById(button.dataset.formid);
 			if(!form){
 				console.error("no form of id: \"" + button.dataset.formid + "\" is found.");
 				return -1;
 			}
-			this.ajaxPost(form, form.action, function(responseText){
+			mf_AjaxHandler.ajaxPost(form, form.action, function(responseText){
 				var callback = eval(button.dataset.callback);
 				callback(JSON.parse(responseText));
 			}.bind(this));
 		}.bind(this));
 	}else if(button.dataset.target){ // fill/replace
-		if(!(button.dataset.fill || button.dataset.replace || button.dataset.before || button.dataset.after)){
-			console.error("button " + button.id + " is missing 'data-fill/replace/before/after' attribute. It needs a target to fill/replace.");
+		if(!(button.dataset.fill == null ||
+			button.dataset.replace == null ||
+			button.dataset.before == null ||
+			button.dataset.after == null ||
+			button.dataset.remove == null)){
+			console.error("button " + button.id + " is missing 'data-fill/replace/before/after/remove' attribute." +
+				"It needs a target to fill/replace/before/after/remove.");
 			return -1;
 		}
-		button.addEventListener("click", function(){
+		button.addEventListener("click", function(e){
+			e.preventDefault();
 			var targetId = button.dataset.target;
 			if(button.dataset.fill){
 				this.fillElement(targetId, button.dataset.fill);
@@ -62,8 +61,10 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				this.replaceElement(targetId, button.dataset.replace);
 			}else if(button.dataset.before){
 				this.placeBeforeElement(targetId, button.dataset.before);
-			}else{ // button.dataset.after
+			}else if(button.dataset.after){
 				this.placeAfterElement(targetId, button.dataset.after);
+			}else{ // button.dataset.remove
+				this.removeElement(targetId, button.dataset.remove);
 			}
 		}.bind(this));
 	}
@@ -79,7 +80,7 @@ mf_AjaxHandler.prototype.searchChildren = function(element){
 // search element and all children for ajax templates
 mf_AjaxHandler.prototype.searchElement = function(element){
 	// search buttons
-	//this.findFormButtons(element);
+	mf_testHandeler.addTestListener(element);
 	this.checkButton(element);
 	// search children
 	if(!this.findAjaxData(element)){
@@ -107,6 +108,14 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 }
 // Fill element width data.
 // data is of format {template:someTemplate, data:someData}
+mf_AjaxHandler.prototype.removeElement = function(elementId){
+	var element = document.getElementById(elementId);
+	if(!element){
+		console.error("no element of id: \"" + elementId + "\" is found.");
+		return -1;
+	}
+	element.parentElement.removeChild(element);
+}
 mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
 	var element = document.getElementById(elementId);
 	if(!element){
@@ -120,6 +129,10 @@ mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
 	this.loadInContent(dummy, url, function(){
 		// empty dummy into parent of element
 		var parent = element.parentElement;
+		if(!parent){
+			console.warn("\"" + url + "\" was not placed after element with id \"" + element.id + "\", due to load confict");
+			return -1;
+		}
 		
 		var elementsToCheck = [];
 		while(dummy.children.length > 0){
@@ -147,6 +160,10 @@ mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
 	this.loadInContent(dummy, url, function(){
 		// empty dummy into parent of element
 		var parent = element.parentElement;
+		if(!parent){
+			console.warn("\"" + url + "\" was not placed before element with id \"" + element.id + "\", due to load confict");
+			return -1;
+		}
 		
 		var elementsToCheck = [];
 		while(dummy.children.length > 0){
@@ -173,6 +190,10 @@ mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
 	this.loadInContent(element, url, function(){
 		// empty element into parent of element
 		var parent = element.parentElement;
+		if(!parent){
+			console.warn("element with id \"" + element.id + "\", was not replaced with \"" + url + "\" due to load confict");
+			return -1;
+		}
 		
 		var elementsToCheck = [];
 		while(element.children.length > 0){
@@ -203,7 +224,7 @@ mf_AjaxHandler.prototype.fillElementArgElement = function(element, url){
 	}.bind(this));
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
-	this.ajaxGet(url, function(responseText){
+	mf_AjaxHandler.ajaxGet(url, function(responseText){
 		var data = JSON.parse(responseText);
 		data.template = templater(data.template, data.data);
 		//notification(data.notification);
@@ -213,17 +234,17 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 	// loading graphic?
 	element.innerHTML = "loading...";
 }
-mf_AjaxHandler.prototype.ajaxGet = function(address, callback){
+mf_AjaxHandler.ajaxGet = function(address, callback){
 	var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if(this.readyState == 4 && this.status == 200){
-				callback(this.responseText);
-			}
+	xhttp.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200){
+			callback(this.responseText);
 		}
-		xhttp.open("GET", address, true);
-		xhttp.send();
+	}
+	xhttp.open("GET", address, true);
+	xhttp.send();
 }
-mf_AjaxHandler.prototype.ajaxPost = function(form, address, callback){
+mf_AjaxHandler.ajaxPost = function(form, address, callback){
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200){
