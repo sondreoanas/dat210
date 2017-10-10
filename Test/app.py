@@ -36,11 +36,14 @@ def getTMPL():
     return json.dumps(data)
 
 
-
+@app.route("/new_event")
+def new_event():
+    pass
 
 @app.route("/login")
 def login(username, password):
     data = request.json
+
     bolean = back.valid_login(data['username'],data['password'])
     return json.dumps(bolean)
 
