@@ -21,7 +21,7 @@ connection = pymysql.connect(host='localhost',
                              cursorclass=pymysql.cursors.DictCursor)
 
 password = "Password123"  # Used as password for users
-
+salt = "salt"  # Used as salt for users
 
 def make_email(name):
     email = ""
@@ -137,8 +137,8 @@ def generate_users(n):
         cur = connection.cursor()
         try:
             name = names.get_full_name()
-            sql = "INSERT INTO User (Email, Password, Name) VALUES (%s, %s, %s)"
-            cur.execute(sql, (make_email(name), generate_password_hash(password), name))
+            sql = "INSERT INTO User (Email, Password, Salt, Name) VALUES (%s, %s, %s, %s)"
+            cur.execute(sql, (make_email(name), generate_password_hash(password), salt, name))
             connection.commit()
         finally:
             cur.close()
@@ -471,7 +471,7 @@ def fill_db(nc, nu, ne, te, nf):  # nc = #calenders, nu = #users, ne = #events, 
 
 
 def main():
-    fill_db(1000,1200,22500,180,50)
+    fill_db(100,25,1800,152,10)
     connection.close()
 
 
