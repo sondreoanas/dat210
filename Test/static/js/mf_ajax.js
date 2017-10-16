@@ -363,9 +363,11 @@ mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 	if(document.readyState === "complete"){
 		return true;
 	}else{
-		window.addEventListener('load', function(){
-			callback.apply(null, Array.prototype.slice.call(arguments, 1)).bind(this);
-		}.bind(this));
+		window.addEventListener('load', (function(that, args){
+			return function(){
+				callback.apply(that, Array.prototype.slice.call(args, 1));
+			};
+		})(this, arguments));
 		return false;
 	}
 }
