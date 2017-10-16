@@ -5,12 +5,18 @@
         <div class="ghost">
             <div class="box form_event_new ffix">
     
-                <h2>Create new calendar</h2>
+                <h2>Create new event</h2>
     
                 <form id="forms_event_new" action="new_form">
-    
-                    <label for="form_event_new_name">Event name:</label>
-                    <input type="text" id="form_event_new_name" placeholder="event name_">
+                    <fieldset>
+                        <label for="form_event_new_name">Event name:</label>
+                        <input type="text" id="form_event_new_name" placeholder="event name_">
+                        <label for="form_event_new_start">Start:</label>
+                        <input type="text" id="form_event_new_start" placeholder="event name_" class="eventDatetime">
+                        <label for="form_event_new_end">End:</label>
+                        <input type="text" id="form_event_new_end" placeholder="event name_">
+                    </fieldset>
+                    
     
                     <button data-formid="forms_event_new" data-callback="cb.event_new">Create new Event</button>
             
