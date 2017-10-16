@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.0.3
+	version			: 0.0.4
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -128,6 +128,9 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 // Fill element width data.
 // data is of format {template:someTemplate, data:someData}
 mf_AjaxHandler.prototype.addLastChild = function(elementId, url){
+	if(!this.checkDomLoaded(this.addLastChild, elementId, url)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
@@ -144,6 +147,9 @@ mf_AjaxHandler.prototype.addLastChildArgElement = function(element, url){
 	this.replaceElementArgElement(dummy, url);
 }
 mf_AjaxHandler.prototype.addFirstChild = function(elementId, url){
+	if(!this.checkDomLoaded(this.addFirstChild, elementId, url)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
@@ -171,6 +177,9 @@ mf_AjaxHandler.prototype.removeElement = function(elementId){
 	element.parentElement.removeChild(element);
 }
 mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
+	if(!this.checkDomLoaded(this.placeAfterElement, elementId, url)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
@@ -205,6 +214,9 @@ mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
 	}.bind(this));
 }
 mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url){
+	if(!this.checkDomLoaded(this.placeBeforeElement, elementId, url)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
@@ -239,6 +251,9 @@ mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
 	}.bind(this));
 }
 mf_AjaxHandler.prototype.replaceElement = function(elementId, url){
+	if(!this.checkDomLoaded(this.replaceElement, elementId, url)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
@@ -273,6 +288,9 @@ mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
 	}.bind(this));
 }
 mf_AjaxHandler.prototype.fillElement = function(elementId, url){
+	if(!this.checkDomLoaded(this.fillElement, elementId, url)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
