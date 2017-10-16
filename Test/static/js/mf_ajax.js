@@ -11,6 +11,10 @@
 			TODO: ...
 */
 
+var testevent = new Event('testevent');
+
+
+
 function mf_AjaxHandler(){
 	
 }
@@ -22,6 +26,8 @@ mf_AjaxHandler.prototype.initAjax = function(){
 	// scan document for ajax templates
 	var body = document.getElementsByTagName("body")[0];
 	this.searchElement(body);
+	
+
 }
 mf_AjaxHandler.prototype.checkButton = function(button){
 	if(button.dataset.formid){ // form
@@ -312,7 +318,22 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 		var data = JSON.parse(responseText);
 		data.template = templater(data.template, data.data);
 		//notification(data.notification);
+
 		element.innerHTML = data.template;
+
+/*
+		var parser = new DOMParser();
+		// delete children of element
+		while(element.firstChild){
+			element.removeChild(element.firstChild);
+		}
+		// fill element with new children
+		var dummy = parser.parseFromString(data.template, "text/html").body;
+		for(var i=0;i<dummy.children.length; i++){
+			element.appendChild(dummy.children[i]);
+		}
+*/
+
 		callback();
 	}.bind(this));
 	// loading graphic?
@@ -322,10 +343,13 @@ mf_AjaxHandler.ajaxGet = function(address, callback){
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200){
+
 			callback(this.responseText);
+			window.dispatchEvent(testevent);
+			
 		}
 	}
-	xhttp.open("GET", address, true);
+	xhttp.open("GET", root+address, true);
 	xhttp.send();
 }
 mf_AjaxHandler.ajaxPost = function(data, address, callback){
