@@ -11,40 +11,36 @@
     <link rel="stylesheet" href="{{ url_for("static", filename="css/sections.css") }}">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/elements.css") }}">
 
-
+    
     <script src="{{ url_for("static", filename="js/templater.js") }}"></script>
     <script src="{{ url_for("static", filename="js/mf_timeline.js") }}"></script>
     <script src="{{ url_for("static", filename="js/mf_ajax.js") }}"></script>
-    <script src="{{ url_for("static", filename="js/nm_callbacks.js") }}"></script>
     <script src="{{ url_for("static", filename="js/mf_tester.js") }}"></script>
     <script src="{{ url_for("static", filename="js/vec.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/nm_callbacks.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/navigo.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/routing.js") }}"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 
 </head>
 
-<body>
-
+<body id="body">
 
     <header>
         <div class="page">
             <h1>Wiel</h1>
         </div>
     </header>
+
+    <nav id="mainmenu"></nav>
     
-    <nav id="mainmenu">
-        <div class="page">
-            <input type="checkbox" id="navcheck">
-            <label for="navcheck"></label>
-            <ul class="ffix">
-    
-                <li><a href="" title="Goto frontpage">Frontpage</a></li>
-    
-            </ul>
-        </div>
-    </nav>
-    
-    <main id="front" data-fill="getHTML?html=form_login">
-    
+    <main id="main" data-location="front">
+
+        
     </main>
     
     <footer>

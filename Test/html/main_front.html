@@ -1,0 +1,26 @@
+<main id="main" data-location="front">
+
+    <section id="login" class="ffix">
+            
+        <div class="ghost">
+            <div class="box form_login ffix">
+    
+                <h2>Login</h2>
+    
+                <form id="forms_login" action="login">
+    
+                    <input type="text" id="username" name="username" placeholder="your@email.com">
+                    <input type="password" id="password" name="password" placeholder="*****">
+    
+                    <button data-formid="forms_login" data-callback="cb.login" class="button_login">Login</button>
+    
+                </form>
+    
+                <button onclick="javascript:router.navigate('newuser');" class="button_newuser button_underline">Create new User</button>
+                <button onclick="javascript:router.navigate('forgotpass');" class="button_forgot button_underline">Forgot password?</button>
+            </div>
+        </div>
+    
+    </section>
+    
+</main>

@@ -1,6 +1,5 @@
 /*
 	mf_timeline.js
-	
 	version			: 0.0.2
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
@@ -1233,6 +1232,4 @@ Tool.widthOfString = function(string, font){
 	ctx.font = font;
 	return ctx.measureText(string).width;
 }
-
-
 
