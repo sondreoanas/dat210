@@ -1,3 +1,4 @@
+
 function Vec(xPos = 0, yPos = 0){
 	this.x = xPos;
 	this.y = yPos;
@@ -39,4 +40,5 @@ Vec.reSize = function(v, len){
 Vec.lerp = function(vStart, vEnd, factor){
 	return Vec.add(Vec.mul(Vec.sub(vEnd, vStart), factor), vStart);
 }
+
 
