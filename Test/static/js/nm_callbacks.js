@@ -5,7 +5,12 @@ cb.prototype.login = function(response){
 	if(response.successLogin){
 		router.navigate('/loggedin');
 	}else{
+<<<<<<< HEAD
 		router.navigate();
+=======
+		//document.getElementById("login").innerHTML = "<h1>FAIL</h1>";
+		mf_ajaxHandler.replaceElement(elementid = "login", url = "getHTML?html=form_login");
+>>>>>>> origin/nils
 	}
 }
 

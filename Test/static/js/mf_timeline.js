@@ -1,8 +1,13 @@
 /*
 	mf_timeline.js
 	
+<<<<<<< HEAD
 	version			: 0.0.2
 	last updated	: 16.10.2017
+=======
+	version			: 0.0.1
+	last updated	: 03.10.2017
+>>>>>>> origin/nils
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
