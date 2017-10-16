@@ -1,3 +1,15 @@
+/*
+	mf_tester.js
+	
+	version			: 0.0.0
+	last updated	: 16.10.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			This will perform testing. Clicking buttons and filling in forms
+		How to use it?
+			TODO: ...
+*/
 
 function mf_Cursor(){
 	this.pos = new Vec();
@@ -209,11 +221,17 @@ mf_TestHandeler.prototype.addTestListener = function(element){
 	if(element.tagName == "BUTTON"){
 		element.addEventListener("click", function(){
 			var data = thisHandeler.getIdPath(this);
+			if(data == -1){
+				return -1;
+			}
 			thisHandeler.recordedCommands += "\tclick, \"" + data.id + "\", [" + data.path.toString() + "], \"\",\n";
 		});
 	}else if(element.tagName == "INPUT" && (element.type == "text" || element.type == "email" || element.type == "password")){
 		element.addEventListener("change", function(){
 			var data = thisHandeler.getIdPath(this);
+			if(data == -1){
+				return -1;
+			}
 			thisHandeler.recordedCommands += "\ttype, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
 		});
 	}
@@ -227,7 +245,7 @@ mf_TestHandeler.prototype.getIdPath = function(element){
 	var path = [];
 	while(element.id == ""){
 		if(!element.parentElement){
-			console.error("could not create recording due to clicked element or any parent elements having an id");
+			console.error("could not create recording due to clicked element or any parent elements not having an id");
 			return -1;
 		}
 		path.push(Array.prototype.slice.call(element.parentElement.children).indexOf(element));
