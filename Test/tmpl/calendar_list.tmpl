@@ -1,0 +1,7 @@
+<%for(var i in this) {%>
+    <li>
+        <%i%>
+        <button onclick="javascript:router.navigate('calendar/edit/<%this[i][0]%>');" class="button_edit">Edit</button>
+        <span><%this[i][1]%></span>  
+    </li>
+<%}%>
