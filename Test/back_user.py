@@ -20,6 +20,7 @@ def init_logged_in_user(username):
         the_user.set_name(get_user_name_db(username)[0])
         the_user.set_userid(get_userid_db(username)[0])
         get_all_calendars()
+        get_all_userevents()
     pass
 
 
