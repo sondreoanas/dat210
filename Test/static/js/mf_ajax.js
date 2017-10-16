@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.0.4
+	version			: 0.0.5
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -365,7 +365,7 @@ mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 	}else{
 		window.addEventListener('load', function(){
 			callback.apply(null, Array.prototype.slice.call(arguments, 1)).bind(this);
-		}).bind(this);
+		}.bind(this));
 		return false;
 	}
 }
