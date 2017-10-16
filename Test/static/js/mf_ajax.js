@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.0.2
+	version			: 0.0.3
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -136,6 +136,9 @@ mf_AjaxHandler.prototype.addLastChild = function(elementId, url){
 	this.addLastChildArgElement(element, url);
 }
 mf_AjaxHandler.prototype.addLastChildArgElement = function(element, url){
+	if(!this.checkDomLoaded(this.addLastChildArgElement, element, url)){
+		return;
+	}
 	var dummy = document.createElement("DIV");
 	element.append(dummy);
 	this.replaceElementArgElement(dummy, url);
@@ -149,11 +152,17 @@ mf_AjaxHandler.prototype.addFirstChild = function(elementId, url){
 	this.addFirstChildArgElement(element, url);
 }
 mf_AjaxHandler.prototype.addFirstChildArgElement = function(element, url){
+	if(!this.checkDomLoaded(this.addFirstChildArgElement, element, url)){
+		return;
+	}
 	var dummy = document.createElement("DIV");
 	element.insertBefore(dummy, element.firstChild);
 	this.replaceElementArgElement(dummy, url);
 }
 mf_AjaxHandler.prototype.removeElement = function(elementId){
+	if(!this.checkDomLoaded(this.removeElement, elementId)){
+		return;
+	}
 	var element = document.getElementById(elementId);
 	if(!element){
 		console.error("no element of id: \"" + elementId + "\" is found.");
@@ -170,6 +179,9 @@ mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
 	this.placeAfterElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
+	if(!this.checkDomLoaded(this.placeAfterElementArgElement, element, url)){
+		return;
+	}
 	var dummy = document.createElement("DIV");
 	this.loadInContent(dummy, url, function(){
 		// empty dummy into parent of element
@@ -201,6 +213,9 @@ mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url){
 	this.placeBeforeElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
+	if(!this.checkDomLoaded(this.placeBeforeElementArgElement, element, url)){
+		return;
+	}
 	var dummy = document.createElement("DIV");
 	this.loadInContent(dummy, url, function(){
 		// empty dummy into parent of element
@@ -232,6 +247,9 @@ mf_AjaxHandler.prototype.replaceElement = function(elementId, url){
 	this.replaceElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
+	if(!this.checkDomLoaded(this.replaceElementArgElement, element, url)){
+		return;
+	}
 	this.loadInContent(element, url, function(){
 		// empty element into parent of element
 		var parent = element.parentElement;
@@ -263,6 +281,9 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, url){
 	this.fillElementArgElement(element, url);
 }
 mf_AjaxHandler.prototype.fillElementArgElement = function(element, url){
+	if(!this.checkDomLoaded(this.fillElementArgElement, element, url)){
+		return;
+	}
 	this.loadInContent(element, url, function(){		
 		// check children
 		this.searchChildren(element);
@@ -320,6 +341,17 @@ mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
 	var formData = new FormData(form);
 	xhttp.send(formData);
 }
+mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
+	if(document.readyState === "complete"){
+		return true;
+	}else{
+		window.addEventListener('load', function(){
+			callback.apply(null, Array.prototype.slice.call(arguments, 1)).bind(this);
+		}).bind(this);
+		return false;
+	}
+}
+
 
 var mf_ajaxHandler = new mf_AjaxHandler();
 window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));
