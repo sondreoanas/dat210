@@ -15,7 +15,7 @@ import tempfile
 
 connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='psw',
+                             password='Stavanger1996',
                              db='annualcycle',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
@@ -135,13 +135,22 @@ def generate_calenders(n):
 def generate_users(n):
     for x in range(n):
         cur = connection.cursor()
-        try:
-            name = names.get_full_name()
-            sql = "INSERT INTO User (Email, Password, Salt, Name) VALUES (%s, %s, %s, %s)"
-            cur.execute(sql, (make_email(name), generate_password_hash(password), salt, name))
-            connection.commit()
-        finally:
-            cur.close()
+        if n == 1:
+            try:
+                name = "Ola Nordmann"
+                sql = "INSERT INTO User (Email, Password, Salt, Name) VALUES (%s, %s, %s, %s)"
+                cur.execute(sql, (make_email(name), generate_password_hash(password), salt, name))
+                connection.commit()
+            finally:
+                cur.close()
+        else:
+            try:
+                name = names.get_full_name()
+                sql = "INSERT INTO User (Email, Password, Salt, Name) VALUES (%s, %s, %s, %s)"
+                cur.execute(sql, (make_email(name), generate_password_hash(password), salt, name))
+                connection.commit()
+            finally:
+                cur.close()
     print("Added " + str(n) + " users to db")
 
 
@@ -471,7 +480,7 @@ def fill_db(nc, nu, ne, te, nf):  # nc = #calenders, nu = #users, ne = #events, 
 
 
 def main():
-    fill_db(100,25,1800,152,10)
+    fill_db(10,1,120,18,5)
     connection.close()
 
 
