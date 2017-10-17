@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.0.5
+	version			: 0.1.0
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -14,6 +14,9 @@
 function mf_AjaxHandler(){
 	
 }
+mf_AjaxHandler.loadEvent = new Event("onFullLoad");
+mf_AjaxHandler.nrOfCallsInProgress = 0;
+mf_AjaxHandler.root = "http://127.0.0.1:5000";
 mf_AjaxHandler.prototype.initAjax = function(){
 	// start recording
 	mf_testHandeler.init();
@@ -308,34 +311,65 @@ mf_AjaxHandler.prototype.fillElementArgElement = function(element, url){
 	}.bind(this));
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
+	//
+	mf_AjaxHandler.nrOfCallsInProgress++;
+	console.log(mf_AjaxHandler.nrOfCallsInProgress);
+	//
 	mf_AjaxHandler.ajaxGet(url, function(responseText){
 		var data = JSON.parse(responseText);
 		data.template = templater(data.template, data.data);
 		//notification(data.notification);
-		element.innerHTML = data.template;
+		var parser = new DOMParser();
+		// delete children of element
+		while(element.firstChild){
+			element.removeChild(element.firstChild);
+		}
+		// fill element with new children
+		var dummy = parser.parseFromString(data.template, "text/html").body;
+		for(var i=0;i<dummy.children.length; i++){
+			element.appendChild(dummy.children[i]);
+		}
 		callback();
-	}.bind(this));
+		//
+		mf_AjaxHandler.nrOfCallsInProgress--;
+		if(mf_AjaxHandler.nrOfCallsInProgress == 0){
+			window.dispatchEvent(mf_AjaxHandler.loadEvent);
+		}
+		console.log(mf_AjaxHandler.nrOfCallsInProgress);
+	}.bind(this), function callbackFail(){
+		mf_AjaxHandler.nrOfCallsInProgress--;
+		if(mf_AjaxHandler.nrOfCallsInProgress == 0){
+			window.dispatchEvent(mf_AjaxHandler.loadEvent);
+		}
+		console.log(mf_AjaxHandler.nrOfCallsInProgress);
+	});
 	// loading graphic?
 	element.innerHTML = "loading...";
 }
-mf_AjaxHandler.ajaxGet = function(address, callback){
+mf_AjaxHandler.ajaxGet = function(address, callback, callbackFail){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if(this.readyState == 4 && this.status == 200){
-			callback(this.responseText);
+	xhttp.onreadystatechange = function(){
+		if(this.readyState == 4){
+			if(this.status == 200){
+				callback(this.responseText);
+			}else{
+				if(callbackFail){
+					callbackFail();
+				}
+			}
 		}
-	}
-	xhttp.open("GET", address, true);
+	};
+	xhttp.open("GET", mf_AjaxHandler.addRoot(address), true);
 	xhttp.send();
 }
 mf_AjaxHandler.ajaxPost = function(data, address, callback){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
 			callback(this.responseText);
 		}
-	}
-	xhttp.open("post", address, true);
+	};
+	xhttp.open("post", mf_AjaxHandler.addRoot(address), true);
 	//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	var keys = Object.keys(data);
 	var str = "";
@@ -349,15 +383,21 @@ mf_AjaxHandler.ajaxPost = function(data, address, callback){
 }
 mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
 			callback(this.responseText);
 		}
-	}
-	xhttp.open("post", address, true);
+	};
+	xhttp.open("post", mf_AjaxHandler.addRoot(address), true);
 	//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	var formData = new FormData(form);
 	xhttp.send(formData);
+}
+mf_AjaxHandler.addRoot = function(address){
+	if(address[0] !== "/"){
+		address = "/" + address;
+	}
+	return mf_AjaxHandler.root + address; // TODO: mf_AjaxHandler.root with root when merged with nils
 }
 mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 	if(document.readyState === "complete"){
@@ -371,7 +411,6 @@ mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 		return false;
 	}
 }
-
 
 var mf_ajaxHandler = new mf_AjaxHandler();
 window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));

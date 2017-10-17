@@ -1,6 +1,6 @@
 /*
 	mf_timeline.js
-	version			: 0.0.2
+	version			: 0.1.0
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -104,20 +104,6 @@ function Timeline(container){
 	this.loop = setInterval(this.loop.bind(this), 1000/mf_timeline.fps);
 	this.container = container;
 	this.id = container.id;
-	this.touchList = [];
-	for(var i=0; i<4; i++){
-		this.touchList.push({
-			x: 0,
-			y: 0,
-			x0: 0,
-			y0: 0,
-			xR: 0,
-			yR: 0,
-			id: 0,
-			touchTime: 0,
-			touchTime0: 0
-		});
-	}
 	this.disableDefaultTouch = false;
 	
 	this.canvas = document.createElement("canvas");
@@ -134,16 +120,40 @@ function Timeline(container){
 	
 	// pc
 	container.addEventListener("mousewheel", this.scroll.bind(this), false);
+	container.addEventListener("mousemove", this.mouseMove.bind(this), false);
+	container.addEventListener("mousedown", this.mouseDown.bind(this), false);
+	container.addEventListener("mouseup", this.mouseUp.bind(this), false);
+	this.mouseData = {
+		pos: new Vec(),
+		pos0: new Vec(),
+		timeDown: 0,
+		timeUp: 0,
+		isDown: false
+	};
 	// mobile
 	container.addEventListener("touchstart", this.touchStartOneFinger.bind(this), false);
 	container.addEventListener("touchmove", this.touchMoveOneFinger.bind(this), false);
 	container.addEventListener("touchend", this.touchEndOneFinger.bind(this), false);
-	/*container.addEventListener("click",
-		(function(){
-			console.log("clicked!!");
-			this.disableDefaultTouch = !this.disableDefaultTouch;
-		}).bind(this), false);*/
-	
+	container.addEventListener("touchend", this.touchEndOneFinger.bind(this), false);
+	this.touchList = [];
+	for(var i=0; i<4; i++){
+		this.touchList.push({
+			x: 0,
+			y: 0,
+			x0: 0,
+			y0: 0,
+			xR: 0,
+			yR: 0,
+			id: 0,
+			timeDown: 0,
+			timeUp: 0,
+			isDown: false
+		});
+	}
+	// click
+	container.addEventListener("click", function(){this.clicked = true;}.bind(this), false);
+	this.clicked = false;
+	//
 	this.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 	this.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	
@@ -342,7 +352,7 @@ Timeline.prototype.loop = function(){
 	this.calculateTouchMotionOneFinger();
 	
 	//
-	this.clickHandle();
+	this.checkButtons();
 	
 	// calcuate motion
 	this.position = (this.targetPosition - this.position) * 0.2 + this.position;
@@ -354,36 +364,35 @@ Timeline.prototype.loop = function(){
 	this.handleStatus();
 	
 	// endstuff
-	// // save last touch positions
+	// mouse and touch
+	// // touch timing calculations
 	for(var i=0; i<this.touchList.length; i++){
 		var t = this.touchList[i];
 		t.x0 = t.x;
 		t.y0 = t.y;
-		if(t.touchTime > 0){
-			t.touchTime++;
-		}else if(t.touchTime < 0){
-			t.touchTime--;
+		if(t.isDown){
+			t.timeDown++;
+		}else if(t.timeUp != 0){
+			t.timeUp++;
 		}
 	}
+	// // mouse timing calculations
+	this.mouseData.pos0 = Vec.newVec(this.mouseData.pos);
+	if(this.mouseData.isDown){
+		this.mouseData.timeDown++;
+	}else if(this.mouseData.timeUp != 0){
+		this.mouseData.timeUp++;
+	}
+	// //
+	this.clicked = false;
 }
 Timeline.prototype.handleStatus = function(){
 	if(this.status == Timeline.standard){
 		
 	}else if(this.status == Timeline.addEventSetStart || this.status == Timeline.addEventSetEnd){
 		// detect click
-		var clicked;
-		if(this.getNrOfTouches() < 2){
-			for(var i=0; i<this.touchList.length; i++){
-				var ti = this.touchList[i];
-				if(ti.touchTime == -1){
-					clicked = true;
-					t = ti;
-					break;
-				}
-			}
-		}
-		if(clicked){
-			var time = this.canvasCoordsToTime(t.x);
+		if(this.mouseClicked()){
+			var time = this.canvasCoordsToTime(this.mouseData.pos.x);
 			
 			var date = new Date(time);
 			this.resetTimeFuntion(date);
@@ -407,14 +416,36 @@ Timeline.prototype.handleStatus = function(){
 		}
 	}
 }
-Timeline.prototype.clickHandle = function(){
+Timeline.prototype.checkButtons = function(){
+	if(this.disableDefaultTouch && this.mouseClicked()){
+		for(var i=0; i<this.buttons.length; i++){
+			var button = this.buttons[i];
+			switch(button.shape){
+				case Button.circle:
+					if(Vec.lgth(Vec.sub(button.pos, this.mouseData.pos)) <= button.radius){
+						button.callBack();
+						return;
+					}
+					break;
+				case Button.square:
+					if(Math.abs(this.mouseData.pos.x - button.pos.x) < button.width * 0.5 &&
+						Math.abs(this.mouseData.pos.y - button.pos.y) < button.height * 0.5){
+						button.callBack();
+						return;
+					}
+					break;
+			}
+		}
+	}
+}
+/*Timeline.prototype.clickHandle = function(){
 	var clicked = false;
 	var t;
 	// find click
 	if(this.getNrOfTouches() < 2){
 		for(var i=0; i<this.touchList.length; i++){
 			var ti = this.touchList[i];
-			if(ti.touchTime == -1){
+			if(ti.timeDown == 1){
 				clicked = true;
 				t = ti;
 			}
@@ -445,13 +476,7 @@ Timeline.prototype.clickHandle = function(){
 			}
 		}
 	}
-	// activate canvas
-	if(t.touchTime0 <= mf_timeline.fps * 0.15 && // clicked for less than 0.1 seconds ...
-		Math.abs(t.x - t.x0) + Math.abs(t.y - t.y0) < 10 && // ... and didn't move much.
-		this.status == Timeline.standard){
-		this.disableDefaultTouch = !this.disableDefaultTouch;
-	}
-}
+}*/
 Timeline.prototype.addEventStart = function(){
 	this.status = Timeline.addEventSetStart;
 	this.addButton.name = "Confirm start";
@@ -939,7 +964,7 @@ Timeline.prototype.drawPolygon = function(corners, color = "black", fill = false
 Timeline.prototype.getNrOfTouches = function(){
 	var n=0;
 	for(var i=0; i<this.touchList.length; i++){
-		if(this.touchList[i].touchTime > 0){
+		if(this.touchList[i].isDown > 0){
 			n++;
 		}
 	}
@@ -951,70 +976,65 @@ Timeline.prototype.calculateTouchMotionOneFinger = function(){
 	var scrollSensitivity = 1;
 	var deltaY = 0;
 	var deltaX = 0;
-	/*for(var i=0; i<this.touchList.length; i++){
-		var t = this.touchList[i];
-		if(t.touchTime < 1){
-			continue;
-		}
-		// zoom
-		deltaX += -(t.x - t.x0) / this.canvas.width * this.zoom * scrollSensitivity;
-		// movement
-		deltaY += (t.y - t.y0) / this.canvas.height * this.zoom * zoomSensitivity + deltaX * (t.y - this.canvas.height * 0.5) / this.canvas.height;
-	}*/
+	// // touch
 	for(var i=0; i<this.touchList.length; i++){
 		var t = this.touchList[i];
-		if(t.touchTime < 1){
+		if(!t.isDown){
 			continue;
 		}
 		// zoom
-		deltaY -= -(t.y - t.y0) / this.canvas.height * this.zoom * zoomSensitivity;
+		deltaY += (t.y - t.y0) / this.canvas.height * this.zoom * zoomSensitivity;
 	}
 	for(var i=0; i<this.touchList.length; i++){
 		var t = this.touchList[i];
-		if(t.touchTime < 1){
+		if(!t.isDown){
 			continue;
 		}
 		// scroll sideways
-		deltaX -= (t.x - t.x0) / this.canvas.width * this.zoom * scrollSensitivity + deltaY / this.getNrOfTouches() * (t.x - this.canvas.width * 0.5) / this.canvas.width;
+		deltaX -= (t.x - t.x0) / this.canvas.width * this.zoom * scrollSensitivity +
+			deltaY / this.getNrOfTouches() * (t.x - this.canvas.width * 0.5) / this.canvas.width;
 	}
-	if(this.disableDefaultTouch && this.getNrOfTouches() != 0){
-		// // zoom
+	if(this.getNrOfTouches() != 0){
 		deltaY /= this.getNrOfTouches();
+		deltaX /= this.getNrOfTouches();
+	}
+	// // mouse
+	if(this.mouseData.isDown){
+		deltaY += (this.mouseData.pos.y - this.mouseData.pos0.y) / this.canvas.height * this.zoom * zoomSensitivity;
+		deltaX -= (this.mouseData.pos.x - this.mouseData.pos0.x) / this.canvas.width * this.zoom * scrollSensitivity +
+			deltaY * (this.mouseData.pos.x - this.canvas.width * 0.5) / this.canvas.width;
+	}
+	// // apply
+	if(this.disableDefaultTouch){
+		// // zoom
 		this.zoom += deltaY;
 		this.zoom = Tool.clamp(this.zoom, this.maxZoom, this.minZoom);
 		// movement
-		deltaX /= this.getNrOfTouches();
 		this.targetPosition += deltaX;
 		this.position += deltaX;
 	}
-}
-Timeline.prototype.calculateTouchMotionTwoFingers = function(){ // delete ????????????????????????????????????????????????
-	if(this.touchList.length == 2){
-		// movement
-		var t0 = this.touchList[0];
-		var t1 = this.touchList[1];
-		var deltaY = ((t0.y - t0.y0) + (t1.y - t1.y0)) * 0.5; // average of vertical motion of the two fingers
-		deltaY *= 1 / this.canvas.height * this.zoom; // make propotional to zoom and screen size
-		this.targetPosition += deltaY;
-		this.position += deltaY;
+	// activate screen
+	// // touch click
+	var touchClick = false;
+	for(var i=0; i<this.touchList.length; i++){
+		var t = this.touchList[i];
+		if(!t.isDown && t.timeUp == 1 && t.timeDown <= mf_timeline.fps * 0.15 && // clicked for less than 0.15 seconds ...
+			Math.abs(t.x - t.x0) + Math.abs(t.y - t.y0) < 10){ // ... and didn't move much.){
+			touchClick = true;
+		}
+	}
+	// // mouse click
+	if(
+		(
+			touchClick
+			||
+			this.mouseClicked()
+		) &&
+		this.status == Timeline.standard){
 		
-		// zoom
-		// // Y
-		var differenceY = (t0.y - t0.y0) - (t1.y - t1.y0);
-		differenceY;
-		if(t0.y > t1.y){
-			differenceY *= -1;
-		}
-		differenceY *= 1 / this.canvas.height * this.zoom;
-		this.zoom += differenceY * 2;
-		// // X
-		var differenceX = (t0.x - t0.x0) - (t1.x - t1.x0);
-		differenceX;
-		if(t0.x > t1.x){
-			differenceX *= -1;
-		}
-		differenceX *= 1 / this.canvas.width * this.zoom;
-		this.zoom += differenceX * 2;
+		console.log("touchClick: " + touchClick + "\n" +
+			"mouseClick: " + this.mouseClicked());
+		this.disableDefaultTouch = !this.disableDefaultTouch;
 	}
 }
 Timeline.prototype.touchStartOneFinger = function(event){
@@ -1030,7 +1050,8 @@ Timeline.prototype.touchStartOneFinger = function(event){
 		t.xR = e.radiusX;
 		t.yR = e.radiusY;
 		t.id = e.identifier;
-		t.touchTime = 1;
+		t.timeDown = 1;
+		t.isDown = true;
 	}
 	
 	if(this.disableDefaultTouch){
@@ -1058,8 +1079,8 @@ Timeline.prototype.touchEndOneFinger = function(event){
 	for(var i=0; i<event.changedTouches.length; i++){
 		var e = event.changedTouches[i];
 		var t = this.touchList[e.identifier];
-		t.touchTime0 = t.touchTime;
-		t.touchTime = -1;
+		t.timeUp = 1;
+		t.isDown = false;
 	}
 	
 	if(this.disableDefaultTouch){
@@ -1072,67 +1093,6 @@ Timeline.prototype.getTouchX = function(e){
 Timeline.prototype.getTouchY = function(e){
 	return this.canvas.height - (e.pageY - e.target.parentElement.offsetTop);
 }
-Timeline.prototype.touchStartTwoFingers = function(event){
-	outer:
-	for(var i=0; i<event.touches.length; i++){
-		var e = event.touches[i];
-		for(var j=0; j<this.touchList.length; j++){
-			var t = this.touchList[j];
-			if(e.identifier == t.id){
-				continue outer;
-			}
-		}
-		
-		if(this.touchList.length >= 2){ // maximum 2
-			return;
-		}
-		this.touchList.push({
-			x: e.clientX - e.target.parentElement.offsetLeft,
-			y: this.canvas.height - (e.clientY - e.target.parentElement.offsetTop),
-			x0: e.clientX - e.target.parentElement.offsetLeft,
-			y0: this.canvas.height - (e.clientY - e.target.parentElement.offsetTop),
-			xR: e.radiusX,
-			yR: e.radiusY,
-			id: e.identifier
-		});
-	}
-	
-	if(this.touchList.length == 2){
-		event.preventDefault();
-	}
-}
-Timeline.prototype.touchMoveTwoFingers = function(event){
-	for(var i=0; i<event.touches.length; i++){
-		var e = event.touches[i];
-		for(var j=0; j<this.touchList.length; j++){
-			var t = this.touchList[j];
-			if(e.identifier == t.id){
-				t.x = e.clientX - e.target.parentElement.offsetLeft;
-				t.y = this.canvas.height - (e.clientY - e.target.parentElement.offsetTop);
-				t.xR = e.radiusX;
-				t.yR = e.radiusY;
-			}
-		}
-	}
-	
-	if(this.touchList.length == 2){
-		event.preventDefault();
-	}
-}
-Timeline.prototype.touchEndTwoFingers = function(event){
-	for(var i=0; i<event.changedTouches.length; i++){
-		var e = event.changedTouches[i];
-		for(var j=0; j<this.touchList.length; j++){
-			var t = this.touchList[j];
-			if(e.identifier == t.id){
-				this.touchList.splice(j, 1);
-				j--;
-			}
-		}
-	}
-	
-	event.preventDefault();
-}
 Timeline.prototype.scroll = function(event){
 	if(!this.disableDefaultTouch){
 		return;
@@ -1144,6 +1104,23 @@ Timeline.prototype.scroll = function(event){
 	}
 	
 	event.preventDefault();
+}
+Timeline.prototype.mouseMove = function(event){
+	this.mouseData.pos = new Vec(this.getTouchX(event), this.getTouchY(event));
+}
+Timeline.prototype.mouseDown = function(event){
+	this.mouseData.timeDown = 1;
+	this.mouseData.isDown = true;
+	console.log("mouse down");
+}
+Timeline.prototype.mouseUp = function(event){
+	this.mouseData.timeUp = 1;
+	this.mouseData.isDown = false;
+	console.log("mouse up");
+}
+Timeline.prototype.mouseClicked = function(){
+	return !this.mouseData.isDown && this.mouseData.timeUp == 1 && this.mouseData.timeDown <= mf_timeline.fps * 0.2 && // clicked for less than 0.2 seconds ...
+		Vec.lgth(Vec.sub(this.mouseData.pos, this.mouseData.pos0)) < 10; // ... and didn't move much.
 }
 // Color
 function Color(r, g, b, a){ // TODO: integrate random color here

@@ -1,7 +1,7 @@
 /*
 	htmlAjaxInstructions.txt
 	
-	version			: 0.0.2
+	version			: 0.0.3
 	last updated	: 06.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -10,9 +10,7 @@
 		How to use it?
 			TODO: ...
 		What is new?
-			lines 61-97 add first/last child in html
-			lines 120-123 add first/last child in nm_callbacks
-			lines 126-130 set start position and zoom for timeline
+			lines 112-113
 */
 
 HTML ajax instructions:
@@ -104,31 +102,32 @@ HTML ajax instructions:
 				<input type="text" name="password" id="password"></br>
 			</form>
 			<button data-formid="someForm" data-callback="callBackExample">Hello there</button>
-		
-		In static/js/nm_callbacks.js:
-			function callBackExample(response){ // responce is an object recieved from python
-				// to fill an element
-				mf_ajaxHandler.fillElement(elementid = "someId", url = "/getHTML?html=someFile");
-				// to replace an element
-				mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile");
-				// to place before
-				mf_ajaxHandler.placeBeforeElement(elementid = "someId", url = "/getHTML?html=someFile");
-				// to place after
-				mf_ajaxHandler.placeAfterElement(elementid = "someId", url = "/getHTML?html=someFile");
-				// to remove
-				mf_ajaxHandler.removeElement(elementid = "someId");
-				// to append at the start of the element with id "someId"
-				mf_ajaxHandler.addFirstChild(elementId = "someId", url = "/getHTML?html=someFile")
-				// to append at the end of the element with id "someId"
-				mf_ajaxHandler.addLastChild(elementId = "someId", url = "/getHTML?html=someFile")
-			}
 	
 	Timeline:
 		To add a timeline. The dimensins of the div will decide the size of the timeline
 			<div data-timeline=""></div>
 		To set start position and zoom. Position unit is milliseconds from 1 jan 1971. Zoom is visible milliseconds. Standard is today and 10 day zoom.
 			<div data-timeline="" data-position="1505599200000" data-zoom="864000000"></div>
-
+Javascript
+	On full load eventlistener. It is called every time the ajax is done loading.
+		document.addEventListener("onFullLoad", someFunction);
+	In static/js/nm_callbacks.js:
+		function callBackExample(response){ // responce is an object recieved from python
+			// to fill an element
+			mf_ajaxHandler.fillElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to replace an element
+			mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to place before
+			mf_ajaxHandler.placeBeforeElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to place after
+			mf_ajaxHandler.placeAfterElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to remove
+			mf_ajaxHandler.removeElement(elementid = "someId");
+			// to append at the start of the element with id "someId"
+			mf_ajaxHandler.addFirstChild(elementId = "someId", url = "/getHTML?html=someFile")
+			// to append at the end of the element with id "someId"
+			mf_ajaxHandler.addLastChild(elementId = "someId", url = "/getHTML?html=someFile")
+		}
 
 
 
