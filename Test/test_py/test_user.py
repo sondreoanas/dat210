@@ -47,7 +47,7 @@ class LoginTest(unittest.TestCase):
 
     def test_8_register_user_success(self):
         with app.app_context():
-            self.assertEqual(register_user("ola@nordmann.mo", "passord", "Ole"), True)
+            self.assertEqual(register_user("ola@nordmann.md", "passord", "Ole"), "ola@nordmann.md")
 
 
 class EmailTest(unittest.TestCase):
