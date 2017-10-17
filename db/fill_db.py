@@ -1,6 +1,6 @@
 """
 Python script for filling db with dummy data
-Last updated: Vebjørn A.A 08.10.17
+Last updated: Vebjørn A.A 17.10.17
 """
 
 
@@ -30,7 +30,7 @@ def make_email(name):
         if name == names[0]:
             email = name.lower()
         elif name == names[len(names)-1]:
-            email = email + "@" + name.lower() + ".com"
+            email = email + "@" + name.lower() + ".no"
         else:
             email = email + "." + name.lower()
     return email
@@ -124,8 +124,9 @@ def generate_calenders(n):
     for x in range(n):
         cur = connection.cursor()
         try:
-            sql = "INSERT INTO calendar (Public) VALUES (%s)"
-            cur.execute(sql, (random.getrandbits(1),))
+            calendarname = "Calendar #" + str(x)
+            sql = "INSERT INTO calendar (Name, Public) VALUES (%s, %s)"
+            cur.execute(sql, (calendarname, random.getrandbits(1)))
             connection.commit()
         finally:
             cur.close()
@@ -200,11 +201,12 @@ def generate_events(n):
     for x in range(n):
         cur = connection.cursor()
         try:
+            eventname = "event #" + str(x)
             now = datetime.datetime.now()
             year = random.randint(now.year, now.year+2)
             period = getRandomPeriod(year, year)
-            sql = "INSERT INTO Eventn (Start, End) VALUES (%s, %s)"
-            cur.execute(sql, (period[0], period[1]))
+            sql = "INSERT INTO Eventn (Name, Start, End) VALUES (%s, %s, %s)"
+            cur.execute(sql, (eventname, period[0], period[1]))
             connection.commit()
         finally:
             cur.close()
