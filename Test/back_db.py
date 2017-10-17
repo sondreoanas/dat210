@@ -321,9 +321,9 @@ def get_events_usercalendar_interval(user_id, calendar_id, interval_start, inter
             "AND E.EventId = C.EventId " \
             "AND E.Start BETWEEN %s AND %s AND E.End BETWEEN %s AND %s "
 
-        cur.execute(sql, (user_id, calendar_id, interval_start, interval_end, interval_start, interval_end))
+        cur.execute(sql, (1201, 302, interval_start, interval_end, interval_start, interval_end))
         return cur.fetchall()
     except mysql.connector.Error as err:
-        return "Stupid piece of shit"
+        return False
     finally:
         cur.close()
