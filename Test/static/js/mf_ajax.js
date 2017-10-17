@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.1.0
-	last updated	: 16.10.2017
+	version			: 0.1.1
+	last updated	: 17.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -17,8 +17,15 @@ function mf_AjaxHandler(){
 }
 mf_AjaxHandler.loadEvent = new Event("onFullLoad");
 mf_AjaxHandler.nrOfCallsInProgress = 0;
-mf_AjaxHandler.root = "http://127.0.0.1:5000";
+mf_AjaxHandler.root = null;
 mf_AjaxHandler.prototype.initAjax = function(){
+	// root
+	if(root){
+		mf_AjaxHandler.root = root;
+	}else{
+		mf_AjaxHandler.root = "http://127.0.0.1:5000";
+	}
+	
 	// start recording
 	mf_testHandeler.init();
 	// load js files
@@ -410,10 +417,33 @@ mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
 	xhttp.send(formData);
 }
 mf_AjaxHandler.addRoot = function(address){
-	if(address[0] !== "/"){
+	/*if(address[0] !== "/"){
 		address = "/" + address;
+	}*/
+	/*var escRoot = mf_AjaxHandler.root.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"); // https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+	var re = new RegExp("^(" + escRoot + ")");
+	address = address.replace(re,"");*/
+	
+	/*for(var i=mf_AjaxHandler.root.length - 1; i>=0; i++){
+		if(address.charAt(0) === mf_AjaxHandler.root.charAt(i)){
+			address = address.substr(1);
+		}else{
+			break;
+		}
+	}*/
+	
+	
+	//return mf_AjaxHandler.root + address; // TODO: mf_AjaxHandler.root with root when merged with nils
+	
+	if(mf_AjaxHandler.root == address.substr(0, mf_AjaxHandler.root.length)){
+		return address;
+	}else{
+		if(address[0] !== "/"){
+			address = "/" + address;
+		}
+		return mf_AjaxHandler.root + address;
 	}
-	return mf_AjaxHandler.root + address; // TODO: mf_AjaxHandler.root with root when merged with nils
+	
 }
 mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 	if(document.readyState === "complete"){

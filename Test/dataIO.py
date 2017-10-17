@@ -1,7 +1,11 @@
-def getData(data, params=None):
+import back_user
+import logged_in_user
+
+def getData(data, user, params=None,):
     returner = {}
 
     if data == "login":
+        back_user.login(params['username'],params['password'])
         returner = {
             "success": True,
             "data": {
@@ -33,21 +37,45 @@ def getData(data, params=None):
             }
 
     if data == "calendar_list":
-        returner = [
-            [21, "Calendar 01",True],
-            [5454, "Calendar 02",False],
-            [554, "Calendar 03",True],
-            [4545, "Calendar 04",False]
-        ]
+
+        #returner = [
+        #    [21, "Calendar 01",True],
+        #    [5454, "Calendar 02",False],
+        #    [554, "Calendar 03",True],
+        #    [4545, "Calendar 04",False]
+        #]
+        cal_db = user.get_user_calendar()
+        calendars = []
+        for cal_id in cal_db:
+            calendar = []
+            calendar.append(cal_id.value())
+            calendar.append(cal_id['calendar_name'])
+            calendar.append(cal_id['calendar_rights'])
+            calendars.append(calendar)
+
+        print(calendars)
+        return calendars
 
     if data == "event_list":
-        returner = [
-            [4545, "Event 01","October 17, 2017 12:00","October 26, 2017 12:00"],
-            [45, "Event 02","October 17, 2017 12:00","October 26, 2017 12:00"],
-            [54, "Event 03","October 17, 2017 12:00","October 26, 2017 12:00"],
-            [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
-        ]
+        #returner = [
+        #    [4545, "Event 01","October 17, 2017 12:00","October 26, 2017 12:00"],
+        #    [45, "Event 02","October 17, 2017 12:00","October 26, 2017 12:00"],
+        #    [54, "Event 03","October 17, 2017 12:00","October 26, 2017 12:00"],
+        #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
+        #]
 
+        cal_db = user.get_user_calendar()
+        events = []
+        for cal_id in cal_db:
+            for event_id in cal_id['events']:
+                event = []
+                event.append(event_id.value())
+                event.append(event_id['name'])
+                event.append(event_id['start'])
+                event.append(event_id['end'])
+                events.append(event)
+        print(events)
+        return events
 
 
 #### PUT DATA #####
