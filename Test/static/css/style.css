@@ -1,0 +1,24 @@
+/* Place your CSS declarations here */
+
+.placeholder {
+    border: 1px solid #333333;
+    border-radius: 5px;
+    padding: 1em;
+    margin: 0.5em;
+    background-color: #ffffcc;
+}
+
+.static {
+    background-color: #ececec;
+}
+
+.message {
+    background-color: #ccffcc;
+}
+
+.error {
+    background-color: #ffcccc;
+    color: red;
+}
+
+
