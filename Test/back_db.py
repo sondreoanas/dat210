@@ -135,11 +135,25 @@ def get_all_calendars_db(user_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT Calendarid, Adminlevel " \
+        sql = "SELECT CalendarId, Adminlevel " \
             "FROM usercalendars " \
             "WHERE UserId = %s "
         cur.execute(sql, (user_id,))
         return cur.fetchall()
+    except mysql.connector.Error as err:
+        return False
+    finally:
+        cur.close()
+
+def get_calendar_db(user_id, calendar_id):
+    db = get_db() 
+    cur = db.cursor()
+    try:
+        sql = "SELECT CalendarId, Adminlevel " \
+            "FROM usercalendars " \
+            "WHERE UserId = %s AND CalendarId = %s AND Deleted = 0 "
+        cur.execute(sql, (user_id, calendar_id))
+        return cur.fetchone()
     except mysql.connector.Error as err:
         return False
     finally:
@@ -296,3 +310,21 @@ def add_new_child_task_db(this_task_id, parent_task_id):
     finally:
         cur.close()
 """
+
+def get_events_usercalendar_interval(user_id, calendar_id, interval_start, interval_end):
+    db = get_db() 
+    cur = db.cursor()
+    try:
+        sql = "SELECT E.EventId, E.Start, E.End " \
+            "FROM eventn E, eventcalendar C " \
+            "WHERE " \
+            "CalendarId = (SELECT CalendarId FROM usercalendars WHERE UserId = %s AND CalendarId = %s) " \
+            "AND E.EventId = C.EventId " \
+            "AND E.Start BETWEEN %s AND %s AND E.End BETWEEN %s AND %s "
+
+        cur.execute(sql, (user_id, calendar_id, interval_start, interval_end, interval_start, interval_end))
+        return cur.fetchall()
+    except mysql.connector.Error as err:
+        return "Stupid piece of shit"
+    finally:
+        cur.close()
