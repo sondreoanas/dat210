@@ -6,7 +6,7 @@
 import dataTmpl
 import notifications
 import back_user
-import event
+import back_event
 import json
 import time
 from flask import Flask, request, redirect, url_for, render_template, flash, session
