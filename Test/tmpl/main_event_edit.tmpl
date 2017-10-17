@@ -5,19 +5,19 @@
         <div class="ghost">
             <div class="box form_event_edit ffix">
     
-                <h2>Edit event: <%this.name%></h2>
+                <h2>Edit event: <%this.data.name%></h2>
     
                 <form id="forms_event_edit" action="edit_form">
 
                     <fieldset>
 
-                        <input type="hidden" id="form_event_id" name="form_event_id" value="<%this.id%>">
+                        <input type="hidden" id="form_event_id" name="form_event_id" value="<%this.data.id%>">
                         <label for="form_event_calendar">Calendar:</label>
                         <select id="form_event_calendar" name="form_event_calendar">
-                            <%for(var i in this.calendars) {%>
-                                <option value="<%this.calendars[i][2]%>" <%if(this.calendars[i][0]) {%>selected<%}%>>
-                                    <%this.calendars[i][1]%>
-                                    <%if(this.calendars[i][3]) {%>
+                            <%for(var i in this.data.calendars) {%>
+                                <option value="<%this.data.calendars[i][0]%>" <%if(this.data.calendars[i][0] == this.data.calendar_id) {%>selected<%}%>>
+                                    <%this.data.calendars[i][1]%>
+                                    <%if(this.data.calendars[i][2]) {%>
                                      - public
                                     <%}%>
                                 </option>
@@ -26,11 +26,11 @@
 
 
                         <label for="form_event_name">Event name:</label>
-                        <input type="text" id="form_event_name" name="form_event_name" placeholder="event name_" value="<%this.name%>">
+                        <input type="text" id="form_event_name" name="form_event_name" placeholder="event name_" value="<%this.data.name%>">
                         <label for="form_event_start">Start:</label>
-                        <input type="text" id="form_event_start" name="form_event_start" placeholder="event start date and time_" value="<%this.start%>">
+                        <input type="text" id="form_event_start" name="form_event_start" placeholder="event start date and time_" value="<%this.data.start%>">
                         <label for="form_event_end">End:</label>
-                        <input type="text" id="form_event_end" name="form_event_end" placeholder="event end date and time_" value="<%this.end%>">
+                        <input type="text" id="form_event_end" name="form_event_end" placeholder="event end date and time_" value="<%this.data.end%>">
                         
                     </fieldset>
     
