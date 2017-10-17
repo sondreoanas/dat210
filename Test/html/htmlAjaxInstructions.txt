@@ -1,0 +1,144 @@
+/*
+	htmlAjaxInstructions.txt
+	
+	version			: 0.0.3
+	last updated	: 06.10.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			TODO: ...
+		How to use it?
+			TODO: ...
+		What is new?
+			lines 112-113
+*/
+
+HTML ajax instructions:
+	Include theese js files in header:
+		<script src="static/js/mf_ajax.js"></script>
+		<script src="static/js/mf_timeline.js"></script>
+		<script src="static/js/nm_callbacks.js"></script>
+		<script src="static/js/templater.js"></script>
+
+	To fill an element with html content:
+		<div data-fill="/getHTML?html=someContent"></div>
+	
+	
+	To replace and element with html content:
+		<div data-replace="/getHTML?html=someContent"></div>
+	
+	
+	To make a button fill element with html content:
+		<button data-target="toBeFilled" data-fill="/getHTML?html=someContent">Button that will fill the h1</button>
+		<h1 id="toBeFilled">
+			Some h1 to be filled
+		</h1>
+	
+	To make a button replace element with html content:
+		<button data-target="toBeReplaced" data-fill="/getHTML?html=someContent">Button that will replace the h1</button>
+		<h1 id="toBeReplaced">
+			Some h1 to be replaced
+		</h1>
+	
+	To make a button modify an element
+		Add html content before:
+			<button data-target="toBePreceded" data-before="/getHTML?html=someContent">Some button to create element to precede the first h1</button>
+			<h1 id="toBePreceded">
+				Some h1 to be preceded
+			</h1>
+		Add html content after:
+			<button data-target="toBeFollowed" data-after="/getHTML?html=someContent">Some button to create element to follow the second h1</button>
+			<h1 id="toBeFollowed">
+				Some h1 to be followed
+			</h1>
+		Remove element:
+			<button data-target="toBeRemoved" data-remove="">Some button to remove h1</button>
+			<h1 id="toBeRemoved">
+				Some h1 to be removed
+			</h1>
+		Add child to element:
+			Add first:
+				Add this to the html:
+					<button data-target="list" data-addfirstchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<ul id="list">
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+					</ul>
+				If someContent.html is this:
+					<li>0</li>
+				...then the end result is this:
+					<button data-target="list" data-addfirstchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<ul id="list">
+						<li>0</li>
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+					</ul>
+			Add last:
+				Add this to the html:
+					<button data-target="list" data-addlastchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<ul id="list">
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+					</ul>
+				If someContent.html is this:
+					<li>4</li>
+				...then the end result is this:
+					<button data-target="list" data-addlastchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<ul id="list">
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+						<li>4</li>
+					</ul>
+	
+	To make a button submit a form and recieve a response
+		
+		In an html file:
+			<form id="someForm" action="/handleLogin">
+				<input type="text" name="email" id="email"><br>
+				<input type="text" name="password" id="password"></br>
+			</form>
+			<button data-formid="someForm" data-callback="callBackExample">Hello there</button>
+	
+	Timeline:
+		To add a timeline. The dimensins of the div will decide the size of the timeline
+			<div data-timeline=""></div>
+		To set start position and zoom. Position unit is milliseconds from 1 jan 1971. Zoom is visible milliseconds. Standard is today and 10 day zoom.
+			<div data-timeline="" data-position="1505599200000" data-zoom="864000000"></div>
+Javascript
+	On full load eventlistener. It is called every time the ajax is done loading.
+		document.addEventListener("onFullLoad", someFunction);
+	In static/js/nm_callbacks.js:
+		function callBackExample(response){ // responce is an object recieved from python
+			// to fill an element
+			mf_ajaxHandler.fillElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to replace an element
+			mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to place before
+			mf_ajaxHandler.placeBeforeElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to place after
+			mf_ajaxHandler.placeAfterElement(elementid = "someId", url = "/getHTML?html=someFile");
+			// to remove
+			mf_ajaxHandler.removeElement(elementid = "someId");
+			// to append at the start of the element with id "someId"
+			mf_ajaxHandler.addFirstChild(elementId = "someId", url = "/getHTML?html=someFile")
+			// to append at the end of the element with id "someId"
+			mf_ajaxHandler.addLastChild(elementId = "someId", url = "/getHTML?html=someFile")
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
