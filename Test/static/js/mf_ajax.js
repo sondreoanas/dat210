@@ -11,6 +11,7 @@
 			TODO: ...
 */
 
+
 function mf_AjaxHandler(){
 	
 }
@@ -25,6 +26,8 @@ mf_AjaxHandler.prototype.initAjax = function(){
 	// scan document for ajax templates
 	var body = document.getElementsByTagName("body")[0];
 	this.searchElement(body);
+	
+
 }
 mf_AjaxHandler.prototype.checkButton = function(button){
 	if(button.dataset.formid){ // form
@@ -319,6 +322,15 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 		var data = JSON.parse(responseText);
 		data.template = templater(data.template, data.data);
 		//notification(data.notification);
+    
+    while(element.firstChild){
+			element.removeChild(element.firstChild);
+		}
+
+		element.innerHTML = data.template;
+
+/*
+
 		var parser = new DOMParser();
 		// delete children of element
 		while(element.firstChild){
@@ -329,6 +341,9 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 		for(var i=0;i<dummy.children.length; i++){
 			element.appendChild(dummy.children[i]);
 		}
+
+*/
+
 		callback();
 		//
 		mf_AjaxHandler.nrOfCallsInProgress--;
@@ -348,6 +363,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 }
 mf_AjaxHandler.ajaxGet = function(address, callback, callbackFail){
 	var xhttp = new XMLHttpRequest();
+
 	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4){
 			if(this.status == 200){

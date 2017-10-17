@@ -1,21 +1,24 @@
 <main id="main" data-location="calendar_edit">
 
-<%for(var i in this) {%>
-        <%this[i]%>
-<%}%>
-
     <section id="calendar_edit" class="ffix page">
             
         <div class="ghost">
             <div class="box form_calendar_edit ffix">
     
-                <h2>Edit calendar: <%this.name%></h2>
+                <h2>Edit calendar: <%this.data.name%></h2>
     
                 <form id="forms_calendar_edit" action="edit_form">
 
-                    <label for="form_calendar_edit_name">Calendar name:</label>
-                    <input type="text" id="form_calendar_edit_name" value="<%this.name%>">
-    
+                    <fieldset>
+                        
+                        <input type="hidden" id="form_calendar_id" name="form_calendar_id" value="<%this.data.id%>">
+                        <label for="form_calendar_name">Calendar name:</label>
+                        <input type="text" id="form_calendar_name" name="form_calendar_name" value="<%this.data.name%>">
+                        <label for="form_calendar_public">Public:</label>
+                        <input type="checkbox" id="form_calendar_public" name="form_calendar_public" value="public" <%if(this.data.public) {%>checked<%}%>>
+
+                    </fieldset>
+
                     <button data-formid="forms_calendar_edit" data-callback="cb.calendar_edit">Save calendar</button>
 
                 </form>
