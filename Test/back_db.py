@@ -12,6 +12,7 @@ import mysql.connector
 import re
 from back_event import *
 import config as c
+from datetime import datetime
 
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
