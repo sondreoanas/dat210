@@ -1,6 +1,6 @@
 
 
-window.addEventListener('testevent', function (e) { 
+window.addEventListener('onFullLoad', function (e) { 
     
     var form_event_start = flatpickr("#form_event_start", {
         enableTime: true,
