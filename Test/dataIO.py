@@ -1,7 +1,10 @@
 import back_user
-import logged_in_user
+import config as c
+from logged_in_user import LoggedInUser
 
-def getData(data, user, params=None,):
+
+
+def getData(data, params=None,):
     returner = {}
 
     if data == "login":
@@ -44,7 +47,7 @@ def getData(data, user, params=None,):
         #    [554, "Calendar 03",True],
         #    [4545, "Calendar 04",False]
         #]
-        cal_db = user.get_user_calendar()
+        cal_db = c.the_user.get_user_calendars()
         calendars = []
         for cal_id in cal_db:
             calendar = []
@@ -53,7 +56,6 @@ def getData(data, user, params=None,):
             calendar.append(cal_id['calendar_rights'])
             calendars.append(calendar)
 
-        print(calendars)
         return calendars
 
     if data == "event_list":
@@ -64,7 +66,7 @@ def getData(data, user, params=None,):
         #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
         #]
 
-        cal_db = user.get_user_calendar()
+        cal_db = c.the_user.get_user_calendars()
         events = []
         for cal_id in cal_db:
             for event_id in cal_id['events']:
