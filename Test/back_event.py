@@ -45,19 +45,3 @@ def add_new_task(interval):
         if add_new_usertask_db(task_id, the_user.get_userid()):
             return task_id
     return False
-
-def search_events_usercalendar(calendar_id, interval_start, interval_end):
-    events = get_events_usercalendar_interval(the_user.get_userid, calendar_id, interval_start, interval_end)
-    if events !== False:
-        search_results = []
-        search_result = dict()
-        for event_id in events:
-            event = get_event_db(event_id)
-            search_result = {
-                'event_id': event_id,
-                'start': event[1],
-                'end': event[2]
-            }
-            search_result.append(search_result.copy())
-        return search_result
-    return events
