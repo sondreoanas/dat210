@@ -1,18 +1,3 @@
-var template =
-    'My skills:' +
-    '<%if(this.showSkills) {%>' +
-    '<%for(var index in this.skills) {%>' +
-    '<a href="#"><%this.skills[index]%></a>' +
-    '<%}%>' +
-    '<%} else {%>' +
-    '<p>none</p>' +
-    '<%}%>';
-console.log(templater(template, {
-    skills: ["js", "html", "css"],
-    showSkills: true
-}));
-
-
 function templater(html, options) {
 
     var re = /<%(.+?)%>/g,
