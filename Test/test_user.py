@@ -1,6 +1,7 @@
 import unittest
 from back_user import *
 from logged_in_user import *
+import config as c
 
 username = "ola@nordmann.no"
 password = "Password123"
@@ -72,33 +73,33 @@ class EmailTest(unittest.TestCase):
 class LoggedInTest(unittest.TestCase):
     def test_00_get_username(self):
         with app.app_context():
-            self.assertEqual(the_user.get_username(), False)
+            self.assertEqual(c.the_user.get_username(), False)
 
     def test_01_get_username(self):
         with app.app_context():
             login_testuser()
-            self.assertEqual(the_user.get_username(), username)
+            self.assertEqual(c.the_user.get_username(), username)
 
     def test_50_get_username(self):
         with app.app_context():
             logout()
-            self.assertEqual(the_user.get_username(), False)
+            self.assertEqual(c.the_user.get_username(), False)
 
     def test_02_get_name(self):
         with app.app_context():
-            self.assertEqual(the_user.get_name(), name)
+            self.assertEqual(c.the_user.get_name(), name)
 
     def test_99_get_name(self):
         with app.app_context():
-            self.assertEqual(the_user.get_name(), False)
+            self.assertEqual(c.the_user.get_name(), False)
     
     def test_03_get_user_id(self):
         with app.app_context():
-            self.assertEqual(the_user.get_userid(), userid)
+            self.assertEqual(c.the_user.get_userid(), userid)
     
     def test_98_get_user_id(self):
         with app.app_context():
-            self.assertEqual(the_user.get_userid(), False)
+            self.assertEqual(c.the_user.get_userid(), False)
 
 
 def main():

@@ -11,6 +11,7 @@ from logged_in_user import *
 import mysql.connector
 import re
 from back_event import *
+import config as c
 from datetime import datetime
 
 UPLOAD_FOLDER = "static/images"
@@ -18,15 +19,13 @@ ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "root"
+app.config["DATABASE_PASSWORD"] = "passordetmitt"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = "any random string"
 
-
-the_user = LoggedInUser()
 
 
 # database connection
@@ -211,7 +210,7 @@ def add_new_usercalendar_db(calendar_id):
         sql = "INSERT INTO usercalendars " \
             "(UserId, CalendarId, Adminlevel, Notifications) " \
             "VALUES (%s, %s, %s, %s) "
-        cur.execute(sql, (the_user.get_userid(), calendar_id, 3, 0))
+        cur.execute(sql, (c.the_user.get_userid(), calendar_id, 3, 0))
         db.commit()
         return True
     except mysql.connector.Error as err:

@@ -3,8 +3,8 @@ from back_user import *
 from logged_in_user import *
 from test_user import *
 from back_event import *
+import config as c
 from datetime import date, datetime
-from back_db import test_time
 
 nr_of_cals = 36
 nr_of_userevents = 195
@@ -273,23 +273,23 @@ class UsercalendarTest(unittest.TestCase):
     def test_00_get_user_calendars(self):
         with app.app_context():
             login_testuser()
-            usercalendars = the_user.get_user_calendars()
+            usercalendars = c.the_user.get_user_calendars()
             self.assertEqual(len(usercalendars), nr_of_cals)
 
     def test_01_get_all_userevents(self):
         with app.app_context():
-            userevents = the_user.get_user_events()
+            userevents = c.the_user.get_user_events()
             self.assertEqual(len(userevents), nr_of_userevents)
 
     def test_50_get_user_calendars(self):
         with app.app_context():
             logout()
-            usercalendars = the_user.get_user_calendars()
+            usercalendars = c.the_user.get_user_calendars()
             self.assertEqual(usercalendars, False)
 
     def test_51_get_all_userevents(self):
         with app.app_context():
-            userevents = the_user.get_user_events()
+            userevents = c.the_user.get_user_events()
             self.assertEqual(userevents, False)
 
 class AddcalendarTest(unittest.TestCase):
