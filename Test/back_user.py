@@ -19,14 +19,16 @@ def init_logged_in_user(username):
         the_user.set_username(username)
         the_user.set_name(get_user_name_db(username)[0])
         the_user.set_userid(get_userid_db(username)[0])
-        get_all_calendars()
-        get_all_userevents()
+        init_all_calendars()
+        init_all_userevents()
     pass
 
 
 # check for valid username function
 def valid_username(username):
     match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', username)
+    if user_exist(username):
+        return False
     if match is None:
         return False
     return True
@@ -66,9 +68,8 @@ def logout():
 def register_user(username, password, name):
     if not valid_username(username):
         return False
-    success = False
     if not user_exist(username):
         set_new_user_db(username, password, name)
         if user_exist(username):
-            success = True
-    return success
+            return username
+    return False
