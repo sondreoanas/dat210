@@ -6,8 +6,8 @@ USE `annualcycle`;
 -- ------------------------------------------------------
 -- Server version	5.7.19-log
 
--- Database annualcycle v1.0.0
--- Last edited: Vebjorn A.A 03.10.17 22.45
+-- Database annualcycle v1.0.1
+-- Last edited: Vebjorn A.A 04.10.17 09.02
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -239,6 +239,7 @@ CREATE TABLE `user` (
   `UserId` int(11) NOT NULL,
   `Email` varchar(45) NOT NULL,
   `Password` varchar(125) NOT NULL,
+  `Salt` varchar(10) NOT NULL,
   `Name` varchar(60) NOT NULL,
   `Deleted` tinyint(1) NOT NULL,
   PRIMARY KEY (`UserId`)

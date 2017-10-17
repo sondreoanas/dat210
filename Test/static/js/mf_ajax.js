@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.0.5
-	last updated	: 16.10.2017
+	version			: 0.1.1
+	last updated	: 17.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -11,10 +11,21 @@
 			TODO: ...
 */
 
+
 function mf_AjaxHandler(){
 	
 }
+mf_AjaxHandler.loadEvent = new Event("onFullLoad");
+mf_AjaxHandler.nrOfCallsInProgress = 0;
+mf_AjaxHandler.root = null;
 mf_AjaxHandler.prototype.initAjax = function(){
+	// root
+	if(root){
+		mf_AjaxHandler.root = root;
+	}else{
+		mf_AjaxHandler.root = "http://127.0.0.1:5000";
+	}
+	
 	// start recording
 	mf_testHandeler.init();
 	// load js files
@@ -22,6 +33,8 @@ mf_AjaxHandler.prototype.initAjax = function(){
 	// scan document for ajax templates
 	var body = document.getElementsByTagName("body")[0];
 	this.searchElement(body);
+	
+
 }
 mf_AjaxHandler.prototype.checkButton = function(button){
 	if(button.dataset.formid){ // form
@@ -308,34 +321,78 @@ mf_AjaxHandler.prototype.fillElementArgElement = function(element, url){
 	}.bind(this));
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
+	//
+	mf_AjaxHandler.nrOfCallsInProgress++;
+	console.log(mf_AjaxHandler.nrOfCallsInProgress);
+	//
 	mf_AjaxHandler.ajaxGet(url, function(responseText){
 		var data = JSON.parse(responseText);
 		data.template = templater(data.template, data.data);
 		//notification(data.notification);
+    
+    while(element.firstChild){
+			element.removeChild(element.firstChild);
+		}
+
 		element.innerHTML = data.template;
+
+/*
+
+		var parser = new DOMParser();
+		// delete children of element
+		while(element.firstChild){
+			element.removeChild(element.firstChild);
+		}
+		// fill element with new children
+		var dummy = parser.parseFromString(data.template, "text/html").body;
+		for(var i=0;i<dummy.children.length; i++){
+			element.appendChild(dummy.children[i]);
+		}
+
+*/
+
 		callback();
-	}.bind(this));
+		//
+		mf_AjaxHandler.nrOfCallsInProgress--;
+		if(mf_AjaxHandler.nrOfCallsInProgress == 0){
+			window.dispatchEvent(mf_AjaxHandler.loadEvent);
+		}
+		console.log(mf_AjaxHandler.nrOfCallsInProgress);
+	}.bind(this), function callbackFail(){
+		mf_AjaxHandler.nrOfCallsInProgress--;
+		if(mf_AjaxHandler.nrOfCallsInProgress == 0){
+			window.dispatchEvent(mf_AjaxHandler.loadEvent);
+		}
+		console.log(mf_AjaxHandler.nrOfCallsInProgress);
+	});
 	// loading graphic?
 	element.innerHTML = "loading...";
 }
-mf_AjaxHandler.ajaxGet = function(address, callback){
+mf_AjaxHandler.ajaxGet = function(address, callback, callbackFail){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if(this.readyState == 4 && this.status == 200){
-			callback(this.responseText);
+
+	xhttp.onreadystatechange = function(){
+		if(this.readyState == 4){
+			if(this.status == 200){
+				callback(this.responseText);
+			}else{
+				if(callbackFail){
+					callbackFail();
+				}
+			}
 		}
-	}
-	xhttp.open("GET", address, true);
+	};
+	xhttp.open("GET", mf_AjaxHandler.addRoot(address), true);
 	xhttp.send();
 }
 mf_AjaxHandler.ajaxPost = function(data, address, callback){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
 			callback(this.responseText);
 		}
-	}
-	xhttp.open("post", address, true);
+	};
+	xhttp.open("post", mf_AjaxHandler.addRoot(address), true);
 	//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	var keys = Object.keys(data);
 	var str = "";
@@ -349,15 +406,44 @@ mf_AjaxHandler.ajaxPost = function(data, address, callback){
 }
 mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
 			callback(this.responseText);
 		}
-	}
-	xhttp.open("post", address, true);
+	};
+	xhttp.open("post", mf_AjaxHandler.addRoot(address), true);
 	//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	var formData = new FormData(form);
 	xhttp.send(formData);
+}
+mf_AjaxHandler.addRoot = function(address){
+	/*if(address[0] !== "/"){
+		address = "/" + address;
+	}*/
+	/*var escRoot = mf_AjaxHandler.root.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"); // https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+	var re = new RegExp("^(" + escRoot + ")");
+	address = address.replace(re,"");*/
+	
+	/*for(var i=mf_AjaxHandler.root.length - 1; i>=0; i++){
+		if(address.charAt(0) === mf_AjaxHandler.root.charAt(i)){
+			address = address.substr(1);
+		}else{
+			break;
+		}
+	}*/
+	
+	
+	//return mf_AjaxHandler.root + address; // TODO: mf_AjaxHandler.root with root when merged with nils
+	
+	if(mf_AjaxHandler.root == address.substr(0, mf_AjaxHandler.root.length)){
+		return address;
+	}else{
+		if(address[0] !== "/"){
+			address = "/" + address;
+		}
+		return mf_AjaxHandler.root + address;
+	}
+	
 }
 mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 	if(document.readyState === "complete"){
@@ -371,7 +457,6 @@ mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 		return false;
 	}
 }
-
 
 var mf_ajaxHandler = new mf_AjaxHandler();
 window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));
