@@ -5,7 +5,8 @@
 """
 import dataTmpl
 import notifications
-import back
+import back_user
+import event
 import json
 import time
 from flask import Flask, request, redirect, url_for, render_template, flash, session
@@ -49,7 +50,7 @@ def login():
     password = request.form.get('password', 0)
 
     return json.dumps({
-        "successLogin": back.valid_login(username, password)
+        "successLogin": back_user.login(username, password)
     })
 
 @app.route("/newuser", methods=["POST"])
