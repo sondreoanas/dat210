@@ -3,7 +3,8 @@ from back_user import *
 from logged_in_user import *
 from test_user import *
 from back_event import *
-from datetime import date
+import config as c
+from datetime import date, datetime
 
 nr_of_cals = 36
 nr_of_userevents = 195
@@ -235,35 +236,35 @@ task_ids = [
 search_parameters = dict()
 search_parameters = {
     'calendar_id': 302,
-    'start': '2017-08-14 00:00:00',
-    'end': '2018-05-06 00:00:00',
+    'start': datetime(2017, 8, 14, 0, 0, 0).isoformat(),
+    'end': datetime(2018, 5, 6, 0, 0, 0).isoformat(),
     'user_id': 1201
 }
 results = [
     {
         'event_id': 3,
-        'start': '2017-08-14 00:00:00',
-        'end': '2017-09-26 00:00:00'
+        'start': datetime(2017, 8, 14, 0, 0, 0),
+        'end': datetime(2017, 9, 26, 0, 0, 0)
     },
     {
         'event_id': 2301,
-        'start': '2018-03-18 00:00:00',
-        'end': '2018-05-06 00:00:00'
+        'start': datetime(2018, 3, 18, 0, 0, 0),
+        'end': datetime(2018, 5, 6, 0, 0, 0)
     },
     {
         'event_id': 3472,
-        'start': '2018-01-25 00:00:00',
-        'end': '2018-01-27 00:00:00'
+        'start': datetime(2018, 1, 25, 0, 0, 0),
+        'end': datetime(2018, 1, 27, 0, 0, 0)
     },
     {
         'event_id': 19621,
-        'start': '2018-04-09 00:00:00',
-        'end': '2018-04-29 00:00:00'
+        'start': datetime(2018, 4, 9, 0, 0, 0),
+        'end': datetime(2018, 4, 29, 0, 0, 0)
     },
     {
         'event_id': 19765,
-        'start': '2018-02-07 00:00:00',
-        'end': '2018-04-14 00:00:00'
+        'start': datetime(2018, 2, 7, 0, 0, 0),
+        'end': datetime(2018, 4, 14, 0, 0, 0)
     }
 ]
 
@@ -272,23 +273,23 @@ class UsercalendarTest(unittest.TestCase):
     def test_00_get_user_calendars(self):
         with app.app_context():
             login_testuser()
-            usercalendars = the_user.get_user_calendars()
+            usercalendars = c.the_user.get_user_calendars()
             self.assertEqual(len(usercalendars), nr_of_cals)
 
     def test_01_get_all_userevents(self):
         with app.app_context():
-            userevents = the_user.get_user_events()
+            userevents = c.the_user.get_user_events()
             self.assertEqual(len(userevents), nr_of_userevents)
 
     def test_50_get_user_calendars(self):
         with app.app_context():
             logout()
-            usercalendars = the_user.get_user_calendars()
+            usercalendars = c.the_user.get_user_calendars()
             self.assertEqual(usercalendars, False)
 
     def test_51_get_all_userevents(self):
         with app.app_context():
-            userevents = the_user.get_user_events()
+            userevents = c.the_user.get_user_events()
             self.assertEqual(userevents, False)
 
 class AddcalendarTest(unittest.TestCase):
@@ -328,10 +329,6 @@ class AddcalendarTest(unittest.TestCase):
             self.assertEqual(True, True)
 
 class SearchintervalTest(unittest.TestCase):
-    def test_00_add_calendar(self):
-        with app.app_context():
-            login_testuser()
-            self.assertEqual(search_events_usercalendar(search_parameters['calendar_id'], search_parameters['start'], search_parameters['end']), True)
     def test_01_add_calendar(self):
         with app.app_context():
             login_testuser()

@@ -22,33 +22,33 @@ HTML ajax instructions:
 		<script src="static/js/templater.js"></script>
 
 	To fill an element with html content:
-		<div data-fill="/getHTML?html=someContent"></div>
+		<div data-fill="//getHTML?html=someContent"></div>
 	
 	
 	To replace and element with html content:
-		<div data-replace="/getHTML?html=someContent"></div>
+		<div data-replace="//getHTML?html=someContent"></div>
 	
 	
 	To make a button fill element with html content:
-		<button data-target="toBeFilled" data-fill="/getHTML?html=someContent">Button that will fill the h1</button>
+		<button data-target="toBeFilled" data-fill="//getHTML?html=someContent">Button that will fill the h1</button>
 		<h1 id="toBeFilled">
 			Some h1 to be filled
 		</h1>
 	
 	To make a button replace element with html content:
-		<button data-target="toBeReplaced" data-fill="/getHTML?html=someContent">Button that will replace the h1</button>
+		<button data-target="toBeReplaced" data-fill="//getHTML?html=someContent">Button that will replace the h1</button>
 		<h1 id="toBeReplaced">
 			Some h1 to be replaced
 		</h1>
 	
 	To make a button modify an element
 		Add html content before:
-			<button data-target="toBePreceded" data-before="/getHTML?html=someContent">Some button to create element to precede the first h1</button>
+			<button data-target="toBePreceded" data-before="//getHTML?html=someContent">Some button to create element to precede the first h1</button>
 			<h1 id="toBePreceded">
 				Some h1 to be preceded
 			</h1>
 		Add html content after:
-			<button data-target="toBeFollowed" data-after="/getHTML?html=someContent">Some button to create element to follow the second h1</button>
+			<button data-target="toBeFollowed" data-after="//getHTML?html=someContent">Some button to create element to follow the second h1</button>
 			<h1 id="toBeFollowed">
 				Some h1 to be followed
 			</h1>
@@ -60,7 +60,7 @@ HTML ajax instructions:
 		Add child to element:
 			Add first:
 				Add this to the html:
-					<button data-target="list" data-addfirstchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<button data-target="list" data-addfirstchild="//getHTML?html=someContent">Add content to top of ul</button>
 					<ul id="list">
 						<li>1</li>
 						<li>2</li>
@@ -69,7 +69,7 @@ HTML ajax instructions:
 				If someContent.html is this:
 					<li>0</li>
 				...then the end result is this:
-					<button data-target="list" data-addfirstchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<button data-target="list" data-addfirstchild="//getHTML?html=someContent">Add content to top of ul</button>
 					<ul id="list">
 						<li>0</li>
 						<li>1</li>
@@ -78,7 +78,7 @@ HTML ajax instructions:
 					</ul>
 			Add last:
 				Add this to the html:
-					<button data-target="list" data-addlastchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<button data-target="list" data-addlastchild="//getHTML?html=someContent">Add content to top of ul</button>
 					<ul id="list">
 						<li>1</li>
 						<li>2</li>
@@ -87,7 +87,7 @@ HTML ajax instructions:
 				If someContent.html is this:
 					<li>4</li>
 				...then the end result is this:
-					<button data-target="list" data-addlastchild="/getHTML?html=someContent">Add content to top of ul</button>
+					<button data-target="list" data-addlastchild="//getHTML?html=someContent">Add content to top of ul</button>
 					<ul id="list">
 						<li>1</li>
 						<li>2</li>
@@ -120,19 +120,19 @@ Javascript
 	In static/js/nm_callbacks.js:
 		function callBackExample(response){ // responce is an object recieved from python
 			// to fill an element
-			mf_ajaxHandler.fillElement(elementid = "someId", url = "/getHTML?html=someFile");
+			mf_ajaxHandler.fillElement(elementid = "someId", url = "//getHTML?html=someFile");
 			// to replace an element
-			mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile");
+			mf_ajaxHandler.replaceElement(elementid = "someId", url = "//getHTML?html=someFile");
 			// to place before
-			mf_ajaxHandler.placeBeforeElement(elementid = "someId", url = "/getHTML?html=someFile");
+			mf_ajaxHandler.placeBeforeElement(elementid = "someId", url = "//getHTML?html=someFile");
 			// to place after
-			mf_ajaxHandler.placeAfterElement(elementid = "someId", url = "/getHTML?html=someFile");
+			mf_ajaxHandler.placeAfterElement(elementid = "someId", url = "//getHTML?html=someFile");
 			// to remove
 			mf_ajaxHandler.removeElement(elementid = "someId");
 			// to append at the start of the element with id "someId"
-			mf_ajaxHandler.addFirstChild(elementId = "someId", url = "/getHTML?html=someFile")
+			mf_ajaxHandler.addFirstChild(elementId = "someId", url = "//getHTML?html=someFile")
 			// to append at the end of the element with id "someId"
-			mf_ajaxHandler.addLastChild(elementId = "someId", url = "/getHTML?html=someFile")
+			mf_ajaxHandler.addLastChild(elementId = "someId", url = "//getHTML?html=someFile")
 		}
 	Custon data in nm_callbacks. All above functions have an optional parameter "data" that will override the data recieved from the server and used in
 	the template engine. Example:

@@ -468,4 +468,3 @@ window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));
 
 
 
-

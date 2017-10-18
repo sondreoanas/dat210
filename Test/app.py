@@ -5,21 +5,20 @@
 """
 import dataIO as io
 import json
-import data
-import logged_in_user
+import config as c
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
 
-the_user = logged_in_user.LoggedInUser()
+
 
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
-    load_start = request.form.get('start', 0);
-    load_end = request.form.get('end', 0);
-    print("start: " + str(load_start))
-    print("end: " + str(load_end))
-    return json.dumps(data.event(load_start,load_end))
+    params = {
+        "load_start": request.form.get('start', 0),
+        "load_end": request.form.get('end', 0)
+    }
+    return json.dumps(io.getData("event_list",params))
 
 @app.route("/getHTML")
 def getHTML():
@@ -44,7 +43,7 @@ def getTMPL():
         template = f.read()
     jstring = {
         "template" : template,
-        "data": io.getData(data, the_user, params)
+        "data": io.getData(data, params)
     }
     return json.dumps(jstring)
 
@@ -55,7 +54,7 @@ def login():
         "username": request.form.get('username', 0),
         "password": request.form.get('password', 0)
     }
-    return json.dumps(io.getData("login", the_user, params,))
+    return json.dumps(io.getData("login", params,))
 
 
 @app.route("/forgotpass_form", methods=["POST"])
@@ -63,7 +62,7 @@ def forgotpass():
     params = {
         "username": request.form.get('form_userid', 0)
     }
-    return json.dumps(io.getData("forgotpass", the_user, params))
+    return json.dumps(io.getData("forgotpass", params))
 
 
 @app.route("/newuser_form", methods=["POST"])
