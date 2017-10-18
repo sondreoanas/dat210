@@ -6,6 +6,7 @@
 import dataIO as io
 import json
 import config as c
+import back_user
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 app = Flask(__name__)
 
@@ -144,3 +145,5 @@ def index():
 
 if __name__ == "__main__":
     app.run()
+    if c.dev_mode:
+        back_user.init_logged_in_user("ola@nordmann.no")
