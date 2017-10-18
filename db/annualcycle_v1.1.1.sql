@@ -55,7 +55,6 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 IF NEW.Deleted <=> "1" AND Old.Deleted <=> "0" THEN
-
     UPDATE EventCalendar
 	SET Deleted = '1'
 	WHERE CalendarId = NEW.CalendarId;
@@ -269,7 +268,6 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 IF NEW.Deleted <=> "1" AND Old.Deleted <=> "0" THEN
-
 	UPDATE EventFiles
 	SET Deleted = '1'
 	WHERE EventId = NEW.EventId;
@@ -394,7 +392,6 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 IF NEW.Deleted <=> "1" AND Old.Deleted <=> "0" THEN
-
 	UPDATE EventFiles
 	SET Deleted = '1'
 	WHERE FileId = NEW.FileId;
@@ -465,7 +462,6 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 IF NEW.Deleted <=> "1" AND Old.Deleted <=> "0" THEN
-
     UPDATE Taskchildren
 	SET Deleted = '1'
 	WHERE ParenttaskId = NEW.TaskId;
@@ -582,7 +578,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('ola@nordmann.no',1,'2518d594b022105fb11f75c49d98ec40989067f7','\r?%+š&û','Ola Nordmann','2017-10-18',0);
+INSERT INTO `user` VALUES ('ola@nordmann.no',1,'2518d594b022105fb11f75c49d98ec40989067f7','\r?%+Âš&Ã»','Ola Nordmann','2017-10-18',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -617,7 +613,6 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 IF NEW.Deleted <=> "1" AND Old.Deleted <=> "0" THEN
-
 	UPDATE Usercalendars
 	SET Deleted = '1'
 	WHERE userId = NEW.userId;
@@ -625,7 +620,6 @@ IF NEW.Deleted <=> "1" AND Old.Deleted <=> "0" THEN
     UPDATE Usertask
 	SET Deleted = '1'
 	WHERE userId = NEW.userId;
-
 END IF;
 END */;;
 DELIMITER ;
@@ -646,7 +640,6 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 IF NEW.Deleted <=> "0" AND Old.Deleted <=> "1" THEN
-
 	UPDATE Usercalendars
 	SET Deleted = '0'
 	WHERE userId = NEW.userId;
