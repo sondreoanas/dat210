@@ -1,0 +1,33 @@
+<section id="login" class="ffix">
+    
+    <div class="ghost">
+        <div class="box ffix">
+
+            <%if(this.success) {%>
+
+                <h2>New user success!</h2>
+
+                <p>Your email: <%this.data.email%></p>
+                <p>Your nickname: <%this.data.nick%></p>
+
+                <p>Login below</p>
+
+            <%} else {%>
+                <h2>New user failed!</h2>
+            <%}%>
+
+            <form id="forms_login" action="login">
+
+                <input type="text" id="username" name="username" placeholder="your@email.com" value="<%this.data.email%>">
+                <input type="password" id="password" name="password" placeholder="*****">
+
+                <button data-formid="forms_login" data-callback="cb.login" class="button_login">Login</button>
+
+            </form>
+
+            <button class="button_newuser button_underline" data-target="login" data-replace="/getHTML?html=form_newuser">Create new User</button>
+            <button class="button_forgot button_underline" data-target="login" data-replace="/getHTML?html=form_forgotpass">Forgot password?</button>
+        </div>
+    </div>
+
+</section>

@@ -231,6 +231,10 @@ figure figcaption {}
 
 form {}
 
+form button {
+    clear:both;
+}
+
 fieldset {
     border: 0;
     padding: 5px 0;
@@ -524,3 +528,23 @@ button {
 }
 
 .box.form_login {}
+
+
+/*	NOTIFICATIONS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+#notifications{
+    position:fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    z-index: 9;
+    list-style: none;
+    padding:0;
+}
+#notifications > ul > li{
+    display: block;
+}
+#notifications > ul > li.notif_red{
+    background-color:rgba(255,0,0,0.5);
+}
