@@ -1,6 +1,7 @@
 import back_user
 import config as c
 from logged_in_user import LoggedInUser
+import time
 
 
 
@@ -8,13 +9,15 @@ def getData(data, params=None,):
     returner = {}
 
     if data == "login":
-        back_user.login(params['username'],params['password'])
-        returner = {
-            "success": True,
-            "data": {
-                "username" : params["username"]
+        success = back_user.login(params['username'],params['password'])
+        if success:
+            returner = {
+                "success": True,
+                "data": {
+                    "username" : params["username"]
+                }
             }
-        }
+        else: return False
 
     if data == "forgotpass":
         returner = {
@@ -69,17 +72,21 @@ def getData(data, params=None,):
         cal_db = c.the_user.get_user_calendars()
         events = []
         if cal_db:
-            for cal_id in cal_db:
-                if 'events' in cal_db[cal_id].keys():
-                    for event_id in cal_db[cal_id]['events']:
-                        event = []
-                        event.append(event_id)
-                        event.append(cal_db[cal_id]['events'][event_id]['name'])
-                        event.append(cal_db[cal_id]['events'][event_id]['start'])
-                        event.append(cal_db[cal_id]['events'][event_id]['end'])
-                        events.append(event)
-        print(events)
-        return events
+        cal_id = 1
+        #for cal_id in cal_db:
+        if 'events' in cal_db[cal_id].keys():
+           returner = {'events':[]}
+           for event_id in cal_db[cal_id]['events']:
+              start = cal_db[cal_id]['events'][event_id]['start']
+              end = cal_db[cal_id]['events'][event_id]['end']
+              
+              event = {
+                'start' : time.mktime(start)
+                'end' : time.mktime(end)
+                'name' : cal_db[cal_id]['events'][event_id]['name']
+                  
+              }
+              returnerer['events'].append(event)
 
 
 #### PUT DATA #####
