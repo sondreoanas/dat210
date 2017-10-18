@@ -32,13 +32,13 @@ def add_new_calendar(calendar_name, public_bool):
             return [calendar_id, True]
     return False
 
-def add_new_event(start_time, calendar_id):
-    event_id = db.add_new_event_db(start_time)
+def add_new_event(calendar_id, event_name, start_time, end_time):
+    event_id = db.add_new_event_db(event_name, start_time, end_time)
     if event_id:
         if db.add_new_eventcalendar_db(event_id, calendar_id):
             event = db.get_event_db(event_id)
             c.the_user.set_user_events(calendar_id, event_id)
-            return event_id
+            return [event_id, True]
     return False
 
 def add_new_task(interval):
