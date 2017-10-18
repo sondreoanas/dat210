@@ -217,14 +217,14 @@ def add_new_usercalendar_db(calendar_id):
     finally:
         cur.close()
 
-def add_new_event_db(start_time):
+def add_new_event_db(name, start_time, end_time):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "INSERT INTO eventn " \
-               "(Start) " \
+               "(Name, Start, End) " \
                "VALUES (%s) "
-        cur.execute(sql, (start_time,))
+        cur.execute(sql, (name, start_time, end_time))
         event_id = cur.lastrowid
         db.commit()
         return event_id
