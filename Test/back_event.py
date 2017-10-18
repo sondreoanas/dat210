@@ -6,21 +6,24 @@ import config as c
 
 def init_all_calendars():
     calendars = get_all_calendars_db(c.the_user.get_userid())
+    print("this is a test")
+    print(calendars)
     if calendars:
-        for (cal_id, cal_rigts) in calendars:
-            c.the_user.set_user_calendars(cal_id,cal_rigts)
+        for (cal_id, cal_name, cal_rigts) in calendars:
+            c.the_user.set_user_calendars(cal_id,cal_name,cal_rigts)
 
 def init_all_userevents():
     init_userevents(c.the_user.get_user_calendars())
 
 def init_userevents(calendars):
-    for calendar_id in calendars:
-        calendar_events = get_all_calendar_events_db(calendar_id)
-        if calendar_events:
-            for (event_id, cal_id) in calendar_events:
-                event = get_event_db(event_id)
-                if event:
-                    c.the_user.set_user_events(cal_id, event_id, event[1], event[2], event[0], event[0])
+    if calendars:
+        for calendar_id in calendars:
+            calendar_events = get_all_calendar_events_db(calendar_id)
+            if calendar_events:
+                for (event_id, cal_id) in calendar_events:
+                    event = get_event_db(event_id)
+                    if event:
+                        c.the_user.set_user_events(cal_id, event_id, event[1], event[2], event[3], event[0], event[0])
                     
 def add_new_calendar(public_bool):
     calendar_id = add_new_calendar_db(public_bool)

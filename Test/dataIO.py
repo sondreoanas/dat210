@@ -68,15 +68,16 @@ def getData(data, params=None,):
 
         cal_db = c.the_user.get_user_calendars()
         events = []
-        for cal_id in cal_db:
-            if 'events' in cal_db[cal_id].keys():
-                for event_id in cal_db[cal_id]['events']:
-                    event = []
-                    event.append(event_id)
-                    #event.append(cal_db[event_id]['name'])
-                    event.append(cal_db[cal_id]['events'][event_id]['start'])
-                    event.append(cal_db[cal_id]['events'][event_id]['end'])
-                    events.append(event)
+        if cal_db:
+            for cal_id in cal_db:
+                if 'events' in cal_db[cal_id].keys():
+                    for event_id in cal_db[cal_id]['events']:
+                        event = []
+                        event.append(event_id)
+                        event.append(cal_db[cal_id]['events'][event_id]['name'])
+                        event.append(cal_db[cal_id]['events'][event_id]['start'])
+                        event.append(cal_db[cal_id]['events'][event_id]['end'])
+                        events.append(event)
         print(events)
         return events
 

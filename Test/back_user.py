@@ -23,7 +23,6 @@ def init_logged_in_user(username):
         c.the_user.set_userid(get_userid_db(username)[0])
         init_all_calendars()
         init_all_userevents()
-    pass
 
 
 # check for valid username function
