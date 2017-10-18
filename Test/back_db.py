@@ -135,9 +135,9 @@ def get_all_calendars_db(user_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT CalendarId, Adminlevel " \
-            "FROM usercalendars " \
-            "WHERE UserId = %s "
+        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
+            "FROM usercalendars U, calendar C " \
+            "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
         cur.execute(sql, (user_id,))
         return cur.fetchall()
     except mysql.connector.Error as err:
@@ -149,9 +149,9 @@ def get_calendar_db(user_id, calendar_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT CalendarId, Adminlevel " \
-            "FROM usercalendars " \
-            "WHERE UserId = %s AND CalendarId = %s AND Deleted = 0 "
+        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
+            "FROM usercalendars U, calendar C " \
+            "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
         cur.execute(sql, (user_id, calendar_id))
         return cur.fetchone()
     except mysql.connector.Error as err:
@@ -177,7 +177,7 @@ def get_event_db(event_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT EventId, Start, End " \
+        sql = "SELECT EventId, Name, Start, End " \
             "FROM eventn " \
             "WHERE EventId = %s "
         cur.execute(sql, (event_id,))

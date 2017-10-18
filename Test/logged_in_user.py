@@ -45,18 +45,19 @@ class LoggedInUser:
             return self.__the_user['id']
         return False
 
-    def set_user_calendars(self, calendar_id, calendar_rights):
+    def set_user_calendars(self, calendar_id, calendar_name, calendar_rights):
         if 'calendars' not in self.__the_user.keys():
             self.__the_user['calendars'] = dict()
         self.__the_user['calendars'][calendar_id] = dict()
         self.__the_user['calendars'][calendar_id]['calendar_rights'] = calendar_rights
+        self.__the_user['calendars'][calendar_id]['calendar_name'] = calendar_name
 
     def get_user_calendars(self):
         if 'calendars' in self.__the_user.keys():
             return self.__the_user['calendars']
         return False
 
-    def set_user_events(self, calendar_id, event_id, start, end, interval, terminatedate):
+    def set_user_events(self, calendar_id, event_id, name, start, end, interval, terminatedate):
         if 'events_list' not in self.__the_user['calendars'][calendar_id].keys():
             self.__the_user['calendars'][calendar_id]['events_list'] = []
         self.__the_user['calendars'][calendar_id]['events_list'].append(event_id)
@@ -64,6 +65,7 @@ class LoggedInUser:
         if 'events' not in self.__the_user['calendars'][calendar_id].keys():
             self.__the_user['calendars'][calendar_id]['events'] = dict()
         self.__the_user['calendars'][calendar_id]['events'][event_id] = dict()
+        self.__the_user['calendars'][calendar_id]['events'][event_id]['name'] = name
         self.__the_user['calendars'][calendar_id]['events'][event_id]['start'] = start
         self.__the_user['calendars'][calendar_id]['events'][event_id]['end'] = end
         self.__the_user['calendars'][calendar_id]['events'][event_id]['interval'] = interval
