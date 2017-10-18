@@ -9,15 +9,12 @@ def getData(data, params=None,):
     returner = {}
 
     if data == "login":
-        success = back_user.login(params['username'],params['password'])
-        if success:
-            returner = {
-                "success": True,
-                "data": {
-                    "username" : params["username"]
-                }
+        returner = {
+            "success": back_user.login(params['username'],params['password']),
+            "data": {
+                "username" : params["username"]
             }
-        else: return False
+        }
 
     if data == "forgotpass":
         returner = {
@@ -72,28 +69,28 @@ def getData(data, params=None,):
         cal_db = c.the_user.get_user_calendars()
         events = []
         if cal_db:
-        cal_id = 1
+            cal_id = 1
         #for cal_id in cal_db:
         if 'events' in cal_db[cal_id].keys():
-           returner = {'events':[]}
-           for event_id in cal_db[cal_id]['events']:
-              start = cal_db[cal_id]['events'][event_id]['start']
-              end = cal_db[cal_id]['events'][event_id]['end']
+                returner = {'events':[]}
+                for event_id in cal_db[cal_id]['events']:
+                    start = cal_db[cal_id]['events'][event_id]['start']
+                    end = cal_db[cal_id]['events'][event_id]['end']
               
-              event = {
-                'start' : time.mktime(start)
-                'end' : time.mktime(end)
-                'name' : cal_db[cal_id]['events'][event_id]['name']
+                    event = {
+                        'start' : time.mktime(start),
+                        'end' : time.mktime(end),
+                        'name' : cal_db[cal_id]['events'][event_id]['name']
                   
-              }
-              returnerer['events'].append(event)
+                    }
+                    returner['events'].append(event)
 
 
 #### PUT DATA #####
 
     if data == "newuser":
         returner = {
-            "success": True,
+            "success": back_user.register_user(params['email'], params['password'], params['nickname']),
             "data": {
                 "email": params["email"],
                 "nickname": params["nickname"]
