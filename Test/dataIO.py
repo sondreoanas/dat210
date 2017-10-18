@@ -1,17 +1,63 @@
 import back_user
-import logged_in_user
+import config as c
+import time
 
-def getData(data, user, params=None,):
+
+
+def getData(data, params=None,):
     returner = {}
 
-    if data == "login":
-        back_user.login(params['username'],params['password'])
-        returner = {
-            "success": True,
-            "data": {
-                "username" : params["username"]
+    """calendars {
+            cal_id: {
+                "calendar_rights": value,
+                "events_list": [id, id, id, id ...],
+                "events": {
+                    event_id: {
+                        "start": value,
+                        "end": value,
+                        "interval": value,
+                        "terminatedate": value
+                    }
+                }
             }
         }
+"""
+
+
+    if data == 'loadview':
+        cal_db = c.the_user.get_user_calendars()
+        returner = {'events': []}
+        cal_id = 1
+        # for cal_id in cal_db:
+        if 'events' in cal_db[cal_id].keys():
+            for event_id in cal_db[cal_id]['events']:
+                start = cal_db[cal_id]['events'][event_id]['start']
+                end = cal_db[cal_id]['events'][event_id]['end']
+
+                start = time.mktime(start.timetuple()) * 1000
+                end = time.mktime(end.timetuple()) * 1000
+
+
+                event = {
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'name': cal_db[cal_id]['events'][event_id]['name']
+                }
+                returner['events'].append(event)
+
+
+
+    if data == "login":
+        Success = back_user.login(params['username'],params['password'])
+        if Success:
+            returner = {
+                "success": True,
+                "data": {
+                    "username" : params["username"]
+                }
+            }
+        else: return False
 
     if data == "forgotpass":
         returner = {
@@ -44,17 +90,13 @@ def getData(data, user, params=None,):
         #    [554, "Calendar 03",True],
         #    [4545, "Calendar 04",False]
         #]
-        cal_db = user.get_user_calendar()
-        calendars = []
+        cal_db = c.the_user.get_user_calendars()
+        returner = []
         for cal_id in cal_db:
-            calendar = []
-            calendar.append(cal_id.value())
-            calendar.append(cal_id['calendar_name'])
-            calendar.append(cal_id['calendar_rights'])
-            calendars.append(calendar)
-
-        print(calendars)
-        return calendars
+            name = cal_db[cal_id]['calendar_name']
+            rights = cal_db[cal_id]['calendar_rights']
+            calendar = [cal_id,name,rights]
+            returner.append(calendar)
 
     if data == "event_list":
         #returner = [
@@ -64,30 +106,34 @@ def getData(data, user, params=None,):
         #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
         #]
 
-        cal_db = user.get_user_calendar()
-        events = []
-        for cal_id in cal_db:
-            for event_id in cal_id['events']:
-                event = []
-                event.append(event_id.value())
-                event.append(event_id['name'])
-                event.append(event_id['start'])
-                event.append(event_id['end'])
-                events.append(event)
-        print(events)
-        return events
+        cal_db = c.the_user.get_user_calendars()
+        returner = []
+        cal_id = 1
+        # for cal_id in cal_db:
+        if 'events' in cal_db[cal_id].keys():
+            for event_id in cal_db[cal_id]['events']:
+                name = cal_db[cal_id]['events'][event_id]['name']
+                start = cal_db[cal_id]['events'][event_id]['start']
+                end = cal_db[cal_id]['events'][event_id]['end']
+                event = [event_id,name,str(start),str(end)]
+                returner.append(event)
 
 
 #### PUT DATA #####
 
     if data == "newuser":
-        returner = {
-            "success": True,
-            "data": {
-                "email": params["email"],
-                "nickname": params["nickname"]
-            }
-        }
+        if params['password'] == params['password_repeat']:
+            success =  back_user.register_user(params['email'],params['password'],params['nickname'])
+            if success:
+                returner = {
+                    "success": True,
+                    "data": {
+                        "email": params["email"],
+                        "nickname": params["nickname"]
+                    }
+                }
+            else: returner = {'success':False}
+        else: returner = {'success':False}
 
     if data == "calendar_new":
         returner = {

@@ -11,6 +11,8 @@ from logged_in_user import *
 import mysql.connector
 import re
 from back_event import *
+import config as c
+from datetime import datetime
 
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
@@ -24,8 +26,6 @@ app.config["DEBUG"] = True  # only for development!
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = "any random string"
 
-
-the_user = LoggedInUser()
 
 
 # database connection
@@ -135,9 +135,9 @@ def get_all_calendars_db(user_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT CalendarId, Adminlevel " \
-            "FROM usercalendars " \
-            "WHERE UserId = %s "
+        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
+            "FROM usercalendars U, calendar C " \
+            "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
         cur.execute(sql, (user_id,))
         return cur.fetchall()
     except mysql.connector.Error as err:
@@ -149,9 +149,9 @@ def get_calendar_db(user_id, calendar_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT CalendarId, Adminlevel " \
-            "FROM usercalendars " \
-            "WHERE UserId = %s AND CalendarId = %s AND Deleted = 0 "
+        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
+            "FROM usercalendars U, calendar C " \
+            "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
         cur.execute(sql, (user_id, calendar_id))
         return cur.fetchone()
     except mysql.connector.Error as err:
@@ -177,7 +177,7 @@ def get_event_db(event_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT EventId, Start, End " \
+        sql = "SELECT EventId, Name, Start, End " \
             "FROM eventn " \
             "WHERE EventId = %s "
         cur.execute(sql, (event_id,))
@@ -210,7 +210,7 @@ def add_new_usercalendar_db(calendar_id):
         sql = "INSERT INTO usercalendars " \
             "(UserId, CalendarId, Adminlevel, Notifications) " \
             "VALUES (%s, %s, %s, %s) "
-        cur.execute(sql, (the_user.get_userid(), calendar_id, 3, 0))
+        cur.execute(sql, (c.the_user.get_userid(), calendar_id, 3, 0))
         db.commit()
         return True
     except mysql.connector.Error as err:
@@ -322,9 +322,9 @@ def get_events_usercalendar_interval(user_id, calendar_id, interval_start, inter
             "AND E.EventId = C.EventId " \
             "AND E.Start BETWEEN %s AND %s AND E.End BETWEEN %s AND %s "
 
-        cur.execute(sql, (user_id, calendar_id, interval_start, interval_end, interval_start, interval_end))
+        cur.execute(sql, (1201, 302, interval_start, interval_end, interval_start, interval_end))
         return cur.fetchall()
     except mysql.connector.Error as err:
-        return "Stupid piece of shit"
+        return False
     finally:
         cur.close()

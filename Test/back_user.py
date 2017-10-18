@@ -13,15 +13,16 @@ import mysql.connector
 import re
 from back_event import *
 from back_db import *
+import config as c
+
 
 def init_logged_in_user(username):
     if user_exist(username):
-        the_user.set_username(username)
-        the_user.set_name(get_user_name_db(username)[0])
-        the_user.set_userid(get_userid_db(username)[0])
+        c.the_user.set_username(username)
+        c.the_user.set_name(get_user_name_db(username)[0])
+        c.the_user.set_userid(get_userid_db(username)[0])
         init_all_calendars()
         init_all_userevents()
-    pass
 
 
 # check for valid username function
@@ -60,7 +61,7 @@ def login(username, password):
 
 # logout function
 def logout():
-    the_user.clear()
+    c.the_user.clear()
     pass
 
 
