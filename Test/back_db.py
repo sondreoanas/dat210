@@ -186,14 +186,14 @@ def get_event_db(event_id):
     finally:
         cur.close()
 
-def add_new_calendar_db(public_bool):
+def add_new_calendar_db(calendar_name, public_bool):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "INSERT INTO calendar " \
-            "(Public) " \
-            "VALUES (%s) "
-        cur.execute(sql, (public_bool,))
+            "(Name, Public) " \
+            "VALUES (%s, %s) "
+        cur.execute(sql, (calendar_name, public_bool))
         calendar_id = cur.lastrowid
         db.commit()
         return calendar_id
@@ -217,14 +217,14 @@ def add_new_usercalendar_db(calendar_id):
     finally:
         cur.close()
 
-def add_new_event_db(start_time):
+def add_new_event_db(name, start_time, end_time):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "INSERT INTO eventn " \
-               "(Start) " \
+               "(Name, Start, End) " \
                "VALUES (%s) "
-        cur.execute(sql, (start_time,))
+        cur.execute(sql, (name, start_time, end_time))
         event_id = cur.lastrowid
         db.commit()
         return event_id
