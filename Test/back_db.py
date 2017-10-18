@@ -7,10 +7,9 @@ Retrieve required data from DB when needed and send to frontend
 Sist oppdatert: 19.09.17 13:22 av Markus
 """
 from flask import Flask, g, abort, session
-from logged_in_user import *
 import mysql.connector
 import re
-from back_event import *
+import back_event
 import config as c
 from datetime import datetime
 

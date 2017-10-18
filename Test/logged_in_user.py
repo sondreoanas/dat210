@@ -33,14 +33,17 @@ class LoggedInUser:
         self.__the_user['name'] = name
 
     def get_name(self):
+        """retrieves the name of the user"""
         if 'name' in self.__the_user.keys():
             return self.__the_user['name']
         return False
 
     def set_userid(self, userid):
+        """sets the userid"""
         self.__the_user['id'] = userid
 
     def get_userid(self):
+        """retrieves the id of the logged in user"""
         if 'id' in self.__the_user.keys():
             return self.__the_user['id']
         return False
