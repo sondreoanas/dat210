@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.1.1
-	last updated	: 17.10.2017
+	version			: 0.2.0
+	last updated	: 18.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -17,6 +17,7 @@ function mf_AjaxHandler(){
 }
 mf_AjaxHandler.loadEvent = new Event("onFullLoad");
 mf_AjaxHandler.nrOfCallsInProgress = 0;
+mf_AjaxHandler.evaluateScriptQue = [];
 mf_AjaxHandler.root = null;
 mf_AjaxHandler.prototype.initAjax = function(){
 	// root
@@ -110,6 +111,11 @@ mf_AjaxHandler.prototype.searchElement = function(element){
 	}
 }
 mf_AjaxHandler.prototype.findAjaxData = function(element){
+	if(element.tagName == "SCRIPT" && element.dataset.run == ""){
+		var code = element.innerHTML;
+		mf_AjaxHandler.evaluateScriptQue.push(code);
+		return false;
+	}
 	if(element.dataset.timeline == "" || !element.dataset.target && (element.dataset.fill || element.dataset.replace)){
 		if(element.dataset.timeline == ""){ // load "mf_timeline.js"
 			var index = mf_addTimeline(element);
@@ -140,8 +146,8 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 }
 // Fill element width data.
 // data is of format {template:someTemplate, data:someData}
-mf_AjaxHandler.prototype.addLastChild = function(elementId, url){
-	if(!this.checkDomLoaded(this.addLastChild, elementId, url)){
+mf_AjaxHandler.prototype.addLastChild = function(elementId, url, data = null){
+	if(!this.checkDomLoaded(this.addLastChild, elementId, url, data)){
 		return;
 	}
 	var element = document.getElementById(elementId);
@@ -149,18 +155,18 @@ mf_AjaxHandler.prototype.addLastChild = function(elementId, url){
 		console.error("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
-	this.addLastChildArgElement(element, url);
+	this.addLastChildArgElement(element, url, data);
 }
-mf_AjaxHandler.prototype.addLastChildArgElement = function(element, url){
-	if(!this.checkDomLoaded(this.addLastChildArgElement, element, url)){
+mf_AjaxHandler.prototype.addLastChildArgElement = function(element, url, data = null){
+	if(!this.checkDomLoaded(this.addLastChildArgElement, element, url, data)){
 		return;
 	}
 	var dummy = document.createElement("DIV");
 	element.append(dummy);
-	this.replaceElementArgElement(dummy, url);
+	this.replaceElementArgElement(dummy, url, data);
 }
-mf_AjaxHandler.prototype.addFirstChild = function(elementId, url){
-	if(!this.checkDomLoaded(this.addFirstChild, elementId, url)){
+mf_AjaxHandler.prototype.addFirstChild = function(elementId, url, data = null){
+	if(!this.checkDomLoaded(this.addFirstChild, elementId, url, data)){
 		return;
 	}
 	var element = document.getElementById(elementId);
@@ -168,15 +174,15 @@ mf_AjaxHandler.prototype.addFirstChild = function(elementId, url){
 		console.error("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
-	this.addFirstChildArgElement(element, url);
+	this.addFirstChildArgElement(element, url, data);
 }
-mf_AjaxHandler.prototype.addFirstChildArgElement = function(element, url){
-	if(!this.checkDomLoaded(this.addFirstChildArgElement, element, url)){
+mf_AjaxHandler.prototype.addFirstChildArgElement = function(element, url, data = null){
+	if(!this.checkDomLoaded(this.addFirstChildArgElement, element, url, data)){
 		return;
 	}
 	var dummy = document.createElement("DIV");
 	element.insertBefore(dummy, element.firstChild);
-	this.replaceElementArgElement(dummy, url);
+	this.replaceElementArgElement(dummy, url, data);
 }
 mf_AjaxHandler.prototype.removeElement = function(elementId){
 	if(!this.checkDomLoaded(this.removeElement, elementId)){
@@ -189,8 +195,8 @@ mf_AjaxHandler.prototype.removeElement = function(elementId){
 	}
 	element.parentElement.removeChild(element);
 }
-mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
-	if(!this.checkDomLoaded(this.placeAfterElement, elementId, url)){
+mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url, data = null){
+	if(!this.checkDomLoaded(this.placeAfterElement, elementId, url, data)){
 		return;
 	}
 	var element = document.getElementById(elementId);
@@ -198,10 +204,10 @@ mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url){
 		console.error("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
-	this.placeAfterElementArgElement(element, url);
+	this.placeAfterElementArgElement(element, url, data);
 }
-mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
-	if(!this.checkDomLoaded(this.placeAfterElementArgElement, element, url)){
+mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url, data = null){
+	if(!this.checkDomLoaded(this.placeAfterElementArgElement, element, url, data)){
 		return;
 	}
 	var dummy = document.createElement("DIV");
@@ -224,10 +230,10 @@ mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url){
 		for(var i=0; i<elementsToCheck.length; i++){
 			this.searchElement(elementsToCheck[i]);
 		}
-	}.bind(this));
+	}.bind(this), data);
 }
-mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url){
-	if(!this.checkDomLoaded(this.placeBeforeElement, elementId, url)){
+mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url, data = null){
+	if(!this.checkDomLoaded(this.placeBeforeElement, elementId, url, data)){
 		return;
 	}
 	var element = document.getElementById(elementId);
@@ -235,10 +241,10 @@ mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url){
 		console.error("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
-	this.placeBeforeElementArgElement(element, url);
+	this.placeBeforeElementArgElement(element, url, data);
 }
-mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
-	if(!this.checkDomLoaded(this.placeBeforeElementArgElement, element, url)){
+mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url, data = null){
+	if(!this.checkDomLoaded(this.placeBeforeElementArgElement, element, url, data)){
 		return;
 	}
 	var dummy = document.createElement("DIV");
@@ -261,10 +267,10 @@ mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url){
 		for(var i=0; i<elementsToCheck.length; i++){
 			this.searchElement(elementsToCheck[i]);
 		}
-	}.bind(this));
+	}.bind(this), data);
 }
-mf_AjaxHandler.prototype.replaceElement = function(elementId, url){
-	if(!this.checkDomLoaded(this.replaceElement, elementId, url)){
+mf_AjaxHandler.prototype.replaceElement = function(elementId, url, data = null){
+	if(!this.checkDomLoaded(this.replaceElement, elementId, url, data)){
 		return;
 	}
 	var element = document.getElementById(elementId);
@@ -272,10 +278,10 @@ mf_AjaxHandler.prototype.replaceElement = function(elementId, url){
 		console.error("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
-	this.replaceElementArgElement(element, url);
+	this.replaceElementArgElement(element, url, data);
 }
-mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
-	if(!this.checkDomLoaded(this.replaceElementArgElement, element, url)){
+mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url, data = null){
+	if(!this.checkDomLoaded(this.replaceElementArgElement, element, url, data)){
 		return;
 	}
 	this.loadInContent(element, url, function(){
@@ -298,10 +304,10 @@ mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url){
 		for(var i=0; i<elementsToCheck.length; i++){
 			this.searchElement(elementsToCheck[i]);
 		}
-	}.bind(this));
+	}.bind(this), data);
 }
-mf_AjaxHandler.prototype.fillElement = function(elementId, url){
-	if(!this.checkDomLoaded(this.fillElement, elementId, url)){
+mf_AjaxHandler.prototype.fillElement = function(elementId, url, data = null){
+	if(!this.checkDomLoaded(this.fillElement, elementId, url, data)){
 		return;
 	}
 	var element = document.getElementById(elementId);
@@ -309,32 +315,34 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, url){
 		console.error("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
-	this.fillElementArgElement(element, url);
+	this.fillElementArgElement(element, url, data);
 }
-mf_AjaxHandler.prototype.fillElementArgElement = function(element, url){
-	if(!this.checkDomLoaded(this.fillElementArgElement, element, url)){
+mf_AjaxHandler.prototype.fillElementArgElement = function(element, url, data = null){
+	if(!this.checkDomLoaded(this.fillElementArgElement, element, url, data)){
 		return;
 	}
-	this.loadInContent(element, url, function(){		
+	this.loadInContent(element, url, function(){
 		// check children
 		this.searchChildren(element);
-	}.bind(this));
+	}.bind(this), data);
 }
-mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
+mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data = null){
 	//
 	mf_AjaxHandler.nrOfCallsInProgress++;
-	console.log(mf_AjaxHandler.nrOfCallsInProgress);
 	//
 	mf_AjaxHandler.ajaxGet(url, function(responseText){
-		var data = JSON.parse(responseText);
-		data.template = templater(data.template, data.data);
-		//notification(data.notification);
+		var responce = JSON.parse(responseText);
+		if(data){
+			responce.data = data;
+		}
+		responce.template = templater(responce.template, responce.data);
+		//notification(responce.notification);
     
     while(element.firstChild){
 			element.removeChild(element.firstChild);
 		}
 
-		element.innerHTML = data.template;
+		element.innerHTML = responce.template;
 
 /*
 
@@ -344,7 +352,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 			element.removeChild(element.firstChild);
 		}
 		// fill element with new children
-		var dummy = parser.parseFromString(data.template, "text/html").body;
+		var dummy = parser.parseFromString(responce.template, "text/html").body;
 		for(var i=0;i<dummy.children.length; i++){
 			element.appendChild(dummy.children[i]);
 		}
@@ -353,17 +361,9 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback){
 
 		callback();
 		//
-		mf_AjaxHandler.nrOfCallsInProgress--;
-		if(mf_AjaxHandler.nrOfCallsInProgress == 0){
-			window.dispatchEvent(mf_AjaxHandler.loadEvent);
-		}
-		console.log(mf_AjaxHandler.nrOfCallsInProgress);
+		this.checkDoneAjaxLoadingAndDecrement();
 	}.bind(this), function callbackFail(){
-		mf_AjaxHandler.nrOfCallsInProgress--;
-		if(mf_AjaxHandler.nrOfCallsInProgress == 0){
-			window.dispatchEvent(mf_AjaxHandler.loadEvent);
-		}
-		console.log(mf_AjaxHandler.nrOfCallsInProgress);
+		this.checkDoneAjaxLoadingAndDecrement();
 	});
 	// loading graphic?
 	element.innerHTML = "loading...";
@@ -393,16 +393,9 @@ mf_AjaxHandler.ajaxPost = function(data, address, callback){
 		}
 	};
 	xhttp.open("post", mf_AjaxHandler.addRoot(address), true);
-	//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	var keys = Object.keys(data);
-	var str = "";
-	for(var i=0; i<keys.length; i++){
-		if(str != ""){
-			str += "&";
-		}
-		str += keys[i] + "=" + data[keys[i]];
-	}
-	xhttp.send(str);
+	xhttp.setRequestHeader("Content-type", "application/json");
+	
+	xhttp.send(JSON.stringify(data));
 }
 mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
 	var xhttp = new XMLHttpRequest();
@@ -457,13 +450,20 @@ mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 		return false;
 	}
 }
+mf_AjaxHandler.prototype.checkDoneAjaxLoadingAndDecrement = function(){
+	mf_AjaxHandler.nrOfCallsInProgress--;
+	if(mf_AjaxHandler.nrOfCallsInProgress == 0){
+		window.dispatchEvent(mf_AjaxHandler.loadEvent);
+	}
+	while(mf_AjaxHandler.evaluateScriptQue.length > 0){
+		eval(mf_AjaxHandler.evaluateScriptQue.shift());
+	}
+}
 
 var mf_ajaxHandler = new mf_AjaxHandler();
 window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));
 
-/*var form = document.getElementById("form id");
-var inputs = form.getElementByType("input");
-inputs[2].value;*/
+
 
 
 

@@ -1,8 +1,8 @@
 /*
 	htmlAjaxInstructions.txt
 	
-	version			: 0.0.3
-	last updated	: 06.10.2017
+	version			: 0.1.0
+	last updated	: 18.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -10,7 +10,8 @@
 		How to use it?
 			TODO: ...
 		What is new?
-			lines 112-113
+			lines 112-115
+			line 137-142
 */
 
 HTML ajax instructions:
@@ -108,6 +109,11 @@ HTML ajax instructions:
 			<div data-timeline=""></div>
 		To set start position and zoom. Position unit is milliseconds from 1 jan 1971. Zoom is visible milliseconds. Standard is today and 10 day zoom.
 			<div data-timeline="" data-position="1505599200000" data-zoom="864000000"></div>
+	To make a loaded script run, add a data-run tag. The script will run immediately after being loaded:
+		<script data-run>
+			alert("hello!");
+		</script>
+	
 Javascript
 	On full load eventlistener. It is called every time the ajax is done loading.
 		document.addEventListener("onFullLoad", someFunction);
@@ -128,6 +134,13 @@ Javascript
 			// to append at the end of the element with id "someId"
 			mf_ajaxHandler.addLastChild(elementId = "someId", url = "/getHTML?html=someFile")
 		}
+	Custon data in nm_callbacks. All above functions have an optional parameter "data" that will override the data recieved from the server and used in
+	the template engine. Example:
+		function callBackExample(response){ // responce is an object recieved from python
+			// to replace an element
+			mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile", data = someData);
+		}
+	
 
 
 
