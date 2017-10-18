@@ -208,7 +208,7 @@ Timeline.prototype.reSizeToContainer = function(){
 Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
 		var eventData = JSON.parse(responseText).events;
-		console.err("Wrong format in responce from server on /loadViewEvents");
+		console.error("Wrong format in responce from server on /loadViewEvents");
 		for(var i=0;i<eventData.length;i++){
 			var e = eventData[i];
 			this.events.push(new mf_Event(
