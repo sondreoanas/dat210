@@ -145,5 +145,3 @@ def index():
 
 if __name__ == "__main__":
     app.run()
-    if c.dev_mode:
-        back_user.init_logged_in_user("ola@nordmann.no")
