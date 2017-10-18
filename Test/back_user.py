@@ -19,8 +19,8 @@ import security as sec
 def init_logged_in_user(username):
     if user_exist(username):
         c.the_user.set_username(username)
-        c.the_user.set_name(get_user_name_db(username)[0])
-        c.the_user.set_userid(get_userid_db(username)[0])
+        c.the_user.set_name(db.get_user_name_db(username)[0])
+        c.the_user.set_userid(db.get_userid_db(username)[0])
         back_event.init_all_calendars()
         back_event.init_all_userevents()
 
@@ -54,7 +54,7 @@ def valid_password(username, password):
 # login function
 def login(username, password):
     if user_exist(username):
-        back_event.init_logged_in_user(username)
+        init_logged_in_user(username)
         return valid_password(username, password)
     return False
 
