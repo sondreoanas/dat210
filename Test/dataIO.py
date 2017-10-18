@@ -54,9 +54,9 @@ def getData(data, params=None,):
         calendars = []
         for cal_id in cal_db:
             calendar = []
-            calendar.append(cal_id.value())
-            calendar.append(cal_id['calendar_name'])
-            calendar.append(cal_id['calendar_rights'])
+            calendar.append(cal_db[cal_id].value())
+            calendar.append(cal_db[cal_id]['calendar_name'])
+            calendar.append(cal_db[cal_id]['calendar_rights'])
             calendars.append(calendar)
 
         return calendars
@@ -146,3 +146,4 @@ def getData(data, params=None,):
         }
 
     return returner
+        
