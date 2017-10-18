@@ -1,6 +1,6 @@
 /*
 	mf_timeline.js
-	version			: 0.2.0
+	version			: 0.2.1
 	last updated	: 18.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -132,6 +132,7 @@ function Timeline(container){
 	container.addEventListener("mousemove", this.mouseMove.bind(this), false);
 	container.addEventListener("mousedown", this.mouseDown.bind(this), false);
 	container.addEventListener("mouseup", this.mouseUp.bind(this), false);
+	container.addEventListener("mouseout", this.mouseUp.bind(this), false);
 	this.mouseData = {
 		pos: new Vec(),
 		pos0: new Vec(),
@@ -207,6 +208,7 @@ Timeline.prototype.reSizeToContainer = function(){
 Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
 		var eventData = JSON.parse(responseText).events;
+		console.err("Wrong format in responce from server on /loadViewEvents");
 		for(var i=0;i<eventData.length;i++){
 			var e = eventData[i];
 			this.events.push(new mf_Event(
@@ -1129,10 +1131,16 @@ Timeline.prototype.mouseMove = function(event){
 	this.mouseData.pos = new Vec(this.getTouchX(event), this.getTouchY(event));
 }
 Timeline.prototype.mouseDown = function(event){
+	if(this.mouseData.isDown){
+		return;
+	}
 	this.mouseData.timeDown = 1;
 	this.mouseData.isDown = true;
 }
 Timeline.prototype.mouseUp = function(event){
+	if(!this.mouseData.isDown){
+		return;
+	}
 	this.mouseData.timeUp = 1;
 	this.mouseData.isDown = false;
 }
