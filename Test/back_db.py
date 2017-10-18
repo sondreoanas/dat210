@@ -107,7 +107,7 @@ def get_password_db(username):
     db = get_db()
     cur = db.cursor()
     try:
-        sql = "SELECT Password " \
+        sql = "SELECT Password, Salt " \
             "FROM user " \
             "WHERE Email = %s "
         cur.execute(sql, (username,))
@@ -117,14 +117,14 @@ def get_password_db(username):
     finally:
         cur.close()
 
-def set_new_user_db(username, password, name):
+def set_new_user_db(username, password_hash, salt, name):
     db = get_db()
     cur = db.cursor()
     try:
         sql2 = "INSERT INTO user " \
-               "(Email, Password, Name) " \
-               "VALUES (%s, %s, %s) "
-        cur.execute(sql2, (username, password, name))
+               "(Email, Password, Salt, Name) " \
+               "VALUES (%s, %s, %s, %s) "
+        cur.execute(sql2, (username, password_hash, salt, name))
         db.commit()
     except mysql.connector.Error as err:
         return False
