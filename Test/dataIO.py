@@ -49,15 +49,12 @@ def getData(data, params=None,):
 
 
     if data == "login":
-        Success = back_user.login(params['username'],params['password'])
-        if Success:
-            returner = {
-                "success": True,
-                "data": {
-                    "username" : params["username"]
-                }
+        returner = {
+            "success": back_user.login(params['username'],params['password']),
+            "data": {
+                "username" : params["username"]
             }
-        else: return False
+        }
 
     if data == "forgotpass":
         returner = {
@@ -107,6 +104,7 @@ def getData(data, params=None,):
         #]
 
         cal_db = c.the_user.get_user_calendars()
+
         returner = []
         cal_id = 1
         # for cal_id in cal_db:
@@ -122,18 +120,14 @@ def getData(data, params=None,):
 #### PUT DATA #####
 
     if data == "newuser":
-        if params['password'] == params['password_repeat']:
-            success =  back_user.register_user(params['email'],params['password'],params['nickname'])
-            if success:
-                returner = {
-                    "success": True,
-                    "data": {
-                        "email": params["email"],
-                        "nickname": params["nickname"]
-                    }
-                }
-            else: returner = {'success':False}
-        else: returner = {'success':False}
+        returner = {
+            "success": back_user.register_user(params['email'], params['password'], params['nickname']),
+            "data": {
+                "email": params["email"],
+                "nickname": params["nickname"]
+            }
+        }
+
 
     if data == "calendar_new":
         returner = {
