@@ -1,7 +1,7 @@
 /*
 	mf_tester.js
 	
-	version			: 0.0.0
+	version			: 0.0.1
 	last updated	: 16.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -22,7 +22,7 @@ function mf_Cursor(){
 	this.noiseFactor = 0;
 	
 	this.img = document.createElement("img");
-	this.img.style.display = "none";
+	this.hide();
 	this.img.src = "https://images.vexels.com/media/users/3/131771/isolated/preview/052dd0c023d9db3d5244875791c71c54-pixilated-arrow-cursor-by-vexels.png";
 	
 	this.width = 47;
@@ -34,6 +34,12 @@ function mf_Cursor(){
 	
 	var body = document.getElementsByTagName("body")[0];
 	body.appendChild(this.img);
+}
+mf_Cursor.prototype.hide = function(){
+	this.img.style.display = "none";
+}
+mf_Cursor.prototype.show = function(){
+	this.img.style.display = "inline";
 }
 mf_Cursor.prototype.setGraphicPos = function(pos){
 	this.setGraphicCoords(pos.x, pos.y);
@@ -85,7 +91,7 @@ mf_TestHandeler.prototype.init = function(){
 mf_TestHandeler.prototype.start = function(acceleration = 10, noiseFactor = 0){
 	this.cursor.acc = acceleration;
 	this.cursor.noiseFactor = noiseFactor;
-	this.cursor.img.style.display = "inline";
+	this.cursor.show();
 	this.loop = setInterval(this.loop.bind(this), 1000 / this.fps);
 }
 mf_TestHandeler.prototype.loop = function(){
@@ -94,13 +100,13 @@ mf_TestHandeler.prototype.loop = function(){
 	// check if success
 	if(this.currentCommandIndex == this.commands.length){
 		clearInterval(this.loop);
-		//alert("The test was completed successfully!");
 		console.info("The test was completed successfully!");
+		this.cursor.hide();
 		return;
 	}else if(this.inactivity > 4 * this.fps){
 		clearInterval(this.loop);
-		//alert("The test failed due to timeout!");
 		console.info("The test failed due to timeout!");
+		this.cursor.hide();
 		return;
 	}
 	

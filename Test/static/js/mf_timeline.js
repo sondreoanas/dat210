@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.1.0
-	last updated	: 16.10.2017
+	version			: 0.2.2
+	last updated	: 18.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -106,13 +106,22 @@ function Timeline(container){
 	this.id = container.id;
 	this.disableDefaultTouch = false;
 	
+	// canvas
 	this.canvas = document.createElement("canvas");
+	
+	// buttons
+	this.buttons = [];
+	this.addButton = new Button(new Vec(this.canvas.width * 0.8, this.canvas.height * 0.9), "Add event", new Color(200,50,50,1));
+	this.addButton.radius = 60;
+	this.addButton.shape = Button.circle;
+	this.addButton.callBack = this.addEventStart.bind(this);
+	this.buttons.push(this.addButton);
+	this.aButtonWasClicked = false;
+	
+	// re-size canvas
 	//this.canvas.style.border = "1px solid black";
-	var style = getComputedStyle(container);
-	this.canvas.width = container.clientWidth
-		- parseFloat(style.paddingRight) - parseFloat(style.paddingLeft);
-	this.canvas.height = container.clientHeight
-		- parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+	this.reSizeToContainer();
+	window.addEventListener("resize", this.reSizeToContainer.bind(this));
 	container.innerHTML = "";
 	container.appendChild(this.canvas);
 	
@@ -123,6 +132,7 @@ function Timeline(container){
 	container.addEventListener("mousemove", this.mouseMove.bind(this), false);
 	container.addEventListener("mousedown", this.mouseDown.bind(this), false);
 	container.addEventListener("mouseup", this.mouseUp.bind(this), false);
+	container.addEventListener("mouseout", this.mouseUp.bind(this), false);
 	this.mouseData = {
 		pos: new Vec(),
 		pos0: new Vec(),
@@ -161,14 +171,6 @@ function Timeline(container){
 	this.events = [];
 	//this.loadDummyData();
 	this.loadEvents();
-	//
-	
-	this.buttons = [];
-	this.addButton = new Button(new Vec(this.canvas.width * 0.8, this.canvas.height * 0.9), "Add event", new Color(200,50,50,1));
-	this.addButton.radius = 60;
-	this.addButton.shape = Button.circle;
-	this.addButton.callBack = this.addEventStart.bind(this);
-	this.buttons.push(this.addButton);
 	
 	// status
 	this.status = Timeline.standard;
@@ -187,9 +189,28 @@ function Timeline(container){
 Timeline.standard = 0;
 Timeline.addEventSetStart = 1;
 Timeline.addEventSetEnd = 2;
+Timeline.prototype.reSizeToContainer = function(){
+	
+	var oldWidth = this.canvas.width;
+	var oldHeight = this.canvas.height;
+	// resize canvas
+	var style = getComputedStyle(this.container);
+	this.canvas.width = this.container.clientWidth
+		- parseFloat(style.paddingRight) - parseFloat(style.paddingLeft);
+	this.canvas.height = this.container.clientHeight
+		- parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+	// resize buttons
+	for(var i=0; i<this.buttons.length; i++){
+		this.buttons[i].pos.x *= this.canvas.width / oldWidth;
+		this.buttons[i].pos.y *= this.canvas.height / oldHeight;
+	}
+}
 Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
 		var eventData = JSON.parse(responseText).events;
+		if(!eventData){
+			console.error("Wrong format in responce from server on /loadViewEvents");
+		}
 		for(var i=0;i<eventData.length;i++){
 			var e = eventData[i];
 			this.events.push(new mf_Event(
@@ -348,11 +369,11 @@ Timeline.prototype.calcuateEventCollisions = function(event){
 Timeline.prototype.loop = function(){
 	this.tick++;
 	
-	// calcuate touchMotion
-	this.calculateTouchMotionOneFinger();
-	
 	//
 	this.checkButtons();
+	
+	// calcuate touchMotion
+	this.calculateTouchMotionOneFinger();
 	
 	// calcuate motion
 	this.position = (this.targetPosition - this.position) * 0.2 + this.position;
@@ -385,6 +406,8 @@ Timeline.prototype.loop = function(){
 	}
 	// //
 	this.clicked = false;
+	// //
+	this.aButtonWasClicked = false;
 }
 Timeline.prototype.handleStatus = function(){
 	if(this.status == Timeline.standard){
@@ -424,6 +447,7 @@ Timeline.prototype.checkButtons = function(){
 				case Button.circle:
 					if(Vec.lgth(Vec.sub(button.pos, this.mouseData.pos)) <= button.radius){
 						button.callBack();
+						this.aButtonWasClicked = true;
 						return;
 					}
 					break;
@@ -431,6 +455,7 @@ Timeline.prototype.checkButtons = function(){
 					if(Math.abs(this.mouseData.pos.x - button.pos.x) < button.width * 0.5 &&
 						Math.abs(this.mouseData.pos.y - button.pos.y) < button.height * 0.5){
 						button.callBack();
+						this.aButtonWasClicked = true;
 						return;
 					}
 					break;
@@ -702,7 +727,7 @@ Timeline.prototype.renderEvents = function(eventSpaceTop, eventSpaceBottom){
 		// name placement and orientation
 		// no center position avalible || even a vertical name would not fit || the name would have to be tilted && it would fully fit at the bottom
 		if(nameBoxIndex == -1 || nameHeight > visibleNameBoxLength || visibleNameBoxLength - nameHeight*0 < nameWidth && nameWidth < visibleLength){ // too little splace
-			yPos = bottom + nameHeight;
+			yPos = bottom + nameHeight * 0.1;
 			xPos = visibleLeft + visibleLength * 0.5;
 			orientation = 0;
 			if(visibleLength < nameWidth){
@@ -1030,10 +1055,9 @@ Timeline.prototype.calculateTouchMotionOneFinger = function(){
 			||
 			this.mouseClicked()
 		) &&
-		this.status == Timeline.standard){
+		this.status == Timeline.standard &&
+		!this.aButtonWasClicked){
 		
-		console.log("touchClick: " + touchClick + "\n" +
-			"mouseClick: " + this.mouseClicked());
 		this.disableDefaultTouch = !this.disableDefaultTouch;
 	}
 }
@@ -1109,14 +1133,18 @@ Timeline.prototype.mouseMove = function(event){
 	this.mouseData.pos = new Vec(this.getTouchX(event), this.getTouchY(event));
 }
 Timeline.prototype.mouseDown = function(event){
+	if(this.mouseData.isDown){
+		return;
+	}
 	this.mouseData.timeDown = 1;
 	this.mouseData.isDown = true;
-	console.log("mouse down");
 }
 Timeline.prototype.mouseUp = function(event){
+	if(!this.mouseData.isDown){
+		return;
+	}
 	this.mouseData.timeUp = 1;
 	this.mouseData.isDown = false;
-	console.log("mouse up");
 }
 Timeline.prototype.mouseClicked = function(){
 	return !this.mouseData.isDown && this.mouseData.timeUp == 1 && this.mouseData.timeDown <= mf_timeline.fps * 0.2 && // clicked for less than 0.2 seconds ...
