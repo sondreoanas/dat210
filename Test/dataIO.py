@@ -7,6 +7,8 @@ import time
 def getData(data, params=None,):
     returner = {}
 
+    back_user.login("ola@nordmann.no","p")
+
     """calendars {
             cal_id: {
                 "calendar_rights": value,
@@ -49,6 +51,7 @@ def getData(data, params=None,):
 
 
     if data == "login":
+
         returner = {
             "success": back_user.login(params['username'],params['password']),
             "data": {
@@ -90,9 +93,11 @@ def getData(data, params=None,):
         cal_db = c.the_user.get_user_calendars()
         returner = []
         for cal_id in cal_db:
-            name = cal_db[cal_id]['calendar_name']
-            rights = cal_db[cal_id]['calendar_rights']
-            calendar = [cal_id,name,rights]
+            calendar = {
+                "id": cal_id,
+                "name": cal_db[cal_id]['calendar_name'],
+                "rights": cal_db[cal_id]['calendar_rights']
+            }
             returner.append(calendar)
 
     if data == "event_list":
@@ -110,10 +115,12 @@ def getData(data, params=None,):
         # for cal_id in cal_db:
         if 'events' in cal_db[cal_id].keys():
             for event_id in cal_db[cal_id]['events']:
-                name = cal_db[cal_id]['events'][event_id]['name']
-                start = cal_db[cal_id]['events'][event_id]['start']
-                end = cal_db[cal_id]['events'][event_id]['end']
-                event = [event_id,name,str(start),str(end)]
+                event = {
+                    "id": event_id,
+                    "name": cal_db[cal_id]['events'][event_id]['name'],
+                    "start": str(cal_db[cal_id]['events'][event_id]['start']),
+                    "end": str(cal_db[cal_id]['events'][event_id]['end'])
+                }
                 returner.append(event)
 
 
@@ -175,4 +182,3 @@ def getData(data, params=None,):
         }
 
     return returner
-        
