@@ -33,11 +33,13 @@ function mf_addTimeline(element){
 function mf_Event(start, end, name, color){
 	this.id = Event.nrOfEvents;
 	mf_Event.nrOfEvents++;
+	
 	this.start = start; // Unix milliseconds
 	this.end = end; // Unix milliseconds
 	this.nameBoxes = [{start:start, end:end}]; // list of x and y coordinates of possible name placements. Coordiantes are in Unix milliseconds
 	this.name = name;
 	this.color = color;
+	
 	this.verticalOffset = 0;
 	this.collisionGroup = []; // all colliding events
 }
