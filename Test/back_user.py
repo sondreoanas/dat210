@@ -84,8 +84,8 @@ def logout():
 
 # register user function
 def register_user(username, password, name):
-    if not valid_username(username) or not valid_password(password):
-        return False
+    #if not valid_username(username) or not valid_password(password):
+    #    return False
     if not user_exist(username):
         password_hashed = sec.create_password(password)
         db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)

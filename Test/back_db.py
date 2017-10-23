@@ -255,7 +255,7 @@ def add_new_event_db(name, start_time, end_time):
     try:
         sql = "INSERT INTO eventn " \
                "(Name, Start, End) " \
-               "VALUES (%s) "
+               "VALUES (%s, %s, %s) "
         cur.execute(sql, (name, start_time, end_time))
         event_id = cur.lastrowid
         db.commit()
