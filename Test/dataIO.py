@@ -112,8 +112,12 @@ def getData(data, params=None,):
 #### PUT DATA #####
 
     if data == "newuser":
+        if params['password'] == params['password_repeat']:
+            result = back_user.register_user(params['email'], params['password'], params['nickname'])
+        else:
+            result = False
         returner = {
-            "success": back_user.register_user(params['email'], params['password'], params['nickname']),
+            "success": result,
             "data": {
                 "email": params["email"],
                 "nickname": params["nickname"]
