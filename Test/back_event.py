@@ -7,8 +7,8 @@ def init_all_calendars():
     calendars = db.get_all_calendars_db(c.the_user.get_userid())
     print(calendars)
     if calendars:
-        for (cal_id, cal_name, cal_rigts) in calendars:
-            c.the_user.set_user_calendars(cal_id, cal_name, cal_rigts)
+        for (cal_id, cal_name, cal_rigts, cal_public) in calendars:
+            c.the_user.set_user_calendars(cal_id, cal_name, cal_rigts, cal_public)
 
 def init_all_userevents():
     init_userevents(c.the_user.get_user_calendars())
