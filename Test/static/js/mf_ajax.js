@@ -336,7 +336,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 	mf_AjaxHandler.nrOfCallsInProgress++;
 	//
 	mf_AjaxHandler.ajaxGet(url, function(responseText){
-		var responce = JSON.parse(responseText);
+		var responce = JSON.parse(responseText); // responce = {template: someTemplate, data: somedata}
 		if(data){
 			responce.data = data;
 		}
