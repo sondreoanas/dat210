@@ -1,4 +1,5 @@
 import back_user
+import back_event
 import config as c
 import time
 
@@ -137,10 +138,11 @@ def getData(data, params=None,):
 
 
     if data == "calendar_new":
+        result = back_event.add_new_calendar(params['name'],params['public'])
         returner = {
-            "success": True,
+            "success": result[1],
             "data": {
-                "id" : 21,
+                "id" : result[0],
                 "name" : params["name"],
                 "public" : params["public"]
             }
@@ -157,10 +159,11 @@ def getData(data, params=None,):
         }
 
     if data == "event_new":
+        result = back_event.add_new_event(params['calendar_id'],params['name'],params['start'],params['end'])
         returner = {
-            "success": True,
+            "success": result[1],
             "data": {
-                "id" : 21,
+                "id" : result[0],
                 "calendar_id": params["calendar_id"],
                 "name": params["name"],
                 "start": params["start"],
