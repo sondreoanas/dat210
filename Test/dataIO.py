@@ -2,6 +2,7 @@ import back_user
 import back_event
 import config as c
 import time
+import datetime
 
 
 
@@ -159,7 +160,9 @@ def getData(data, params=None,):
         }
 
     if data == "event_new":
-        result = back_event.add_new_event(params['calendar_id'],params['name'],params['start'],params['end'])
+        start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
+        end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
+        result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
         returner = {
             "success": result[1],
             "data": {

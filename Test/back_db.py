@@ -125,7 +125,9 @@ def set_new_user_db(username, password_hash, salt, name):
                "VALUES (%s, %s, %s, %s) "
         cur.execute(sql2, (username, password_hash, salt, name))
         db.commit()
+        print("successfull creation")
     except mysql.connector.Error as err:
+        print("unsuccessful")
         return False
     finally:
         cur.close()
@@ -255,7 +257,7 @@ def add_new_event_db(name, start_time, end_time):
     try:
         sql = "INSERT INTO eventn " \
                "(Name, Start, End) " \
-               "VALUES (%s) "
+               "VALUES (%s, %s, %s) "
         cur.execute(sql, (name, start_time, end_time))
         event_id = cur.lastrowid
         db.commit()
