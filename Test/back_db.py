@@ -18,7 +18,7 @@ ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passord"
+app.config["DATABASE_PASSWORD"] = "root"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -125,7 +125,9 @@ def set_new_user_db(username, password_hash, salt, name):
                "VALUES (%s, %s, %s, %s) "
         cur.execute(sql2, (username, password_hash, salt, name))
         db.commit()
+        print("successfull creation")
     except mysql.connector.Error as err:
+        print("unsuccessful")
         return False
     finally:
         cur.close()
@@ -150,7 +152,7 @@ def get_all_calendars_db(user_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
+        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel, C.Public " \
             "FROM usercalendars U, calendar C " \
             "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
         cur.execute(sql, (user_id,))
