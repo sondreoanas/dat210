@@ -1,14 +1,16 @@
 /*
 	mf_tester.js
 	
-	version			: 0.0.1
-	last updated	: 16.10.2017
+	version			: 0.1.1
+	last updated	: 23.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
 			This will perform testing. Clicking buttons and filling in forms
 		How to use it?
-			TODO: ...
+			see mf_testHandelerInstructions.txt
+		What is new?
+			see mf_testHandelerInstructions.txt
 */
 
 function mf_Cursor(){
@@ -63,9 +65,20 @@ function mf_TestHandeler(){
 	
 	this.recordedCommands;
 	
+	this.timelines;
+	
+	this.control;
+	
+	this.waitTime;
+	
+	this.isRunning;
+	
 	// command indexes
 	this.click;
 	this.type;
+	this.timelineScroll;
+	this.timelineZoom;
+	this.timelineIsActive;
 }
 mf_TestHandeler.prototype.init = function(){
 	this.tick = -1;
@@ -79,34 +92,102 @@ mf_TestHandeler.prototype.init = function(){
 	
 	this.inactivity = 0;
 	
-	this.recordedCommands = "[\n";
+	this.recordedCommands = "var dataList = [\n";
+	
+	this.timelines = [];
+	
+	this.control = new mf_Control();
+	this.control.addKeyDownEventListener(function(){
+		if(this.control.ctrl.isDown && this.control.shift.isDown && this.control.s.isDown){ // start end recording
+			this.control.reset(); // alerts will prevent keyup to be recognized
+			if(this.isRunning){
+				this.start(); // error message will appear
+				return;
+			}
+			var speed
+			while(true){
+				speed = prompt("Set playspeed. Nothing will default to 10");
+				if(parseFloat(speed)){
+					this.start(parseFloat(speed));
+					break;
+				}else if(speed == ""){
+					this.start();
+					break;
+				}else{
+					alert("Wrong input. Type a number or leave field empty.");
+					continue;
+				}
+			}
+		}else if(this.control.ctrl.isDown && this.control.shift.isDown && this.control.c.isDown){ // save recording
+			this.control.reset(); // alerts will prevent keyup to be recognized
+			if(Tool.copyStringToClipboard(this.getRecord())){
+				alert("Commands are now copied to clipboard. Paste the commands to\n\"/js/mf_testerData.js\", reload page and press" +
+					"\"ctrl\" + \"shift\" + \"s\"\nto start playback.");
+			}else{
+				alert("Something went wrong whe copying commands to clipboard. Try running \"mf_testHandeler.getRecord()\" in the console instead.");
+			}
+		}
+	}.bind(this));
+	
+	this.isRunning = false;
+	
+	this.waitTime = 0;
 	
 	// command indexes
 	this.click = 0;
 	this.type = 1;
+	this.timelineScroll = 2;
+	this.timelineZoom = 3;
+	this.timelineIsActive = 4;
 	
 	// load data
 	this.getData();
 }
+mf_TestHandeler.prototype.addRecordTimeline = function(timeline){
+	this.timelines.push({
+		timeline: timeline,
+		position: timeline.targetPosition,
+		zoom: timeline.zoom,
+		isActive: timeline.isActive
+	});
+}
 mf_TestHandeler.prototype.start = function(acceleration = 10, noiseFactor = 0){
+	if(this.isRunning){
+		var s;
+		var message = "A test is already in progress. Do you want to cancel it? \"y\"/\"n\".\n(No input means yes, cancel means no)";
+		while(true){
+			s = prompt(message);
+			if(s == "y" || s == "yes" || s == "j" || s == "ja" || s == ""){
+				clearInterval(this.loop);
+				console.info("The test was canceled!");
+				this.endTest();
+				break;
+			}else if(!s || s == "n" || s == "no" || s == "nei"){
+				break;
+			}
+			message = "Do you want to cancel the test? \"y\"/\"n\".\n(No input means yes, cancel means no)\nUnrecognized input. Try again.";
+		}
+		return;
+	}
+	this.isRunning = true;
 	this.cursor.acc = acceleration;
 	this.cursor.noiseFactor = noiseFactor;
 	this.cursor.show();
-	this.loop = setInterval(this.loop.bind(this), 1000 / this.fps);
+	this.loop = setInterval(this.intervalLoop.bind(this), 1000 / this.fps);
 }
-mf_TestHandeler.prototype.loop = function(){
+mf_TestHandeler.prototype.intervalLoop = function(){
 	this.tick++;
 	
 	// check if success
 	if(this.currentCommandIndex == this.commands.length){
 		clearInterval(this.loop);
 		console.info("The test was completed successfully!");
-		this.cursor.hide();
+		this.endTest();
 		return;
 	}else if(this.inactivity > 4 * this.fps){
 		clearInterval(this.loop);
 		console.info("The test failed due to timeout!");
-		this.cursor.hide();
+		this.endTest();
 		return;
 	}
 	
@@ -140,28 +221,65 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 	var rect = targetElement.getBoundingClientRect();
 	this.cursor.targetPos = new Vec(rect.right * 0.8 + rect.left * 0.2, rect.top * 0.2 + rect.bottom * 0.8);
 	// calculate action
-	switch(this.currentCommand.action){
-		case this.click:
-			if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1){ // is closer than 1px from target
-				targetElement.click();
+	this.waitTime -= this.cursor.acc * this.fps;
+	if(this.waitTime < 0){
+		this.waitTime = 0;
+	}
+	if(this.waitTime > 0){
+		return;
+	}
+	
+	if(this.currentCommand.action == this.click){
+		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1){ // is closer than 1px from target
+			targetElement.click();
+			this.currentCommandIndex++;
+		}else{
+			this.inactivity = 0;
+		}
+	}else if(this.currentCommand.action == this.type){
+		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
+			if(this.currentCommand.data == targetElement.value){ // the text is the same. Is done
 				this.currentCommandIndex++;
-			}else{
-				this.inactivity = 0;
+			}else if(this.currentCommand.data.substr(0, targetElement.value.length) != targetElement.value){ // the element text is wrong. Erase
+				targetElement.value = targetElement.value.substr(0, targetElement.value.length - 1);
+			}else{ // the text is unfinished. Append next character
+				targetElement.value += this.currentCommand.data[targetElement.value.length];
 			}
-			break;
-		case this.type:
-			if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
-				if(this.currentCommand.data == targetElement.value){ // the text is the same. Is done
-					this.currentCommandIndex++;
-				}else if(this.currentCommand.data.substr(0, targetElement.value.length) != targetElement.value){ // the element text is wrong. Erase
-					targetElement.value = targetElement.value.substr(0, targetElement.value.length - 1);
-				}else{ // the text is unfinished. Append next character
-					targetElement.value += this.currentCommand.data[targetElement.value.length];
+		}else{
+			this.inactivity = 0;
+		}
+	}else if(this.currentCommand.action == this.timelineScroll || this.currentCommand.action == this.timelineZoom ||
+		this.currentCommand.action == this.timelineIsActive){
+		
+		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1){ // is closer than 1px from target
+			var timeline;
+			for(var i=0; i<this.timelines.length; i++){
+				if(this.timelines[i].timeline.canvas == targetElement){
+					timeline = this.timelines[i].timeline;
+					break;
 				}
-			}else{
-				this.inactivity = 0;
 			}
-			break;
+			if (this.currentCommand.action == this.timelineScroll){
+				timeline.targetPosition = this.currentCommand.data;
+				this.waitTime = 100;
+			}else if(this.currentCommand.action == this.timelineZoom){
+				timeline.zoom = Tool.lerp(timeline.zoom, this.currentCommand.data, 0.5);
+				if (Math.abs(this.currentCommand.data - timeline.zoom) < timeline.zoom / timeline.canvas.width){ // zoom is less than one pixel off
+					timeline.zoom = this.currentCommand.data;
+					
+				}else{
+					return;
+				}
+			}else{ // this.currentCommand.action == this.timelineIsActive){
+				timeline.isActive = this.currentCommand.data;
+				this.waitTime = 100;
+			}
+			this.currentCommandIndex++
+		}else{
+			this.inactivity = 0;
+		}
+	}else if(this.currentCommand.action == this.timelineClick){
+		
 	}
 }
 mf_TestHandeler.prototype.animate = function(){
@@ -204,11 +322,22 @@ mf_TestHandeler.prototype.animate = function(){
 	//
 	this.cursor.setGraphicPos(this.cursor.pos);
 }
+mf_TestHandeler.prototype.endTest = function(){
+	this.currentCommandIndex = 0;
+	this.cursor.hide();
+	this.isRunning = false;
+	this.inactivity = 0;
+	this.waitTime = 0;
+}
 mf_TestHandeler.prototype.getData = function(){
 	mf_AjaxHandler.ajaxGet("/static/js/mf_testerData.js", function(responseText){
 		var click = this.click;
 		var type = this.type;
-		var dataList = eval(responseText);
+		var timelineScroll = this.timelineScroll;
+		var timelineZoom = this.timelineZoom;
+		var timelineIsActive = this.timelineIsActive;
+		var dataList;
+		eval(responseText); // define dataList
 		if(dataList.length % 4 != 0){
 			console.error("list at mf_testerData.js should have a length of a multiple of 4");
 		}
@@ -223,9 +352,12 @@ mf_TestHandeler.prototype.getData = function(){
 	}.bind(this));
 }
 mf_TestHandeler.prototype.addTestListener = function(element){
+	// recordings are done here, exept for timeline recordings
+	
 	var thisHandeler = this;
 	if(element.tagName == "BUTTON"){
 		element.addEventListener("click", function(){
+			thisHandeler.checkTimelineChange();
 			var data = thisHandeler.getIdPath(this);
 			if(data == -1){
 				return -1;
@@ -234,18 +366,45 @@ mf_TestHandeler.prototype.addTestListener = function(element){
 		});
 	}else if(element.tagName == "INPUT" && (element.type == "text" || element.type == "email" || element.type == "password")){
 		element.addEventListener("change", function(){
+			thisHandeler.checkTimelineChange();
 			var data = thisHandeler.getIdPath(this);
 			if(data == -1){
 				return -1;
 			}
 			thisHandeler.recordedCommands += "\ttype, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
 		});
+	}else if(element.dataset.timeline == ""){
+		element.addEventListener("mousedown", function(){
+			thisHandeler.checkTimelineChange();
+		});
+	}
+}
+mf_TestHandeler.prototype.checkTimelineChange = function(){
+	for(var i=0; i<this.timelines.length; i++){
+		var timeLineData = this.timelines[i];
+		var timeline = timeLineData.timeline;
+		var data = this.getIdPath(timeline.canvas);
+		if(timeLineData.position != timeline.targetPosition){
+			this.recordedCommands += "\ttimelineScroll, \"" + data.id + "\", [" + data.path.toString() + "], " + timeline.targetPosition + ",\n";
+			timeLineData.position = timeline.targetPosition;
+		}
+		if(timeLineData.zoom != timeline.zoom){
+			this.recordedCommands += "\ttimelineZoom, \"" + data.id + "\", [" + data.path.toString() + "], " + timeline.zoom + ",\n";
+			timeLineData.zoom = timeline.zoom;
+		}
+		if(timeLineData.isActive != timeline.isActive){
+			this.recordedCommands += "\ttimelineIsActive, \"" + data.id + "\", [" + data.path.toString() + "], " + timeline.isActive + ",\n";
+			timeLineData.isActive = timeline.isActive;
+		}
 	}
 }
 mf_TestHandeler.prototype.getRecord = function(){
-	this.recordedCommands = this.recordedCommands.substr(0, this.recordedCommands.length - 2) + "\n]"; // remove last comma and add end parenthesis
-	console.log(this.recordedCommands);
-	this.recordedCommands = this.recordedCommands.substr(0, this.recordedCommands.length - 2) + ",\n"; // remove end parethesis and add comma
+	this.checkTimelineChange();
+	this.recordedCommands = this.recordedCommands.substr(0, this.recordedCommands.length - 2) + "\n];"; // remove last comma and add end parenthesis and semicolon
+	//console.log(this.recordedCommands);
+	var result = this.recordedCommands;
+	this.recordedCommands = this.recordedCommands.substr(0, this.recordedCommands.length - 3) + ",\n"; // remove end stuff and add comma
+	return result;
 }
 mf_TestHandeler.prototype.getIdPath = function(element){
 	var path = [];
