@@ -49,12 +49,13 @@ class LoggedInUser:
             return self.__the_user['id']
         return False
 
-    def set_user_calendars(self, calendar_id, calendar_name, calendar_rights):
+    def set_user_calendars(self, calendar_id, calendar_name, calendar_rights, calendar_public):
         if 'calendars' not in self.__the_user.keys():
             self.__the_user['calendars'] = dict()
         self.__the_user['calendars'][calendar_id] = dict()
         self.__the_user['calendars'][calendar_id]['calendar_rights'] = calendar_rights
         self.__the_user['calendars'][calendar_id]['calendar_name'] = calendar_name
+        self.__the_user['calendars'][calendar_id]['calendar_public'] = calendar_public
 
     def get_user_calendars(self):
         if 'calendars' in self.__the_user.keys():
