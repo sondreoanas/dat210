@@ -1,7 +1,7 @@
 /*
 	mf_tester.js
 	
-	version			: 0.1.0
+	version			: 0.1.1
 	last updated	: 23.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -261,7 +261,7 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 			}
 			if (this.currentCommand.action == this.timelineScroll){
 				timeline.targetPosition = this.currentCommand.data;
-				this.waitTime = 5000;
+				this.waitTime = 100;
 			}else if(this.currentCommand.action == this.timelineZoom){
 				timeline.zoom = Tool.lerp(timeline.zoom, this.currentCommand.data, 0.5);
 				if (Math.abs(this.currentCommand.data - timeline.zoom) < timeline.zoom / timeline.canvas.width){ // zoom is less than one pixel off
@@ -272,7 +272,7 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 				}
 			}else{ // this.currentCommand.action == this.timelineIsActive){
 				timeline.isActive = this.currentCommand.data;
-				this.waitTime = 5000;
+				this.waitTime = 100;
 			}
 			this.currentCommandIndex++
 		}else{
@@ -326,6 +326,8 @@ mf_TestHandeler.prototype.endTest = function(){
 	this.currentCommandIndex = 0;
 	this.cursor.hide();
 	this.isRunning = false;
+	this.inactivity = 0;
+	this.waitTime = 0;
 }
 mf_TestHandeler.prototype.getData = function(){
 	mf_AjaxHandler.ajaxGet("/static/js/mf_testerData.js", function(responseText){
