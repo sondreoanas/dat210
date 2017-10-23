@@ -32,6 +32,9 @@ def add_new_calendar(calendar_name, public_bool):
             return [calendar_id, True]
     return False
 
+def edit_calendar(calendar_id, calendar_name, public_bool):
+    return db.edit_calendar_db(calendar_id, calendar_name, public_bool)
+
 def add_new_event(calendar_id, event_name, start_time, end_time):
     event_id = db.add_new_event_db(event_name, start_time, end_time)
     if event_id:
@@ -40,6 +43,9 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             c.the_user.set_user_events(calendar_id, event_id)
             return [event_id, True]
     return False
+
+def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
+    return db.edit_event_db(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)
 
 def add_new_task(interval):
     task_id = db.add_new_task_db(interval)
