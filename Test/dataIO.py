@@ -98,7 +98,8 @@ def getData(data, params=None,):
             calendar = {
                 "id": cal_id,
                 "name": cal_db[cal_id]['calendar_name'],
-                "rights": cal_db[cal_id]['calendar_rights']
+                "rights": cal_db[cal_id]['calendar_rights'],
+                "public": cal_db[cal_id]['calendar_public']
             }
             returner.append(calendar)
 
@@ -150,6 +151,7 @@ def getData(data, params=None,):
         }
 
     if data == "calendar_edit":
+        result = back_event.edit_calendar(params['id'],params['name'])
         returner = {
             "success": True,
             "data": {
