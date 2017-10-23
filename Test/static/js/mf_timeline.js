@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.2.0
-	last updated	: 18.10.2017
+	version			: 0.2.3
+	last updated	: 22.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -132,6 +132,7 @@ function Timeline(container){
 	container.addEventListener("mousemove", this.mouseMove.bind(this), false);
 	container.addEventListener("mousedown", this.mouseDown.bind(this), false);
 	container.addEventListener("mouseup", this.mouseUp.bind(this), false);
+	container.addEventListener("mouseout", this.mouseUp.bind(this), false);
 	this.mouseData = {
 		pos: new Vec(),
 		pos0: new Vec(),
@@ -168,8 +169,8 @@ function Timeline(container){
 	
 	// dummydata
 	this.events = [];
-	//this.loadDummyData();
-	this.loadEvents();
+	this.loadDummyData();
+	//this.loadEvents();
 	
 	// status
 	this.status = Timeline.standard;
@@ -207,6 +208,10 @@ Timeline.prototype.reSizeToContainer = function(){
 Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
 		var eventData = JSON.parse(responseText).events;
+		if(!eventData){
+			console.error("Wrong format in responce from server on /loadViewEvents");
+			return -1;
+		}
 		for(var i=0;i<eventData.length;i++){
 			var e = eventData[i];
 			this.events.push(new mf_Event(
@@ -410,7 +415,7 @@ Timeline.prototype.handleStatus = function(){
 		
 	}else if(this.status == Timeline.addEventSetStart || this.status == Timeline.addEventSetEnd){
 		// detect click
-		if(this.mouseClicked()){
+		if(this.mouseClicked() && !this.aButtonWasClicked){
 			var time = this.canvasCoordsToTime(this.mouseData.pos.x);
 			
 			var date = new Date(time);
@@ -770,7 +775,8 @@ Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, vertical
 	}
 	
 	// draw intervals
-	if(opacity > 0){
+	var opacityMargin = 2;
+	if(opacity > -opacityMargin){
 		this.drawIntervall(
 			function(right, left, date){
 				// calcuate vertical position of unit value. For example day = tuesday.
@@ -782,8 +788,8 @@ Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, vertical
 				// draw unit name
 				this.drawText(unitValueName, xPos, verticalOffset + 0.3 * parseInt(font), Tool.rgba(0,0,0,opacity), font, "center", 0);
 				// draw horizontal ruler to seperate the units
-				this.drawLine(right, this.verticalRulerHeight, right, this.canvas.height, Tool.rgba(0,0,0,opacity), 1);
-				this.drawLine(right, verticalOffset, right, verticalOffset + height, Tool.rgba(0,0,0,opacity), 1);
+				this.drawLine(right, this.verticalRulerHeight, right, this.canvas.height, Tool.rgba(0,0,0,opacity + opacityMargin), 1);
+				this.drawLine(right, verticalOffset, right, verticalOffset + height, Tool.rgba(0,0,0,opacity + opacityMargin), 1);
 			}.bind(this),
 			resetTimeFuntion,
 			incrementTimeFunction
@@ -1129,10 +1135,16 @@ Timeline.prototype.mouseMove = function(event){
 	this.mouseData.pos = new Vec(this.getTouchX(event), this.getTouchY(event));
 }
 Timeline.prototype.mouseDown = function(event){
+	if(this.mouseData.isDown){
+		return;
+	}
 	this.mouseData.timeDown = 1;
 	this.mouseData.isDown = true;
 }
 Timeline.prototype.mouseUp = function(event){
+	if(!this.mouseData.isDown){
+		return;
+	}
 	this.mouseData.timeUp = 1;
 	this.mouseData.isDown = false;
 }

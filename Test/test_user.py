@@ -102,6 +102,50 @@ class LoggedInTest(unittest.TestCase):
             self.assertEqual(c.the_user.get_userid(), False)
 
 
+class PasswordTest(unittest.TestCase):
+    def test_00_password(self):
+        self.assertEqual(valid_password("password"), False)
+    def test_01_password(self):
+        self.assertEqual(valid_password("Password"), False)
+    def test_02_password(self):
+        self.assertEqual(valid_password("password123"), False)
+    def test_03_password(self):
+        self.assertEqual(valid_password("Password123"), False)
+    def test_04_password(self):
+        self.assertEqual(valid_password("p"), False)
+    def test_05_password(self):
+        self.assertEqual(valid_password("Password123@"), False)
+    def test_06_password(self):
+        self.assertEqual(valid_password("PASSWORD123"), False)
+    def test_07_password(self):
+        self.assertEqual(valid_password("Password123!"), False)
+    def test_08_password(self):
+        self.assertEqual(valid_password("Password 123"), False)
+    def test_08_password(self):
+        self.assertEqual(valid_password("Password123£"), False)
+    def test_09_password(self):
+        self.assertEqual(valid_password("Password123$"), False)
+    def test_10_password(self):
+        self.assertEqual(valid_password("Password%123¤"), False)
+    def test_11_password(self):
+        self.assertEqual(valid_password("Password4758¤"), False)
+    def test_12_password(self):
+        self.assertEqual(valid_password("Username%123¤"), False)
+    def test_13_password(self):
+        self.assertEqual(valid_password("password%23435"), False)
+    def test_14_password(self):
+        self.assertEqual(valid_password("Pas1swo2rd%3¤"), True)
+    def test_15_password(self):
+        self.assertEqual(valid_password("Password%123¤"), False)
+    def test_16_password(self):
+        self.assertEqual(valid_password("Password%123¤"), False)
+    def test_17_password(self):
+        self.assertEqual(valid_password("Password%123¤"), False)
+    def test_18_password(self):
+        self.assertEqual(valid_password("Password%123¤"), False)
+        
+
+
 def main():
     unittest.main()
 
