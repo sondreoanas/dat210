@@ -1,6 +1,6 @@
 /*
 	mf_timeline.js
-	version			: 0.2.4
+	version			: 0.2.5
 	last updated	: 23.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -170,8 +170,8 @@ function Timeline(container){
 	
 	// dummydata
 	this.events = [];
-	this.loadDummyData();
-	//this.loadEvents();
+	//this.loadDummyData();
+	this.loadEvents();
 	
 	// status
 	this.status = Timeline.standard;
