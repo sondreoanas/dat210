@@ -1,14 +1,16 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.2.0
-	last updated	: 18.10.2017
+	version			: 0.2.1
+	last updated	: 23.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
 			This will manage ajax calls from the html
 		How to use it?
 			TODO: ...
+		What is new?
+			...
 */
 
 
@@ -53,6 +55,9 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			}
 			mf_AjaxHandler.ajaxPostForm(form, form.action, function(responseText){
 				var callback = eval(button.dataset.callback);
+				if(!callback){
+					console.error("No function with name: \"" + button.dataset.callback + "\" is found.");
+				}
 				callback(JSON.parse(responseText));
 			}.bind(this));
 		}.bind(this));

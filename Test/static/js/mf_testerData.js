@@ -1,29 +1,13 @@
-/* action, startId, path, data */
-/*[
-	type, "username", [], "wrong@wrongmann.wrong",
-	type, "password", [], "Password123",
-	click, "forms_login", [2], "",
-	click, "login", [0,0,2], "",
-	type, "form_new_email", [], "ola@nordmann.no",
-	type, "form_new_nick", [], "kuleOla",
-	type, "form_new_pass", [], "Password123",
-	type, "form_new_pass_repeat", [], "Password123",
-	click, "forms_newuser", [8], "",
-	click, "forms_login", [2], "",
-	type, "username", [], "ola@nordmann.no",
-	type, "password", [], "Password123",
-	click, "forms_login", [2], "",
-	click, "mainmenu", [0,2,0,0], ""
-]*/
-[
-	type, "username", [], "hjkfdsahfjdsak",
-	type, "password", [], "jkløjkol",
-	click, "login", [0,0,2], "",
-	type, "form_new_email", [], "fjdksøajkl",
-	type, "form_new_nick", [], "jkløj",
-	type, "form_new_pass", [], "kløjlkøj",
-	type, "form_new_pass_repeat", [], "lkøjkløjk"
-]
-
-
-
+var dataList = [
+	click, "mainmenu", [0,2,0,1,0,0], "",
+	click, "mainmenu", [0,2,0,1,1,0], "",
+	click, "mainmenu", [0,2,1,0], "",
+	timelineIsActive, "home_view", [0,0,1,0], true,
+	timelineScroll, "home_view", [0,0,1,0], 1509070885755.0144,
+	timelineZoom, "home_view", [0,0,1,0], 294912287.561969,
+	timelineScroll, "home_view", [0,0,1,0], 1508905954249.9392,
+	timelineZoom, "home_view", [0,0,1,0], 450219503.6841638,
+	timelineIsActive, "home_view", [0,0,1,0], false,
+	timelineIsActive, "home_view", [0,0,1,0], true,
+	click, "mainmenu", [0,2,0,1,0,0], ""
+];
