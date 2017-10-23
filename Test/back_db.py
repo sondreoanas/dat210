@@ -125,7 +125,9 @@ def set_new_user_db(username, password_hash, salt, name):
                "VALUES (%s, %s, %s, %s) "
         cur.execute(sql2, (username, password_hash, salt, name))
         db.commit()
+        print("successfull creation")
     except mysql.connector.Error as err:
+        print("unsuccessful")
         return False
     finally:
         cur.close()
