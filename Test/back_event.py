@@ -43,6 +43,8 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             event = db.get_event_db(event_id)
             c.the_user.set_user_events(calendar_id, event_id)
             return [event_id, True]
+        else:
+            db.edit_event_db(event_id)
     return False
 
 def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):

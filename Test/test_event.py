@@ -273,6 +273,8 @@ class UsercalendarTest(unittest.TestCase):
     def test_00_get_user_calendars(self):
         with app.app_context():
             login_testuser()
+            logout_testuser()
+            login_testuser()
             usercalendars = c.the_user.get_user_calendars()
             self.assertEqual(len(usercalendars), nr_of_cals)
 
@@ -285,12 +287,12 @@ class UsercalendarTest(unittest.TestCase):
         with app.app_context():
             logout()
             usercalendars = c.the_user.get_user_calendars()
-            self.assertEqual(usercalendars, False)
+            self.assertEqual(usercalendars, {})
 
     def test_51_get_all_userevents(self):
         with app.app_context():
             userevents = c.the_user.get_user_events()
-            self.assertEqual(userevents, False)
+            self.assertEqual(userevents, [])
 
 class AddcalendarTest(unittest.TestCase):
     def test_00_add_calendar(self):

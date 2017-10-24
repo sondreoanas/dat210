@@ -3,13 +3,16 @@ from back_user import *
 from logged_in_user import *
 import config as c
 
-username = "ola@nordmann.no"
-password = "Password123"
-name = "Ola Nordmann"
-userid = 1201
+username = "test@tes.no"
+password = "test"
+name = "test"
+userid = 2
 
 def login_testuser():
     login(username, password)
+
+def logout_testuser():
+    logout()
 
 
 class LoginTest(unittest.TestCase):
