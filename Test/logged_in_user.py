@@ -48,6 +48,7 @@ class LoggedInUser:
         if 'id' in self.__the_user.keys():
             return self.__the_user['id']
         return False
+
     """
     def set_user_calendars(self, calendar_id, calendar_name, calendar_rights, calendar_public):
         if 'calendars' not in self.__the_user.keys():
@@ -69,8 +70,9 @@ class LoggedInUser:
                 calendar_list[cal_id]['calendar_name'] = cal_name
                 calendar_list[cal_id]['calendar_public'] = cal_public
             return calendar_list
-        return False
+        return calendar_list
 
+    """
     def set_user_events(self, calendar_id, event_id, name, start, end, interval, terminatedate):
         if 'events' not in self.__the_user['calendars'][calendar_id].keys():
             self.__the_user['calendars'][calendar_id]['events'] = dict()
@@ -80,6 +82,7 @@ class LoggedInUser:
         self.__the_user['calendars'][calendar_id]['events'][event_id]['end'] = end
         self.__the_user['calendars'][calendar_id]['events'][event_id]['interval'] = interval
         self.__the_user['calendars'][calendar_id]['events'][event_id]['terminatedate'] = terminatedate
+    """
 
     def get_user_events(self):
         calendars = self.get_user_calendars()
@@ -98,7 +101,7 @@ class LoggedInUser:
                             calendar[calendar_id]['events_list'].append(event_id)
                             user_events.append(event_id)
             return user_events
-        return False
+        return user_events
 
     def get_user_event(self, calendar_id, event_id):
         pass
@@ -106,6 +109,7 @@ class LoggedInUser:
     def clear(self):
         """clears the class"""
         self.__the_user = LoggedInUser(dict())
+        return True
 
     def contents(self):
         """return the details of the logged in user"""

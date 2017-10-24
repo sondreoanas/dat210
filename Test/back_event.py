@@ -28,7 +28,7 @@ def add_new_calendar(calendar_name, public_bool):
     calendar_id = db.add_new_calendar_db(calendar_name, public_bool)
     if calendar_id:
         if db.add_new_usercalendar_db(calendar_id):
-            calendar = db.get_calendar_db(c.the_user.get_userid, calendar_name, calendar_id)
+            #calendar = db.get_calendar_db(c.the_user.get_userid, calendar_name, calendar_id)
             #c.the_user.set_user_calendars(calendar[0], calendar[1])
             return [calendar_id, True]
     return False
@@ -43,6 +43,8 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             event = db.get_event_db(event_id)
             c.the_user.set_user_events(calendar_id, event_id)
             return [event_id, True]
+        else:
+            db.edit_event_db(event_id)
     return False
 
 def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
@@ -69,3 +71,7 @@ def search_events_usercalendar(calendar_id, interval_start, interval_end):
             search_results.append(search_result.copy())
         return search_results
     return events
+
+def get_calendar(calendar_id):
+    """returns calendar in list [0]=\"CalendarId\" [1]=\"Name\" [2]=\"Public\" """
+    return db.get_calendar_db(c.the_user.get_userid(), calendar_id)

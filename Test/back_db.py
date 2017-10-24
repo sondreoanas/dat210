@@ -18,7 +18,7 @@ ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passord"
+app.config["DATABASE_PASSWORD"] = "root"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -166,10 +166,13 @@ def get_calendar_db(user_id, calendar_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
-            "FROM usercalendars U, calendar C " \
-            "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
-        cur.execute(sql, (user_id, calendar_id))
+        sql = "SELECT CalendarId, Name, Public " \
+            "FROM calendar " \
+            "WHERE CalendarId = " \
+            "(SELECT CalendarId " \
+            "FROM usercalendars " \
+            "WHERE CalendarId = %s AND UserId = %s) "
+        cur.execute(sql, (calendar_id, user_id))
         return cur.fetchone()
     except mysql.connector.Error as err:
         return False
@@ -275,6 +278,21 @@ def edit_event_db(event_id, event_name, event_description, event_start, event_en
             "SET Name = %s, Description = %s, Start = %s, End = %s, Interval = %s, Terminatedate = %s " \
             "WHERE EventId = %s "
         cur.execute(sql, (event_name, event_description, event_start, event_end, event_interval, event_terminatedate, event_id))
+        db.commit()
+        return True
+    except mysql.connector.Error as err:
+        return False
+    finally:
+        cur.close()
+
+def delete_event_db(event_id):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE eventn " \
+            "SET Deleted = %s " \
+            "WHERE EventId = %s "
+        cur.execute(sql, (event_id))
         db.commit()
         return True
     except mysql.connector.Error as err:
