@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.2.2
+	version			: 0.2.3
 	last updated	: 24.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -76,20 +76,22 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 		button.addEventListener("click", function(e){
 			e.preventDefault();
 			var targetId = button.dataset.target;
-			if(button.dataset.fill){
+			if(button.dataset.fill != null){
 				this.fillElement(targetId, button.dataset.fill);
-			}else if(button.dataset.replace){
+			}else if(button.dataset.replace != null){
 				this.replaceElement(targetId, button.dataset.replace);
-			}else if(button.dataset.before){
+			}else if(button.dataset.before != null){
 				this.placeBeforeElement(targetId, button.dataset.before);
-			}else if(button.dataset.after){
+			}else if(button.dataset.after != null){
 				this.placeAfterElement(targetId, button.dataset.after);
-			}else if(button.dataset.remove){
+			}else if(button.dataset.remove != null){
 				this.removeElement(targetId, button.dataset.remove); // TODO: remove second argument? test
-			}else if(button.dataset.addfirstchild){
+			}else if(button.dataset.addfirstchild != null){
 				this.addFirstChild(targetId, button.dataset.addfirstchild);
-			}else{ // button.dataset.addlastchild
+			}else if(button.dataset.addlastchild != null){
 				this.addLastChild(targetId, button.dataset.addlastchild);
+			}else{
+				Tool.printError("Markus 1 did something wrong, ask him to fix it.");
 			}
 		}.bind(this));
 	}
@@ -155,6 +157,8 @@ mf_AjaxHandler.prototype.addLastChild = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.addLastChild, elementId, url, data)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -174,6 +178,8 @@ mf_AjaxHandler.prototype.addFirstChild = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.addFirstChild, elementId, url, data)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -193,6 +199,7 @@ mf_AjaxHandler.prototype.removeElement = function(elementId){
 	if(!this.checkDomLoaded(this.removeElement, elementId)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -204,6 +211,8 @@ mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url, data = nul
 	if(!this.checkDomLoaded(this.placeAfterElement, elementId, url, data)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -241,6 +250,8 @@ mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url, data = nu
 	if(!this.checkDomLoaded(this.placeBeforeElement, elementId, url, data)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -278,6 +289,8 @@ mf_AjaxHandler.prototype.replaceElement = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.replaceElement, elementId, url, data)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -315,6 +328,8 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.fillElement, elementId, url, data)){
 		return;
 	}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
