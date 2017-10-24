@@ -14,6 +14,7 @@ import back_event
 import back_db as db
 import config as c
 import security as sec
+import logged_in_user as liu
 
 
 def init_logged_in_user(username):
@@ -21,6 +22,7 @@ def init_logged_in_user(username):
         c.the_user.set_username(username)
         c.the_user.set_name(db.get_user_name_db(username)[0])
         c.the_user.set_userid(db.get_userid_db(username)[0])
+        session["the_user"] = c.the_user.contents()
 
 
 # check for valid username function
@@ -73,12 +75,16 @@ def login(username, password):
         init_logged_in_user(username)
         user_password = db.get_password_db(username)
         if user_password:
-            return sec.check_password(password, user_password[0], user_password[1])
+            login_success = sec.check_password(password, user_password[0], user_password[1])
+            if login_success:
+                session["login"] = True
+                c.the_user.clear()
     return False
 
 
 # logout function
 def logout():
+    session.clear()
     return c.the_user.clear()
 
 
@@ -90,7 +96,7 @@ def register_user(username, password, name):
         password_hashed = sec.create_password(password)
         db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
         if user_exist(username):
-            return username
+            return [True, username]
     return False
 
 
