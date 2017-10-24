@@ -18,7 +18,7 @@ ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "root"
+app.config["DATABASE_PASSWORD"] = "passordetmitt"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -197,7 +197,7 @@ def get_event_db(event_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT EventId, Name, Start, End " \
+        sql = "SELECT EventId, Name, Description, Start, End " \
             "FROM eventn " \
             "WHERE EventId = %s "
         cur.execute(sql, (event_id,))

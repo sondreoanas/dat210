@@ -94,7 +94,7 @@ def calendar_edit_form():
         "name": request.form.get('form_calendar_name', 0),
         "public": request.form.get('form_calendar_public', 0)
     }
-    return json.dumps(io.getData("calendar_edit", params))
+    return json.dumps(io.getData("calendar_edit_form", params))
 
 
 @app.route("/event/new_form", methods=["POST"])
@@ -117,7 +117,7 @@ def event_edit_form():
         "start": request.form.get('form_event_start', 0),
         "end": request.form.get('form_event_end', 0)
     }
-    return json.dumps(io.getData("event_edit", params))
+    return json.dumps(io.getData("event_edit_form", params))
 
 
 @app.route("/calendar/edit/<int:id>")
