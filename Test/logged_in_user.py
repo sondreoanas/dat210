@@ -109,6 +109,7 @@ class LoggedInUser:
     def clear(self):
         """clears the class"""
         self.__the_user = LoggedInUser(dict())
+        return True
 
     def contents(self):
         """return the details of the logged in user"""
