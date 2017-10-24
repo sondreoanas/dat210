@@ -137,6 +137,10 @@ def getData(data, params=None,):
 
 
     if data == "calendar_new":
+        if params['public'] == 'public':
+            params['public'] = True
+        else:
+            params['public'] = False
         result = back_event.add_new_calendar(params['name'],params['public'])
         returner = {
             "success": result[1],

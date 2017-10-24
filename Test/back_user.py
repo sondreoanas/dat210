@@ -21,8 +21,6 @@ def init_logged_in_user(username):
         c.the_user.set_username(username)
         c.the_user.set_name(db.get_user_name_db(username)[0])
         c.the_user.set_userid(db.get_userid_db(username)[0])
-        #back_event.init_all_calendars()
-        #back_event.init_all_userevents()
 
 
 # check for valid username function
@@ -78,8 +76,7 @@ def login(username, password):
 
 # logout function
 def logout():
-    c.the_user.clear()
-    pass
+    return c.the_user.clear()
 
 
 # register user function
