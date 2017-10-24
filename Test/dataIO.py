@@ -210,7 +210,7 @@ def getData(data, params=None,):
         }
 
     if data == "event_edit":
-        result = c.the_user.get_event(params['id'])
+        result = c.the_user.get_user_event(params['id'])
         returner = {
             "success": True,
             "data": {
