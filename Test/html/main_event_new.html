@@ -1,0 +1,40 @@
+<main id="main" data-location="event_new">
+
+    <section id="event_new" class="ffix page">
+            
+        <div class="ghost">
+            <div class="box form_event_new ffix">
+    
+                <h2>Create new event</h2>
+    
+                <form id="forms_event_new" action="new_form">
+                    <fieldset>
+
+                        <label for="form_event_calendar">Calendar:</label>
+                        <select id="form_event_calendar" name="form_event_calendar" data-fill="/getTMPL?tmpl=calendar_list_option&data=calendar_list">
+
+                        </select>
+
+                        <label for="form_event_name">Event name:</label>
+                        <input type="text" id="form_event_name" name="form_event_name" placeholder="event name_">
+                        <label for="form_event_start">Start:</label>
+                        <input type="text" id="form_event_start" name="form_event_start" placeholder="event start date and time_">
+                        <label for="form_event_end">End:</label>
+                        <input type="text" id="form_event_end" name="form_event_end" placeholder="event end date and time_">
+                    </fieldset>
+
+                    <script data-run>
+                        main_event_new_init_flatpicker();
+                    </script>
+
+    
+                    <button data-formid="forms_event_new" data-callback="cb.event_new">Create new Event</button>
+            
+                </form>
+    
+            </div>
+        </div>
+    
+    </section>
+
+</main>

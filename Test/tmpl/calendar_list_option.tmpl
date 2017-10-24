@@ -1,0 +1,8 @@
+<%for(var i in this) {%>
+    <option value="<%this[i].id%>">
+        <%this[i].name%>
+        <%if(this[i].public) {%>
+            - public
+        <%}%>
+    </option>
+<%}%>

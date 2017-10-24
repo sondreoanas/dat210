@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wiel</title>
+
+
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/style.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/master.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/sections.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/elements.css") }}">
+
+    
+    <script src="{{ url_for("static", filename="js/templater.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/mf_timeline.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/mf_ajax.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/mf_tester.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/vec.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/nm_callbacks.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/navigo.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/routing.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/mf_control.js") }}"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script src="{{ url_for("static", filename="js/liveFunctions.js") }}"></script>
+
+
+</head>
+
+<body id="body">
+
+
+
+    <header>
+        <div class="page">
+            <h1>Wiel</h1>
+        </div>
+    </header>
+
+    <nav id="mainmenu">
+
+        <div class="page">
+            <input type="checkbox" id="navcheck">
+            <label for="navcheck"></label>
+            <ul class="ffix">
+                <li>
+                    <button onclick="javascript:router.navigate('login');" class="button_nav">Login</button>
+                </li>
+                <li>
+                    <button onclick="javascript:router.navigate('newuser');" class="button_nav">New user</button>
+                </li>
+                <li>
+                    <button onclick="javascript:router.navigate('forgotpass');" class="button_nav">Forgot password?</button>
+                </li>
+                
+            </ul>
+        </div>
+
+    </nav>
+    
+    <main id="main" data-location="front">
+
+        
+    </main>
+    
+    <footer>
+        <div class="page">
+    
+            <section id="contact">
+                <h2>Customer service</h2>
+                <p>+47 40 40 40 40</p>
+                <a href="mailto:customer@service.com" title="Customer service email">customer@service.com</a>
+            </section>
+    
+            <section id="social">
+                <h2>Social media</h2>
+                <ul>
+                    <li><a href="http://www.facebook.com/" title="Facebook link" class="facebook">Facebook</a></li>
+                    <li><a href="http://www.twitter.com/" title="Twitter link" class="twitter">Twitter</a></li>
+                    <li><a href="http://www.linkedin.com/" title="LinkedIn link" class="linkedin">LinkedIn</a></li>
+                </ul>
+            </section>
+    
+        </div>
+    </footer>
+
+    
+
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+/*
+	mf_testHandelerInstructions.txt
+	
+	version			: 0.1.0
+	last updated	: 23.10.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			TODO: ...
+		How to use it?
+			TODO: ...
+		What is new?
+			Everything...
+*/
+
+step 1
+	Reload page.
+step 2
+	Do the stuff you want to
+step 3
+	Press ctrl + shift + c. This will automatically copy the result to your clipboard.
+step 4
+	Paste result into "/js/mf_testerData.js".
+step 5
+	Reload page.
+step 6
+	press ctrl + shift + s to start playback.
+	Success/error -messages will appear in console.
+

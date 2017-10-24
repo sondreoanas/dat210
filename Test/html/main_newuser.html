@@ -1,0 +1,37 @@
+<main id="main" data-location="newuser">
+    
+    <section id="newuser" class="ffix">
+        
+        <div class="ghost">
+            <div class="box form_newuser ffix">
+
+                <h2>Create new user</h2>
+
+                <form id="forms_newuser" action="/newuser_form">
+
+                    <fieldset>
+
+                        <label for="form_new_email">Enter email:</label>
+                        <input type="text" id="form_new_email" name="form_new_email" placeholder="your@email.com_">
+
+                        <label for="form_new_nick">Enter nickname:</label>
+                        <input type="text" id="form_new_nick" name="form_new_nick" placeholder="your nickname_">
+
+                        <label for="form_new_pass">Enter password:</label>
+                        <input type="password" id="form_new_pass" name="form_new_pass" placeholder="your password_">
+
+                        <label for="form_new_pass_repeat">Repeat password:</label>
+                        <input type="password" id="form_new_pass_repeat" name="form_new_pass_repeat" placeholder="repeat password_">
+
+                    </fieldset>
+
+                    <button data-formid="forms_newuser" data-callback="cb.newuser" class="button_newuser">Create new User</button>
+            
+                </form>
+
+            </div>
+        </div>
+
+    </section>
+
+</main>
