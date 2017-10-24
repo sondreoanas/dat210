@@ -91,19 +91,21 @@ def getData(data, params=None,):
         #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
         #]
 
-        cal_db = c.the_user.get_user_calendars()
+        event_db = c.the_user.get_user_calendars()
 
         returner = []
-        for cal_id in cal_db:
-            if 'events' in cal_db[cal_id].keys():
-                for event_id in cal_db[cal_id]['events']:
-                    event = {
-                        "id": event_id,
-                        "name": cal_db[cal_id]['events'][event_id]['name'],
-                        "start": str(cal_db[cal_id]['events'][event_id]['start']),
-                        "end": str(cal_db[cal_id]['events'][event_id]['end'])
-                    }
-                    returner.append(event)
+        for event_id in event_db:
+            temp_event = c.the_user.get_user_event(event_id)
+            
+            for event_id in cal_db[cal_id]['events']:
+                print(event_id)
+                event = {
+                    "id": event_id,
+                    "name": cal_db[cal_id]['events'][event_id]['name'],
+                    "start": str(cal_db[cal_id]['events'][event_id]['start']),
+                    "end": str(cal_db[cal_id]['events'][event_id]['end'])
+                }
+                returner.append(event)
 
 
 #### PUT DATA #####
