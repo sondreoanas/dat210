@@ -1,8 +1,8 @@
 /*
 	mf_tester.js
 	
-	version			: 0.1.1
-	last updated	: 23.10.2017
+	version			: 0.1.2
+	last updated	: 24.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -112,6 +112,8 @@ mf_TestHandeler.prototype.init = function(){
 					break;
 				}else if(speed == ""){
 					this.start();
+					break;
+				}else if(speed == null){
 					break;
 				}else{
 					alert("Wrong input. Type a number or leave field empty.");
