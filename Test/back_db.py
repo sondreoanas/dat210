@@ -166,10 +166,13 @@ def get_calendar_db(user_id, calendar_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
-            "FROM usercalendars U, calendar C " \
-            "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
-        cur.execute(sql, (user_id, calendar_id))
+        sql = "SELECT CalendarId, Name, Public " \
+            "FROM calendar " \
+            "WHERE CalendarId = " \
+            "(SELECT CalendarId " \
+            "FROM usercalendars " \
+            "WHERE CalendarId = %s AND UserId = %s) "
+        cur.execute(sql, (calendar_id, user_id))
         return cur.fetchone()
     except mysql.connector.Error as err:
         return False
