@@ -19,8 +19,10 @@ cb.prototype.forgotpass = function(response){
 cb.prototype.newuser = function(response){	
 	if(response.success){
 		console.log(response.data)
-		//mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_welcome");
+		mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_welcome", data = response.data);
+		mf_ajaxHandler.buffer = response.data;
 	}else{
+		console.log(response.data)
 		router.navigate();
 	}	
 }

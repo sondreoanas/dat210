@@ -9,7 +9,7 @@ import datetime
 def getData(data, params=None,):
     returner = {}
 
-    back_user.login("ola@nordmann.no","p")
+    #back_user.login("ola@nordmann.no","p")
 
     """calendars {
             cal_id: {
@@ -25,7 +25,7 @@ def getData(data, params=None,):
                 }
             }
         }
-"""
+    """
 
 
     if data == 'loadview':
@@ -51,9 +51,7 @@ def getData(data, params=None,):
                 returner['events'].append(event)
 
 
-
     if data == "login":
-
         returner = {
             "success": back_user.login(params['username'],params['password']),
             "data": {

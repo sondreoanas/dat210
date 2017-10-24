@@ -22,6 +22,9 @@ router
         mf_ajaxHandler.replaceElement(elementid = "mainmenu", url = "/getTMPL?tmpl=nav&data=nav");
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_home");        
     },
+    'welcome': function () {
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_welcome", data = response.data);      
+    },
 
 // HOME
     'home': function () {
