@@ -11,44 +11,27 @@ def getData(data, params=None,):
 
     back_user.login("ola@nordmann.no","p")
 
-    """calendars {
-            cal_id: {
-                "calendar_rights": value,
-                "events_list": [id, id, id, id ...],
-                "events": {
-                    event_id: {
-                        "start": value,
-                        "end": value,
-                        "interval": value,
-                        "terminatedate": value
-                    }
-                }
-            }
-        }
-"""
-
 
     if data == 'loadview':
         cal_db = c.the_user.get_user_calendars()
         returner = {'events': []}
-        cal_id = 1
-        # for cal_id in cal_db:
-        if 'events' in cal_db[cal_id].keys():
-            for event_id in cal_db[cal_id]['events']:
-                start = cal_db[cal_id]['events'][event_id]['start']
-                end = cal_db[cal_id]['events'][event_id]['end']
+        for cal_id in cal_db:
+            if 'events' in cal_db[cal_id].keys():
+                for event_id in cal_db[cal_id]['events']:
+                    start = cal_db[cal_id]['events'][event_id]['start']
+                    end = cal_db[cal_id]['events'][event_id]['end']
 
-                start = time.mktime(start.timetuple()) * 1000
-                end = time.mktime(end.timetuple()) * 1000
+                    start = time.mktime(start.timetuple()) * 1000
+                    end = time.mktime(end.timetuple()) * 1000
 
 
-                event = {
-                    'id': event_id,
-                    'start': start,
-                    'end': end,
-                    'name': cal_db[cal_id]['events'][event_id]['name']
-                }
-                returner['events'].append(event)
+                    event = {
+                        'id': event_id,
+                        'start': start,
+                        'end': end,
+                        'name': cal_db[cal_id]['events'][event_id]['name']
+                    }
+                    returner['events'].append(event)
 
 
 
@@ -98,7 +81,8 @@ def getData(data, params=None,):
             calendar = {
                 "id": cal_id,
                 "name": cal_db[cal_id]['calendar_name'],
-                "rights": cal_db[cal_id]['calendar_rights']
+                "rights": cal_db[cal_id]['calendar_rights'],
+                "public": cal_db[cal_id]['calendar_public']
             }
             returner.append(calendar)
 
@@ -113,32 +97,50 @@ def getData(data, params=None,):
         cal_db = c.the_user.get_user_calendars()
 
         returner = []
-        cal_id = 1
-        # for cal_id in cal_db:
-        if 'events' in cal_db[cal_id].keys():
-            for event_id in cal_db[cal_id]['events']:
-                event = {
-                    "id": event_id,
-                    "name": cal_db[cal_id]['events'][event_id]['name'],
-                    "start": str(cal_db[cal_id]['events'][event_id]['start']),
-                    "end": str(cal_db[cal_id]['events'][event_id]['end'])
-                }
-                returner.append(event)
+        for cal_id in cal_db:
+            if 'events' in cal_db[cal_id].keys():
+                for event_id in cal_db[cal_id]['events']:
+                    event = {
+                        "id": event_id,
+                        "name": cal_db[cal_id]['events'][event_id]['name'],
+                        "start": str(cal_db[cal_id]['events'][event_id]['start']),
+                        "end": str(cal_db[cal_id]['events'][event_id]['end'])
+                    }
+                    returner.append(event)
 
 
 #### PUT DATA #####
 
     if data == "newuser":
+        if params['password'] == params['password_repeat']:
+            result = back_user.register_user(params['email'], params['password'], params['nickname'])
+        else:
+            result = False
         returner = {
-            "success": back_user.register_user(params['email'], params['password'], params['nickname']),
+            "success": result,
             "data": {
                 "email": params["email"],
                 "nickname": params["nickname"]
             }
         }
+    if data == "edit_user":
+        if params['password_repeat'] == params['password']:
+            result = back_user.edit_user(params['username_old'],params['username'],params['password'],)
+        else: result = False
+        returner = {
+            "success":result,
+            "data": {
+                "username":params['username'],
+                "name": params['name'],
+            }
+        }
 
 
     if data == "calendar_new":
+        if params['public'] == 'public':
+            params['public'] = True
+        else:
+            params['public'] = False
         result = back_event.add_new_calendar(params['name'],params['public'])
         returner = {
             "success": result[1],
@@ -151,11 +153,11 @@ def getData(data, params=None,):
 
     if data == "calendar_edit":
         returner = {
-            "success": True,
+            "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
                 "id" : params["id"],
-                "name" : "Some name",
-                "public" : True
+                "name" : params['name'],
+                "public" : params['public']
             }
         }
 
@@ -176,14 +178,15 @@ def getData(data, params=None,):
 
     if data == "event_edit":
         returner = {
-            "success": True,
+            "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
+            #event description mangler + intervall + terminate_date
             "data": {
                 "id" : params["id"],
-                "calendar_id": 1212,
+                "calendar_id": params["cal_id"],
                 "calendars" : getData("calendar_list"),
-                "name": "Some name",
-                "start": "October 17, 2017 12:00",
-                "end": "October 26, 2017 12:00"
+                "name": params['name'],
+                "start": params['start'],
+                "end":  params['end']
             }
         }
 
