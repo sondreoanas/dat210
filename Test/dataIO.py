@@ -123,6 +123,17 @@ def getData(data, params=None,):
                 "nickname": params["nickname"]
             }
         }
+    if data == "edit_user":
+        if params['password_repeat'] == params['password']:
+            result = back_user.edit_user(params['username_old'],params['username'],params['password'],)
+        else: result = False
+        returner = {
+            "success":result,
+            "data": {
+                "username":params['username'],
+                "name": params['name'],
+            }
+        }
 
 
     if data == "calendar_new":
