@@ -70,7 +70,7 @@ class LoggedInUser:
                 calendar_list[cal_id]['calendar_name'] = cal_name
                 calendar_list[cal_id]['calendar_public'] = cal_public
             return calendar_list
-        return False
+        return calendar_list
 
     """
     def set_user_events(self, calendar_id, event_id, name, start, end, interval, terminatedate):
@@ -101,7 +101,7 @@ class LoggedInUser:
                             calendar[calendar_id]['events_list'].append(event_id)
                             user_events.append(event_id)
             return user_events
-        return False
+        return user_events
 
     def get_user_event(self, calendar_id, event_id):
         pass
