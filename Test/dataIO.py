@@ -107,6 +107,7 @@ def getData(data, params=None,):
         #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
         #]
 
+
         events_db = c.the_user.get_user_events()
 
         returner = []
