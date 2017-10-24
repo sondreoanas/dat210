@@ -48,6 +48,9 @@ def valid_password(password):
     #match = re.match('(?=[a-z])', password)
     #if match is None:
     #    return False
+
+    return True
+
     if len(password) < 8:
         return False
     elif re.search('[0-9]', password) is None:

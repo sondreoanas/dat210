@@ -578,7 +578,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('ola@nordmann.no',1,'2518d594b022105fb11f75c49d98ec40989067f7','\r?%+&û','Ola Nordmann','2017-10-18',0);
+INSERT INTO `user` VALUES ('ola@nordmann.no',1,'a7e1d6b3453305fd147de7cac5b78aff981146a8','\r\?;?n.|\?\\','Ola Nordmann','2017-10-24',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
