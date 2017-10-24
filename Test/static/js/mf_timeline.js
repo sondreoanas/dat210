@@ -1,6 +1,6 @@
 /*
 	mf_timeline.js
-	version			: 0.2.6
+	version			: 0.2.7
 	last updated	: 24.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -661,7 +661,7 @@ Timeline.prototype.renderDateStructure = function(){
 			return hours + ":00";
 		}.bind(this),
 		function resetTimeFuntion(date){
-			Tool.resetDateTo(date, Tool.hours);
+			Tool.resetDateTo(date, Tool.hour);
 		},
 		function incrementTimeFunction(date){
 			Tool.incrementDate(date, Tool.hour, 1);
