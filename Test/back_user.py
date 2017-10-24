@@ -94,5 +94,8 @@ def register_user(username, password, name):
     return False
 
 
-def edit_user(username_old, username_new, password_hash, salt, name):
-    return db.edit_user_db(username_old, username_new, password_hash, salt, name)
+def edit_user(username_old, username_new, password, name):
+    if not valid_password(password):
+        return False
+    password_hashed = sec.create_password(password)
+    return db.edit_user_db(username_old, username_new, password_hashed[0], password_hashed[1], name)
