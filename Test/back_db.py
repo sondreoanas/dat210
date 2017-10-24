@@ -125,6 +125,24 @@ def set_new_user_db(username, password_hash, salt, name):
                "VALUES (%s, %s, %s, %s) "
         cur.execute(sql2, (username, password_hash, salt, name))
         db.commit()
+        print("successfull creation")
+    except mysql.connector.Error as err:
+        print("unsuccessful")
+        return False
+    finally:
+        cur.close()
+
+def edit_user_db(username_old, username_new, password_hash, salt, name):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE user " \
+            "SET Username = %s, Name = %s, Password = %s, Salt = %s " \
+            "WHERE Username = %s "
+        cur.execute(sql, (username_new, name, password_hash, salt, username_old))
+        user_id = cur.lastrowid
+        db.commit()
+        return user_id
     except mysql.connector.Error as err:
         return False
     finally:
@@ -134,7 +152,7 @@ def get_all_calendars_db(user_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel " \
+        sql = "SELECT U.CalendarId, C.Name, U.Adminlevel, C.Public " \
             "FROM usercalendars U, calendar C " \
             "WHERE U.UserId = %s AND C.CalendarId = U.CalendarId "
         cur.execute(sql, (user_id,))
@@ -202,6 +220,22 @@ def add_new_calendar_db(calendar_name, public_bool):
     finally:
         cur.close()
 
+def edit_calendar_db(calendar_id, calendar_name, public_bool):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE calendar " \
+            "SET Name = %s, Public = %s " \
+            "WHERE CalendarId = %s "
+        cur.execute(sql, (calendar_name, public_bool, calendar_id))
+        calendar_id = cur.lastrowid
+        db.commit()
+        return True
+    except mysql.connector.Error as err:
+        return False
+    finally:
+        cur.close()
+
 def add_new_usercalendar_db(calendar_id):
     db = get_db()
     cur = db.cursor()
@@ -217,17 +251,32 @@ def add_new_usercalendar_db(calendar_id):
     finally:
         cur.close()
 
-def add_new_event_db(start_time):
+def add_new_event_db(name, start_time, end_time):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "INSERT INTO eventn " \
-               "(Start) " \
-               "VALUES (%s) "
-        cur.execute(sql, (start_time,))
+               "(Name, Start, End) " \
+               "VALUES (%s, %s, %s) "
+        cur.execute(sql, (name, start_time, end_time))
         event_id = cur.lastrowid
         db.commit()
         return event_id
+    except mysql.connector.Error as err:
+        return False
+    finally:
+        cur.close()
+
+def edit_event_db(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE eventn " \
+            "SET Name = %s, Description = %s, Start = %s, End = %s, Interval = %s, Terminatedate = %s " \
+            "WHERE EventId = %s "
+        cur.execute(sql, (event_name, event_description, event_start, event_end, event_interval, event_terminatedate, event_id))
+        db.commit()
+        return True
     except mysql.connector.Error as err:
         return False
     finally:

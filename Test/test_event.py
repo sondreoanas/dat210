@@ -3,11 +3,12 @@ from back_user import *
 from logged_in_user import *
 from test_user import *
 from back_event import *
+from back_db import *
 import config as c
 from datetime import date, datetime
 
-nr_of_cals = 36
-nr_of_userevents = 195
+nr_of_cals = 3
+nr_of_userevents = 6
 cal_ids = [
     1001,
     1002,
@@ -233,7 +234,6 @@ task_ids = [
     219,
     220,
 ]
-search_parameters = dict()
 search_parameters = {
     'calendar_id': 302,
     'start': datetime(2017, 8, 14, 0, 0, 0).isoformat(),

@@ -1,4 +1,5 @@
 """Class representing the logged in user"""
+import back_db as db
 
 class LoggedInUser:
     """Class representing the logged in user"""
@@ -47,24 +48,30 @@ class LoggedInUser:
         if 'id' in self.__the_user.keys():
             return self.__the_user['id']
         return False
-
-    def set_user_calendars(self, calendar_id, calendar_name, calendar_rights):
+    """
+    def set_user_calendars(self, calendar_id, calendar_name, calendar_rights, calendar_public):
         if 'calendars' not in self.__the_user.keys():
             self.__the_user['calendars'] = dict()
         self.__the_user['calendars'][calendar_id] = dict()
         self.__the_user['calendars'][calendar_id]['calendar_rights'] = calendar_rights
         self.__the_user['calendars'][calendar_id]['calendar_name'] = calendar_name
+        self.__the_user['calendars'][calendar_id]['calendar_public'] = calendar_public
+    """
 
     def get_user_calendars(self):
-        if 'calendars' in self.__the_user.keys():
-            return self.__the_user['calendars']
+        calendars = db.get_all_calendars_db(self.get_userid())
+        print(calendars)
+        calendar_list = dict()
+        if calendars:
+            for (cal_id, cal_name, cal_rigts, cal_public) in calendars:
+                calendar_list[cal_id] = dict()
+                calendar_list[cal_id]['calendar_rights'] = cal_name
+                calendar_list[cal_id]['calendar_name'] = cal_name
+                calendar_list[cal_id]['calendar_public'] = cal_public
+            return calendar_list
         return False
 
     def set_user_events(self, calendar_id, event_id, name, start, end, interval, terminatedate):
-        if 'events_list' not in self.__the_user['calendars'][calendar_id].keys():
-            self.__the_user['calendars'][calendar_id]['events_list'] = []
-        self.__the_user['calendars'][calendar_id]['events_list'].append(event_id)
-        
         if 'events' not in self.__the_user['calendars'][calendar_id].keys():
             self.__the_user['calendars'][calendar_id]['events'] = dict()
         self.__the_user['calendars'][calendar_id]['events'][event_id] = dict()
@@ -75,11 +82,21 @@ class LoggedInUser:
         self.__the_user['calendars'][calendar_id]['events'][event_id]['terminatedate'] = terminatedate
 
     def get_user_events(self):
-        if 'calendars' in self.__the_user.keys():
-            user_events = []
-            for calendar_id in self.__the_user['calendars'].keys():
-                if 'events_list' in self.__the_user['calendars'][calendar_id].keys():
-                    user_events.extend(self.__the_user['calendars'][calendar_id]['events_list'])
+        calendars = self.get_user_calendars()
+        calendar = dict()
+        user_events = []
+        if calendars:
+            for calendar_id in calendars:
+                calendar_events = db.get_all_calendar_events_db(calendar_id)
+                calendar[calendar_id] = dict()
+                if calendar_events:
+                    for (event_id, cal_id) in calendar_events:
+                        event = db.get_event_db(event_id)
+                        if event:
+                            if 'events_list' not in calendar[calendar_id]:
+                                calendar[calendar_id]['events_list'] = []
+                            calendar[calendar_id]['events_list'].append(event_id)
+                            user_events.append(event_id)
             return user_events
         return False
 
