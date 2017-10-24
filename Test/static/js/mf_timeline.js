@@ -30,7 +30,7 @@ function mf_addTimeline(element){
 	return mf_timeline.timelines.length - 1; // index of the new timeline
 }
 // Event
-function mf_Event(start, end, name, color){
+function mf_Event(start, end, name, color, repeatFunctions){
 	this.id = Event.nrOfEvents;
 	mf_Event.nrOfEvents++;
 	
@@ -39,6 +39,7 @@ function mf_Event(start, end, name, color){
 	this.nameBoxes = [{start:start, end:end}]; // list of x and y coordinates of possible name placements. Coordiantes are in Unix milliseconds
 	this.name = name;
 	this.color = color;
+	this.repeatFunctions = repeatFunctions;
 	
 	this.verticalOffset = 0;
 	this.collisionGroup = []; // all colliding events
@@ -170,8 +171,8 @@ function Timeline(container){
 	this.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 	this.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	
-	// dummydata
-	this.events = [];
+	// fill data
+	this.events = []; // visual events
 	//this.loadDummyData();
 	this.loadEvents();
 	
@@ -210,50 +211,43 @@ Timeline.prototype.reSizeToContainer = function(){
 }
 Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
+		// {events:[{start, end, name, repeatData},{start,...},...]}
+		
+		//repeatdata = {
+		//	year: null/{m, r}, // null or modulus and rest
+		//	month: null/{m, r, perY/perM},
+		//	week: null/{m, r, perY/perM/perW}
+		//	day: null/{m, r, perY/perM/perW/perD}
+		//	hour: null/{m, r}
+		//	minute: null/{m, r}
+		//	second: null/{m, r}
+		//}
 		var eventData = JSON.parse(responseText).events;
 		if(!eventData){
 			console.error("Wrong format in responce from server on /loadViewEvents");
 			return -1;
 		}
-		/* repetition data format
-		{
-			year: null/{m, r},
-			month: null/{m, r, perY/perM},
-			week: null/{m, r, perY/perM/perW}
-			day: null/{m, r, perY/perM/perW/perD}
-			hour: null/{m, r}
-			minute: null/{m, r}
-			second: null/{m, r}
-		}
-		{
-			yearSelect: [],
-			yearIntervall: {m, r}
-			month: null/{m, r, perY/perM},
-			week: null/{m, r, perY/perM/perW}
-			day: null/{m, r, perY/perM/perW/perD}
-			hour: null/{m, r}
-			minute: null/{m, r}
-			second: null/{m, r}
-		}
-		*/
+		
 		for(var i=0;i<eventData.length;i++){
 			var e = eventData[i];
+			/*if(e.repeatData){
+				var repeatFunctions = [];
+				
+				if(e.repeatData.year){
+					repeatFunctions.push(function(date){Tool.resetDateTo(date,Tool.year)});
+				}
+			}*/
 			this.events.push(new mf_Event(
 				start = e.start,
 				end = e.end,
 				name = e.name,
-				color = Tool.randomColor(1)
+				color = Tool.randomColor(1),
+				repeatFunctions = repeatFunctions
 			));
 		}
 		this.calcuateEventCollisions();
 		
 	}.bind(this));
-	/*
-	mf_AjaxHandler.ajaxPostForm(form, form.action, function(responseText){
-		var callback = eval(button.dataset.callback);
-		callback(JSON.parse(responseText));
-	}.bind(this));
-	*/
 }
 Timeline.prototype.loadDummyData = function(){
 	this.events = [
@@ -1285,5 +1279,61 @@ Tool.copyStringToClipboard = function(string){
 		document.body.removeChild(textArea);
 	}
 }
+Tool.milliseconds = 0;
+Tool.seconds = 1;
+Tool.minutes = 2;
+Tool.hours = 3;
+Tool.day = 4;
+Tool.week = 5;
+Tool.month = 6;
+Tool.year = 7;
+Tool.resetDateTo = function(date, resolution){
+	// Will reset the date to the resolution.
+	// Example: var startOfWeek = Tool.resetDateTo(new Date(), Tool.week);
+	if(Tool.milliseconds){
+		return;
+	}else if(Tool.seconds){
+		date.setMilliseconds(0);
+	}else if(Tool.minutes){
+		date.setMilliseconds(0);
+		date.setSeconds(0);
+	}else if(Tool.hours){
+		date.setMilliseconds(0);
+		date.setSeconds(0);
+		date.setMinutes(0);
+	}else if(Tool.day){
+		date.setMilliseconds(0);
+		date.setSeconds(0);
+		date.setMinutes(0);
+		date.setHours(0);
+	}else if(Tool.week){
+		date.setMilliseconds(0);
+		date.setSeconds(0);
+		date.setMinutes(0);
+		date.setHours(0);
+		date.setDate(date.getDate() - (date.getDay() + 6) % 7);
+	}else if(Tool.month){
+		date.setMilliseconds(0);
+		date.setSeconds(0);
+		date.setMinutes(0);
+		date.setHours(0);
+		date.setDate(1);
+	}else if(Tool.year){
+		date.setMilliseconds(0);
+		date.setSeconds(0);
+		date.setMinutes(0);
+		date.setHours(0);
+		date.setDate(1);
+		date.setMonth(0);
+	}
+}
+
+
+
+
+
+
+
+
 
 
