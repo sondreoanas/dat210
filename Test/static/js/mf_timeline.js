@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.2.5
-	last updated	: 23.10.2017
+	version			: 0.2.7
+	last updated	: 24.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -224,7 +224,7 @@ Timeline.prototype.loadEvents = function(){
 		//}
 		var eventData = JSON.parse(responseText).events;
 		if(!eventData){
-			console.error("Wrong format in responce from server on /loadViewEvents");
+			Tool.printError("Wrong format in responce from server on /loadViewEvents");
 			return -1;
 		}
 		
@@ -241,8 +241,8 @@ Timeline.prototype.loadEvents = function(){
 				start = e.start,
 				end = e.end,
 				name = e.name,
-				color = Tool.randomColor(1),
-				repeatFunctions = repeatFunctions
+				color = Tool.randomColor(1)//,
+				//repeatFunctions = repeatFunctions
 			));
 		}
 		this.calcuateEventCollisions();
@@ -596,15 +596,10 @@ Timeline.prototype.renderDateStructure = function(){
 			return date.getFullYear();
 		},
 		function resetTimeFuntion(date){
-			date.setMilliseconds(0);
-			date.setSeconds(0);
-			date.setMinutes(0);
-			date.setHours(0);
-			date.setDate(1);
-			date.setMonth(0);
+			Tool.resetDateTo(date, Tool.year);
 		},
 		function incrementTimeFunction(date){
-			date.setFullYear(date.getFullYear() + 1);
+			Tool.incrementDate(date, Tool.year, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -614,14 +609,10 @@ Timeline.prototype.renderDateStructure = function(){
 			return this.months[date.getMonth()];
 		}.bind(this),
 		function resetTimeFuntion(date){
-			date.setMilliseconds(0);
-			date.setSeconds(0);
-			date.setMinutes(0);
-			date.setHours(0);
-			date.setDate(1);
+			Tool.resetDateTo(date, Tool.month);
 		},
 		function incrementTimeFunction(date){
-			date.setMonth(date.getMonth() + 1);
+			Tool.incrementDate(date, Tool.month, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -640,14 +631,10 @@ Timeline.prototype.renderDateStructure = function(){
 			return "week " + weekNumber;
 		}.bind(this),
 		function resetTimeFuntion(date){
-			date.setMilliseconds(0);
-			date.setSeconds(0);
-			date.setMinutes(0);
-			date.setHours(0);
-			date.setDate(date.getDate() - (date.getDay() + 6) % 7);
+			Tool.resetDateTo(date, Tool.week);
 		},
 		function incrementTimeFunction(date){
-			date.setDate(date.getDate() + 7);
+			Tool.incrementDate(date, Tool.week, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -657,13 +644,10 @@ Timeline.prototype.renderDateStructure = function(){
 			return this.days[date.getDay()] + " #" + date.getDate();
 		}.bind(this),
 		function resetTimeFuntion(date){
-			date.setMilliseconds(0);
-			date.setSeconds(0);
-			date.setMinutes(0);
-			date.setHours(0);
+			Tool.resetDateTo(date, Tool.day);
 		},
 		function incrementTimeFunction(date){
-			date.setDate(date.getDate() + 1);
+			Tool.incrementDate(date, Tool.day, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -677,12 +661,10 @@ Timeline.prototype.renderDateStructure = function(){
 			return hours + ":00";
 		}.bind(this),
 		function resetTimeFuntion(date){
-			date.setMilliseconds(0);
-			date.setSeconds(0);
-			date.setMinutes(0);
+			Tool.resetDateTo(date, Tool.hour);
 		},
 		function incrementTimeFunction(date){
-			date.setTime(date.getTime() + 1000 * 60 * 60);
+			Tool.incrementDate(date, Tool.hour, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -696,11 +678,10 @@ Timeline.prototype.renderDateStructure = function(){
 			return "" + ":" + minutes;
 		}.bind(this),
 		function resetTimeFuntion(date){
-			date.setMilliseconds(0);
-			date.setSeconds(0);
+			Tool.resetDateTo(date, Tool.minute);
 		},
 		function incrementTimeFunction(date){
-			date.setTime(date.getTime() + 1000 * 60);
+			Tool.incrementDate(date, Tool.minute, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -1279,10 +1260,10 @@ Tool.copyStringToClipboard = function(string){
 		document.body.removeChild(textArea);
 	}
 }
-Tool.milliseconds = 0;
-Tool.seconds = 1;
-Tool.minutes = 2;
-Tool.hours = 3;
+Tool.millisecond = 0;
+Tool.second = 1;
+Tool.minute = 2;
+Tool.hour = 3;
 Tool.day = 4;
 Tool.week = 5;
 Tool.month = 6;
@@ -1290,45 +1271,79 @@ Tool.year = 7;
 Tool.resetDateTo = function(date, resolution){
 	// Will reset the date to the resolution.
 	// Example: var startOfWeek = Tool.resetDateTo(new Date(), Tool.week);
-	if(Tool.milliseconds){
-		return;
-	}else if(Tool.seconds){
+	if(resolution == Tool.millisecond){
+		
+	}else if(resolution == Tool.second){
 		date.setMilliseconds(0);
-	}else if(Tool.minutes){
+	}else if(resolution == Tool.minute){
 		date.setMilliseconds(0);
 		date.setSeconds(0);
-	}else if(Tool.hours){
+	}else if(resolution == Tool.hour){
 		date.setMilliseconds(0);
 		date.setSeconds(0);
 		date.setMinutes(0);
-	}else if(Tool.day){
+	}else if(resolution == Tool.day){
 		date.setMilliseconds(0);
 		date.setSeconds(0);
 		date.setMinutes(0);
 		date.setHours(0);
-	}else if(Tool.week){
+	}else if(resolution == Tool.week){
 		date.setMilliseconds(0);
 		date.setSeconds(0);
 		date.setMinutes(0);
 		date.setHours(0);
 		date.setDate(date.getDate() - (date.getDay() + 6) % 7);
-	}else if(Tool.month){
+	}else if(resolution == Tool.month){
 		date.setMilliseconds(0);
 		date.setSeconds(0);
 		date.setMinutes(0);
 		date.setHours(0);
 		date.setDate(1);
-	}else if(Tool.year){
+	}else if(resolution == Tool.year){
 		date.setMilliseconds(0);
 		date.setSeconds(0);
 		date.setMinutes(0);
 		date.setHours(0);
 		date.setDate(1);
 		date.setMonth(0);
+	}else{
+		Tool.printError("Resolution \"" + resolution + "\" not recognized.", 2);
 	}
 }
-
-
+Tool.incrementDate = function(date, resolution, steps){
+	// Example: var twoWeeksFromNow = Tool.incrementDate(new Date(), Tool.week, 2);
+	if(resolution == Tool.millisecond){
+		date.setTime(date.getTime() + 1 * steps);
+	}else if(resolution == Tool.second){
+		date.setTime(date.getTime() + 1000 * steps);
+	}else if(resolution == Tool.minute){
+		date.setTime(date.getTime() + 1000 * 60 * steps);
+	}else if(resolution == Tool.hour){
+		date.setTime(date.getTime() + 1000 * 60 * 60 * steps);
+	}else if(resolution == Tool.day){
+		date.setDate(date.getDate() + steps);
+	}else if(resolution == Tool.week){
+		date.setDate(date.getDate() + 7 * steps);
+	}else if(resolution == Tool.month){
+		date.setMonth(date.getMonth() + steps);
+	}else if(resolution == Tool.year){
+		date.setFullYear(date.getFullYear() + steps);
+	}else{
+		Tool.printError("Resolution \"" + resolution + "\" not recognized.", 2);
+		
+	}
+}
+Tool.printError = function(message, level = 1){
+	// level >= 0
+	// Prints out an error with stack trace. The level is how many functions up the stack will start.
+	// Standard is one level above where the function is called
+	console.error(message + "\n" + Tool.getStackTrace(level + 1));
+}
+Tool.getStackTrace = function(level = 1){
+	var error = Error().stack.split("\n");
+	error.splice(1, level);
+	return error.join("\n");
+}
 
 
 

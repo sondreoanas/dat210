@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.2.1
-	last updated	: 23.10.2017
+	version			: 0.2.2
+	last updated	: 24.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -42,7 +42,7 @@ mf_AjaxHandler.prototype.initAjax = function(){
 mf_AjaxHandler.prototype.checkButton = function(button){
 	if(button.dataset.formid){ // form
 		if(!button.dataset.callback){
-			console.error("button " + button.id + " is missing 'data-callback' attribute. It needs a callback function to recieve and handle " +
+			Tool.printError("button " + button.id + " is missing 'data-callback' attribute. It needs a callback function to recieve and handle " +
 				"the response from the server.");
 			return -1;
 		}
@@ -50,13 +50,13 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			e.preventDefault();
 			var form = document.getElementById(button.dataset.formid);
 			if(!form){
-				console.error("no form of id: \"" + button.dataset.formid + "\" is found.");
+				Tool.printError("no form of id: \"" + button.dataset.formid + "\" is found.");
 				return -1;
 			}
 			mf_AjaxHandler.ajaxPostForm(form, form.action, function(responseText){
 				var callback = eval(button.dataset.callback);
 				if(!callback){
-					console.error("No function with name: \"" + button.dataset.callback + "\" is found.");
+					Tool.printError("No function with name: \"" + button.dataset.callback + "\" is found.");
 				}
 				callback(JSON.parse(responseText));
 			}.bind(this));
@@ -69,7 +69,7 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			button.dataset.remove == null &&
 			button.dataset.addfirstchild == null &&
 			button.dataset.addlastchild == null ){
-			console.error("button " + button.id + " is missing 'data-fill/replace/before/after/remove/addfirstchild' attribute." +
+			Tool.printError("button " + button.id + " is missing 'data-fill/replace/before/after/remove/addfirstchild' attribute." +
 				"It needs a target to fill/replace/before/after/remove/addfirstchild.");
 			return -1;
 		}
@@ -128,10 +128,10 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 				var pos = parseFloat(element.dataset.position);
 				var zoom = parseFloat(element.dataset.zoom);
 				if(!pos){
-					console.error("Element with id \"" + element.id + "\" is missing/wrong format data-position=\"someNumber\" attribute.");
+					Tool.printError("Element with id \"" + element.id + "\" is missing/wrong format data-position=\"someNumber\" attribute.");
 				}
 				if(!zoom){
-					console.error("Element with id \"" + element.id + "\" is missing/wrong format data-zoom=\"someNumber\" attribute.");
+					Tool.printError("Element with id \"" + element.id + "\" is missing/wrong format data-zoom=\"someNumber\" attribute.");
 				}
 				mf_timeline.timelines[index].position = pos;
 				mf_timeline.timelines[index].targetPosition = pos;
@@ -157,7 +157,7 @@ mf_AjaxHandler.prototype.addLastChild = function(elementId, url, data = null){
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	this.addLastChildArgElement(element, url, data);
@@ -176,7 +176,7 @@ mf_AjaxHandler.prototype.addFirstChild = function(elementId, url, data = null){
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	this.addFirstChildArgElement(element, url, data);
@@ -195,7 +195,7 @@ mf_AjaxHandler.prototype.removeElement = function(elementId){
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	element.parentElement.removeChild(element);
@@ -206,7 +206,7 @@ mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url, data = nul
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	this.placeAfterElementArgElement(element, url, data);
@@ -243,7 +243,7 @@ mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url, data = nu
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	this.placeBeforeElementArgElement(element, url, data);
@@ -280,7 +280,7 @@ mf_AjaxHandler.prototype.replaceElement = function(elementId, url, data = null){
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	this.replaceElementArgElement(element, url, data);
@@ -317,7 +317,7 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, url, data = null){
 	}
 	var element = document.getElementById(elementId);
 	if(!element){
-		console.error("no element of id: \"" + elementId + "\" is found.");
+		Tool.printError("no element of id: \"" + elementId + "\" is found.");
 		return -1;
 	}
 	this.fillElementArgElement(element, url, data);
