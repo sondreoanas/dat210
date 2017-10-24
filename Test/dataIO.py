@@ -9,7 +9,7 @@ import datetime
 def getData(data, params=None,):
     returner = {}
 
-    #back_user.login("ola@nordmann.no","p")
+    back_user.login("ola@nordmann.no","p")
 
 
     if data == 'loadview':
@@ -162,6 +162,16 @@ def getData(data, params=None,):
 
     if data == "calendar_edit_form":
         returner = {
+            "success": True,
+            "data": {
+                "id" : params["id"],
+                "name" : params['name'],
+                "public" : params['public']
+            }
+        }
+
+    if data == "calendar_edit_form":
+        returner = {
             "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
                 "id" : params["id"],
@@ -200,7 +210,7 @@ def getData(data, params=None,):
         }
 
     if data == "event_edit":
-        result = back_event.get_event(params['id'])
+        result = c.the_user.get_user_event(params['id'])
         returner = {
             "success": True,
             "data": {
@@ -215,7 +225,7 @@ def getData(data, params=None,):
 
     if data == "loggout":
         returner = {
-            "success": back_user.loggout()
+            "success": back_user.logout()
         }
 
     return returner

@@ -1268,12 +1268,12 @@ Tool.copyStringToClipboard = function(string){
 	textArea.select();
 	try {
 		var successful = document.execCommand('copy');
+		document.body.removeChild(textArea);
 		if(successful){
 			return true;
 		}else{
 			return false;
 		}
-		document.body.removeChild(textArea);
 	} catch (err) {
 		return false;
 		document.body.removeChild(textArea);
