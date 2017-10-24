@@ -215,6 +215,27 @@ Timeline.prototype.loadEvents = function(){
 			console.error("Wrong format in responce from server on /loadViewEvents");
 			return -1;
 		}
+		/* repetition data format
+		{
+			year: null/{m, r},
+			month: null/{m, r, perY/perM},
+			week: null/{m, r, perY/perM/perW}
+			day: null/{m, r, perY/perM/perW/perD}
+			hour: null/{m, r}
+			minute: null/{m, r}
+			second: null/{m, r}
+		}
+		{
+			yearSelect: [],
+			yearIntervall: {m, r}
+			month: null/{m, r, perY/perM},
+			week: null/{m, r, perY/perM/perW}
+			day: null/{m, r, perY/perM/perW/perD}
+			hour: null/{m, r}
+			minute: null/{m, r}
+			second: null/{m, r}
+		}
+		*/
 		for(var i=0;i<eventData.length;i++){
 			var e = eventData[i];
 			this.events.push(new mf_Event(
