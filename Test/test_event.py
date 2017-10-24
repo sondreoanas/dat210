@@ -7,7 +7,7 @@ from back_db import *
 import config as c
 from datetime import date, datetime
 
-nr_of_cals = 1
+nr_of_cals = 3
 nr_of_userevents = 6
 cal_ids = [
     1001,

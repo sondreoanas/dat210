@@ -21,8 +21,8 @@ def init_logged_in_user(username):
         c.the_user.set_username(username)
         c.the_user.set_name(db.get_user_name_db(username)[0])
         c.the_user.set_userid(db.get_userid_db(username)[0])
-        back_event.init_all_calendars()
-        back_event.init_all_userevents()
+        #back_event.init_all_calendars()
+        #back_event.init_all_userevents()
 
 
 # check for valid username function
@@ -94,5 +94,8 @@ def register_user(username, password, name):
     return False
 
 
-def edit_user(username_old, username_new, password_hash, salt, name):
-    return db.edit_user_db(username_old, username_new, password_hash, salt, name)
+def edit_user(username_old, username_new, password, name):
+    if not valid_password(password):
+        return False
+    password_hashed = sec.create_password(password)
+    return db.edit_user_db(username_old, username_new, password_hashed[0], password_hashed[1], name)

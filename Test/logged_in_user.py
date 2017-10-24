@@ -48,7 +48,7 @@ class LoggedInUser:
         if 'id' in self.__the_user.keys():
             return self.__the_user['id']
         return False
-
+    """
     def set_user_calendars(self, calendar_id, calendar_name, calendar_rights, calendar_public):
         if 'calendars' not in self.__the_user.keys():
             self.__the_user['calendars'] = dict()
@@ -56,10 +56,19 @@ class LoggedInUser:
         self.__the_user['calendars'][calendar_id]['calendar_rights'] = calendar_rights
         self.__the_user['calendars'][calendar_id]['calendar_name'] = calendar_name
         self.__the_user['calendars'][calendar_id]['calendar_public'] = calendar_public
+    """
 
     def get_user_calendars(self):
-        if 'calendars' in self.__the_user.keys():
-            return self.__the_user['calendars']
+        calendars = db.get_all_calendars_db(self.get_userid())
+        print(calendars)
+        calendar_list = dict()
+        if calendars:
+            for (cal_id, cal_name, cal_rigts, cal_public) in calendars:
+                calendar_list[cal_id] = dict()
+                calendar_list[cal_id]['calendar_rights'] = cal_name
+                calendar_list[cal_id]['calendar_name'] = cal_name
+                calendar_list[cal_id]['calendar_public'] = cal_public
+            return calendar_list
         return False
 
     def set_user_events(self, calendar_id, event_id, name, start, end, interval, terminatedate):

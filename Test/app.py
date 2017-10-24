@@ -19,7 +19,7 @@ def loadViewEvents():
         "load_start": request.form.get('start', 0),
         "load_end": request.form.get('end', 0)
     }
-    return json.dumps(io.getData("event_list",params))
+    return json.dumps(io.getData("loadview",params))
 
 @app.route("/getHTML")
 def getHTML():
