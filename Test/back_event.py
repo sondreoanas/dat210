@@ -23,6 +23,7 @@ def init_userevents(calendars):
                     if event:
                         c.the_user.set_user_events(cal_id, event_id, event[1], event[2], event[3], event[0], event[0])
 """
+
 def add_new_calendar(calendar_name, public_bool):
     calendar_id = db.add_new_calendar_db(calendar_name, public_bool)
     if calendar_id:
