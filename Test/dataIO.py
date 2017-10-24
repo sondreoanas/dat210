@@ -150,7 +150,7 @@ def getData(data, params=None,):
             }
         }
     if data == "calendar_edit":
-        result = back_event.get_calendar(params['id'])
+        result = c.the_user.get_calendar(params['id'])
         returner = {
             "success": True,
             "data": {
