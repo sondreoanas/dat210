@@ -9,8 +9,6 @@ import datetime
 def getData(data, params=None,):
     returner = {}
 
-    #back_user.login("ola@nordmann.no","p")
-
 
     if data == 'loadview':
         cal_db = c.the_user.get_user_calendars()
@@ -141,14 +139,19 @@ def getData(data, params=None,):
         else:
             params['public'] = False
         result = back_event.add_new_calendar(params['name'],params['public'])
-        returner = {
-            "success": result[1],
-            "data": {
-                "id" : result[0],
-                "name" : params["name"],
-                "public" : params["public"]
+        if result[0]:
+            returner = {
+                "success": result[0],
+                "data": {
+                    "id" : result[1],
+                    "name" : params["name"],
+                    "public" : params["public"]
+                }
             }
-        }
+        else:
+            returner = {
+                "success": result[0]
+            }
     if data == "calendar_edit":
         result = c.the_user.get_calendar(params['id'])
         returner = {
@@ -160,17 +163,12 @@ def getData(data, params=None,):
             }
         }
 
-    if data == "calendar_edit_form":
-        returner = {
-            "success": True,
-            "data": {
-                "id" : params["id"],
-                "name" : params['name'],
-                "public" : params['public']
-            }
-        }
 
     if data == "calendar_edit_form":
+        if params['public'] == 'public':
+            params['public'] = True
+        else:
+            params['public'] = False
         returner = {
             "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
@@ -181,17 +179,17 @@ def getData(data, params=None,):
         }
 
     if data == "event_new":
-        start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
-        end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
-        result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
+        start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
+        end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
+        result = back_event.add_new_event(params['calendar_id'],params['name'],start,end)
         returner = {
             "success": result[1],
             "data": {
                 "id" : result[0],
                 "calendar_id": params["calendar_id"],
                 "name": params["name"],
-                "start": params["start"],
-                "end": params["end"]
+                "start": params['start'],
+                "end": params['end']
             }
         }
 
@@ -218,8 +216,8 @@ def getData(data, params=None,):
                 "calendar_id": result[0],
                 "calendars" : getData("calendar_list"),
                 "name": result[1],
-                "start": result[2],
-                "end":  result[3]
+                "start": str(result[2]),
+                "end":  str(result[3])
             }
         }
 

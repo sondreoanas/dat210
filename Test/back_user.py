@@ -32,7 +32,7 @@ def valid_username(username):
         return [False, "Username already in use"]
     if match is None:
         return [False, "Not a valid email address"]
-    return True
+    return [True]
 
 
 # function to check if a user exists
@@ -51,7 +51,7 @@ def valid_password(password):
     #if match is None:
     #    return False
 
-    return True
+    return [True]
 
     if len(password) < 8:
         return False
@@ -66,7 +66,7 @@ def valid_password(password):
     elif re.search('123', password):
         return False
     else:
-        return True
+        return [True]
 
 
 # login function
@@ -78,7 +78,7 @@ def login(username, password):
             login_success = sec.check_password(password, user_password[0], user_password[1])
             if login_success:
                 session["login"] = True
-                c.the_user.clear()
+                #c.the_user.clear()
                 return login_success
     return False
 
