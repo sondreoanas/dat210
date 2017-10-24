@@ -27,6 +27,7 @@ router
     },
     'loggedout': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_loggedout&data=loggout");
+        mf_ajaxHandler.removeElement(elementid = "mainmenu");
     },
 
 // HOME
