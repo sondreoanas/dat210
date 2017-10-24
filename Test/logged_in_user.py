@@ -101,7 +101,7 @@ class LoggedInUser:
                             calendar[calendar_id]['events_list'].append(event_id)
                             user_events.append(event_id)
             return user_events
-        return False
+        return user_events
 
     def get_user_event(self, calendar_id, event_id):
         pass
