@@ -34,9 +34,7 @@ def getData(data, params=None,):
                     returner['events'].append(event)
 
 
-
     if data == "login":
-
         returner = {
             "success": back_user.login(params['username'],params['password']),
             "data": {
@@ -63,7 +61,8 @@ def getData(data, params=None,):
                     "Event" : [1,{
                         "New Event" : [0,"event/new"],
                         "My Events" : [0,"event/list"]
-                    }]
+                    }],
+                    "Loggout" : [0,"/loggedout"]
                 }
             }
 
@@ -188,6 +187,11 @@ def getData(data, params=None,):
                 "start": params['start'],
                 "end":  params['end']
             }
+        }
+
+    if data == "loggout":
+        returner = {
+            "success": back_user.loggout()
         }
 
     return returner
