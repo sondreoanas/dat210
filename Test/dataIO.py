@@ -9,8 +9,6 @@ import datetime
 def getData(data, params=None,):
     returner = {}
 
-    #back_user.login("ola@nordmann.no","p")
-
 
     if data == 'loadview':
         cal_db = c.the_user.get_user_calendars()
@@ -141,16 +139,36 @@ def getData(data, params=None,):
         else:
             params['public'] = False
         result = back_event.add_new_calendar(params['name'],params['public'])
+        if result[0]:
+            returner = {
+                "success": result[0],
+                "data": {
+                    "id" : result[1],
+                    "name" : params["name"],
+                    "public" : params["public"]
+                }
+            }
+        else:
+            returner = {
+                "success": result[0]
+            }
+    if data == "calendar_edit":
+        result = c.the_user.get_calendar(params['id'])
         returner = {
-            "success": result[1],
+            "success": True,
             "data": {
-                "id" : result[0],
-                "name" : params["name"],
-                "public" : params["public"]
+                "id": result[0],
+                "name": result[1],
+                "public": result[2]
             }
         }
 
-    if data == "calendar_edit":
+
+    if data == "calendar_edit_form":
+        if params['public'] == 'public':
+            params['public'] = True
+        else:
+            params['public'] = False
         returner = {
             "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
@@ -175,7 +193,7 @@ def getData(data, params=None,):
             }
         }
 
-    if data == "event_edit":
+    if data == "event_edit_form":
         returner = {
             "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
             #event description mangler + intervall + terminate_date
@@ -189,9 +207,23 @@ def getData(data, params=None,):
             }
         }
 
+    if data == "event_edit":
+        result = c.the_user.get_user_event(params['id'])
+        returner = {
+            "success": True,
+            "data": {
+                "id" : params["id"],
+                "calendar_id": result[0],
+                "calendars" : getData("calendar_list"),
+                "name": result[1],
+                "start": result[2],
+                "end":  result[3]
+            }
+        }
+
     if data == "loggout":
         returner = {
-            "success": back_user.loggout()
+            "success": back_user.logout()
         }
 
     return returner

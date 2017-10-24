@@ -30,7 +30,7 @@ def add_new_calendar(calendar_name, public_bool):
         if db.add_new_usercalendar_db(calendar_id):
             #calendar = db.get_calendar_db(c.the_user.get_userid, calendar_name, calendar_id)
             #c.the_user.set_user_calendars(calendar[0], calendar[1])
-            return [calendar_id, True]
+            return [True, calendar_id]
     return False
 
 def edit_calendar(calendar_id, calendar_name, public_bool):
@@ -40,9 +40,11 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
     event_id = db.add_new_event_db(event_name, start_time, end_time)
     if event_id:
         if db.add_new_eventcalendar_db(event_id, calendar_id):
-            event = db.get_event_db(event_id)
-            c.the_user.set_user_events(calendar_id, event_id)
+            #event = db.get_event_db(event_id)
+            #c.the_user.set_user_events(calendar_id, event_id)
             return [event_id, True]
+        else:
+            db.edit_event_db(event_id)
     return False
 
 def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
@@ -56,7 +58,7 @@ def add_new_task(interval):
     return False
 
 def search_events_usercalendar(calendar_id, interval_start, interval_end):
-    events = db.get_events_usercalendar_interval(the_user.get_userid, calendar_id, interval_start, interval_end)
+    events = db.get_events_usercalendar_interval(c.the_user.get_userid, calendar_id, interval_start, interval_end)
     if events != False:
         search_results = []
         search_result = dict()

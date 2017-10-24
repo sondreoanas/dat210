@@ -18,7 +18,7 @@ ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passordetmitt"
+app.config["DATABASE_PASSWORD"] = "root"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -197,7 +197,7 @@ def get_event_db(event_id):
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT EventId, Name, Start, End " \
+        sql = "SELECT EventId, Name, Description, Start, End " \
             "FROM eventn " \
             "WHERE EventId = %s "
         cur.execute(sql, (event_id,))
@@ -278,6 +278,21 @@ def edit_event_db(event_id, event_name, event_description, event_start, event_en
             "SET Name = %s, Description = %s, Start = %s, End = %s, Interval = %s, Terminatedate = %s " \
             "WHERE EventId = %s "
         cur.execute(sql, (event_name, event_description, event_start, event_end, event_interval, event_terminatedate, event_id))
+        db.commit()
+        return True
+    except mysql.connector.Error as err:
+        return False
+    finally:
+        cur.close()
+
+def delete_event_db(event_id):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE eventn " \
+            "SET Deleted = %s " \
+            "WHERE EventId = %s "
+        cur.execute(sql, (event_id))
         db.commit()
         return True
     except mysql.connector.Error as err:

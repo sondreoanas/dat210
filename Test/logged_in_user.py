@@ -103,12 +103,18 @@ class LoggedInUser:
             return user_events
         return user_events
 
-    def get_user_event(self, calendar_id, event_id):
-        pass
+    def get_user_event(self, event_id):
+        """returns calendar in list [0]=\"EventId\" [1]=\"Name\" [2]=\"Description\" [3]=\"Start\" [4]=\"End\" """
+        return db.get_event_db(event_id)
+
+    def get_calendar(self, calendar_id):
+        """returns calendar in list [0]=\"CalendarId\" [1]=\"Name\" [2]=\"Public\" """
+        return db.get_calendar_db(self.get_userid(), calendar_id)
 
     def clear(self):
         """clears the class"""
         self.__the_user = LoggedInUser(dict())
+        return True
 
     def contents(self):
         """return the details of the logged in user"""
