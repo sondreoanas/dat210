@@ -9,7 +9,7 @@ import datetime
 def getData(data, params=None,):
     returner = {}
 
-    #back_user.login("ola@nordmann.no","p")
+    back_user.login("ola@nordmann.no","p")
 
 
     if data == 'loadview':
@@ -149,8 +149,28 @@ def getData(data, params=None,):
                 "public" : params["public"]
             }
         }
-
     if data == "calendar_edit":
+        result = c.the_user.get_calendar(params['id'])
+        returner = {
+            "success": True,
+            "data": {
+                "id": result[0],
+                "name": result[1],
+                "public": result[2]
+            }
+        }
+
+    if data == "calendar_edit_form":
+        returner = {
+            "success": True,
+            "data": {
+                "id" : params["id"],
+                "name" : params['name'],
+                "public" : params['public']
+            }
+        }
+
+    if data == "calendar_edit_form":
         returner = {
             "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
@@ -175,7 +195,7 @@ def getData(data, params=None,):
             }
         }
 
-    if data == "event_edit":
+    if data == "event_edit_form":
         returner = {
             "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
             #event description mangler + intervall + terminate_date
@@ -189,9 +209,23 @@ def getData(data, params=None,):
             }
         }
 
+    if data == "event_edit":
+        result = c.the_user.get_user_event(params['id'])
+        returner = {
+            "success": True,
+            "data": {
+                "id" : params["id"],
+                "calendar_id": result[0],
+                "calendars" : getData("calendar_list"),
+                "name": result[1],
+                "start": result[2],
+                "end":  result[3]
+            }
+        }
+
     if data == "loggout":
         returner = {
-            "success": back_user.loggout()
+            "success": back_user.logout()
         }
 
     return returner
