@@ -107,9 +107,9 @@ class LoggedInUser:
         """returns calendar in list [0]=\"EventId\" [1]=\"Name\" [2]=\"Description\" [3]=\"Start\" [4]=\"End\" """
         return db.get_event_db(event_id)
 
-    def get_calendar(calendar_id):
+    def get_calendar(self, calendar_id):
         """returns calendar in list [0]=\"CalendarId\" [1]=\"Name\" [2]=\"Public\" """
-        return db.get_calendar_db(c.the_user.get_userid(), calendar_id)
+        return db.get_calendar_db(self.get_userid(), calendar_id)
 
     def clear(self):
         """clears the class"""
