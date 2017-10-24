@@ -78,7 +78,8 @@ def getData(data, params=None,):
                     "Event" : [1,{
                         "New Event" : [0,"event/new"],
                         "My Events" : [0,"event/list"]
-                    }]
+                    }],
+                    "Loggout" : [0,"/loggedout"]
                 }
             }
 
@@ -183,6 +184,11 @@ def getData(data, params=None,):
                 "start": "October 17, 2017 12:00",
                 "end": "October 26, 2017 12:00"
             }
+        }
+
+    if data == "loggout":
+        returner = {
+            "success": back_user.loggout()
         }
 
     return returner

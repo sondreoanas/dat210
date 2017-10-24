@@ -23,7 +23,10 @@ router
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_home");        
     },
     'welcome': function () {
-        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_welcome", data = response.data);      
+
+    },
+    'loggedout': function () {
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_loggedout&data=loggout");
     },
 
 // HOME
