@@ -3,7 +3,7 @@ from back_user import *
 from logged_in_user import *
 import config as c
 
-username = "test@tes.no"
+username = "test@test.no"
 password = "test"
 name = "test"
 userid = 2

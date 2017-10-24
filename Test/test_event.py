@@ -7,7 +7,7 @@ from back_db import *
 import config as c
 from datetime import date, datetime
 
-nr_of_cals = 3
+nr_of_cals = 1
 nr_of_userevents = 6
 cal_ids = [
     1001,
@@ -273,15 +273,15 @@ class UsercalendarTest(unittest.TestCase):
     def test_00_get_user_calendars(self):
         with app.app_context():
             login_testuser()
-            logout_testuser()
-            login_testuser()
             usercalendars = c.the_user.get_user_calendars()
             self.assertEqual(len(usercalendars), nr_of_cals)
 
     def test_01_get_all_userevents(self):
         with app.app_context():
+            logout_testuser()
             userevents = c.the_user.get_user_events()
-            self.assertEqual(len(userevents), nr_of_userevents)
+            usercalendars = c.the_user.get_user_calendars()
+            self.assertEqual(len(usercalendars), 0)
 
     def test_50_get_user_calendars(self):
         with app.app_context():
