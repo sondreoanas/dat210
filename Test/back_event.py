@@ -72,6 +72,4 @@ def search_events_usercalendar(calendar_id, interval_start, interval_end):
         return search_results
     return events
 
-def get_calendar(calendar_id):
-    """returns calendar in list [0]=\"CalendarId\" [1]=\"Name\" [2]=\"Public\" """
-    return db.get_calendar_db(c.the_user.get_userid(), calendar_id)
+
