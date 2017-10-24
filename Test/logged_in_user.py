@@ -103,7 +103,7 @@ class LoggedInUser:
             return user_events
         return user_events
 
-    def get_user_event(self, calendar_id, event_id):
+    def get_user_event(self, event_id):
         """returns calendar in list [0]=\"EventId\" [1]=\"Name\" [2]=\"Description\" [3]=\"Start\" [4]=\"End\" """
         return db.get_event_db(event_id)
 

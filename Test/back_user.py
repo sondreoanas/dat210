@@ -29,9 +29,9 @@ def init_logged_in_user(username):
 def valid_username(username):
     match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', username)
     if user_exist(username):
-        return False
+        return [False, "Username already in use"]
     if match is None:
-        return False
+        return [False, "Not a valid email address"]
     return True
 
 
@@ -90,8 +90,12 @@ def logout():
 
 # register user function
 def register_user(username, password, name):
-    #if not valid_username(username) or not valid_password(password):
-    #    return False
+    validate_username = valid_username(username)
+    validate_password = valid_password(password)
+    if not validate_username[0]:
+        return False
+    elif not validate_password[0]:
+        return False
     if not user_exist(username):
         password_hashed = sec.create_password(password)
         db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
