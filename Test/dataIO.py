@@ -232,8 +232,8 @@ def getData(data, params=None,):
                 "calendar_id": result[0],
                 "calendars" : getData("calendar_list"),
                 "name": result[1],
-                "start": str(result[2]),
-                "end":  str(result[3])
+                "start": str(result[3]),
+                "end":  str(result[4])
             }
         }
 
