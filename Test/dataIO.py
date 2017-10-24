@@ -179,17 +179,17 @@ def getData(data, params=None,):
         }
 
     if data == "event_new":
-        start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
-        end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
-        result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
+        start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
+        end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
+        result = back_event.add_new_event(params['calendar_id'],params['name'],start,end)
         returner = {
             "success": result[1],
             "data": {
                 "id" : result[0],
                 "calendar_id": params["calendar_id"],
                 "name": params["name"],
-                "start": params["start"],
-                "end": params["end"]
+                "start": params['start'],
+                "end": params['end']
             }
         }
 
@@ -216,8 +216,8 @@ def getData(data, params=None,):
                 "calendar_id": result[0],
                 "calendars" : getData("calendar_list"),
                 "name": result[1],
-                "start": result[2],
-                "end":  result[3]
+                "start": str(result[2]),
+                "end":  str(result[3])
             }
         }
 
