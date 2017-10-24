@@ -163,17 +163,12 @@ def getData(data, params=None,):
             }
         }
 
-    if data == "calendar_edit_form":
-        returner = {
-            "success": True,
-            "data": {
-                "id" : params["id"],
-                "name" : params['name'],
-                "public" : params['public']
-            }
-        }
 
     if data == "calendar_edit_form":
+        if params['public'] == 'public':
+            params['public'] = True
+        else:
+            params['public'] = False
         returner = {
             "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
