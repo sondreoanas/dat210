@@ -48,7 +48,7 @@ class LoggedInUser:
         if 'id' in self.__the_user.keys():
             return self.__the_user['id']
         return False
-
+    """
     def set_user_calendars(self, calendar_id, calendar_name, calendar_rights, calendar_public):
         if 'calendars' not in self.__the_user.keys():
             self.__the_user['calendars'] = dict()
@@ -56,6 +56,7 @@ class LoggedInUser:
         self.__the_user['calendars'][calendar_id]['calendar_rights'] = calendar_rights
         self.__the_user['calendars'][calendar_id]['calendar_name'] = calendar_name
         self.__the_user['calendars'][calendar_id]['calendar_public'] = calendar_public
+    """
 
     def get_user_calendars(self):
         calendars = db.get_all_calendars_db(self.get_userid())
