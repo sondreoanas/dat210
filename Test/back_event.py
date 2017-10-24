@@ -71,5 +71,3 @@ def search_events_usercalendar(calendar_id, interval_start, interval_end):
             search_results.append(search_result.copy())
         return search_results
     return events
-
-
