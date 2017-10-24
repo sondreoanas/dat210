@@ -11,9 +11,24 @@ def getData(data, params=None,):
 
 
     if data == 'loadview':
-        cal_db = c.the_user.get_user_calendars()
+        events_db = c.the_user.get_user_events()
+
+        returner = {'events':[]}
+        for event_id in events_db:
+            event = c.the_user.get_user_event(event_id)
+            start = time.mktime(event[3].timetuple()) * 1000
+            end = time.mktime(event[4].timetuple()) * 1000
+            event = {
+                "id": event_id,
+                "name": event[1],
+                "start": start,
+                "end": end
+            }
+            returner['events'].append(event)
+        """
+        events_db = c.the_user.get_user_events()
         returner = {'events': []}
-        for cal_id in cal_db:
+        for event_id in events_db:
             if 'events' in cal_db[cal_id].keys():
                 for event_id in cal_db[cal_id]['events']:
                     start = cal_db[cal_id]['events'][event_id]['start']
@@ -30,6 +45,7 @@ def getData(data, params=None,):
                         'name': cal_db[cal_id]['events'][event_id]['name']
                     }
                     returner['events'].append(event)
+        """
 
 
     if data == "login":
@@ -91,21 +107,19 @@ def getData(data, params=None,):
         #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
         #]
 
-        event_db = c.the_user.get_user_calendars()
+
+        events_db = c.the_user.get_user_events()
 
         returner = []
-        for event_id in event_db:
-            temp_event = c.the_user.get_user_event(event_id)
-            
-            for event_id in cal_db[cal_id]['events']:
-                print(event_id)
-                event = {
-                    "id": event_id,
-                    "name": cal_db[cal_id]['events'][event_id]['name'],
-                    "start": str(cal_db[cal_id]['events'][event_id]['start']),
-                    "end": str(cal_db[cal_id]['events'][event_id]['end'])
-                }
-                returner.append(event)
+        for event_id in events_db:
+            event = c.the_user.get_user_event(event_id)
+            event = {
+                "id": event_id,
+                "name": event[1],
+                "start": str(event[3]),
+                "end": str(event[4])
+            }
+            returner.append(event)
 
 
 #### PUT DATA #####
