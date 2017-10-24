@@ -140,9 +140,9 @@ def getData(data, params=None,):
             params['public'] = False
         result = back_event.add_new_calendar(params['name'],params['public'])
         returner = {
-            "success": result[1],
+            "success": result[0],
             "data": {
-                "id" : result[0],
+                "id" : result[1],
                 "name" : params["name"],
                 "public" : params["public"]
             }
