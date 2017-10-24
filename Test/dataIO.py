@@ -123,6 +123,17 @@ def getData(data, params=None,):
                 "nickname": params["nickname"]
             }
         }
+    if data == "edit_user":
+        if params['password_repeat'] == params['password']:
+            result = back_user.edit_user(params['username_old'],params['username'],params['password'],)
+        else: result = False
+        returner = {
+            "success":result,
+            "data": {
+                "username":params['username'],
+                "name": params['name'],
+            }
+        }
 
 
     if data == "calendar_new":
@@ -137,13 +148,12 @@ def getData(data, params=None,):
         }
 
     if data == "calendar_edit":
-        result = back_event.edit_calendar(params['id'],params['name'])
         returner = {
-            "success": True,
+            "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
             "data": {
                 "id" : params["id"],
-                "name" : "Some name",
-                "public" : True
+                "name" : params['name'],
+                "public" : params['public']
             }
         }
 
@@ -164,14 +174,15 @@ def getData(data, params=None,):
 
     if data == "event_edit":
         returner = {
-            "success": True,
+            "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
+            #event description mangler + intervall + terminate_date
             "data": {
                 "id" : params["id"],
-                "calendar_id": 1212,
+                "calendar_id": params["cal_id"],
                 "calendars" : getData("calendar_list"),
-                "name": "Some name",
-                "start": "October 17, 2017 12:00",
-                "end": "October 26, 2017 12:00"
+                "name": params['name'],
+                "start": params['start'],
+                "end":  params['end']
             }
         }
 
