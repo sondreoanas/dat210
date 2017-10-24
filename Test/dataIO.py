@@ -9,8 +9,6 @@ import datetime
 def getData(data, params=None,):
     returner = {}
 
-    back_user.login("ola@nordmann.no","p")
-
 
     if data == 'loadview':
         cal_db = c.the_user.get_user_calendars()

@@ -79,7 +79,7 @@ def login(username, password):
             if login_success:
                 session["login"] = True
                 c.the_user.clear()
-    return False
+    return login_success
 
 
 # logout function
