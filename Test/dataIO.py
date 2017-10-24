@@ -139,14 +139,19 @@ def getData(data, params=None,):
         else:
             params['public'] = False
         result = back_event.add_new_calendar(params['name'],params['public'])
-        returner = {
-            "success": result[0],
-            "data": {
-                "id" : result[1],
-                "name" : params["name"],
-                "public" : params["public"]
+        if result[0]:
+            returner = {
+                "success": result[0],
+                "data": {
+                    "id" : result[1],
+                    "name" : params["name"],
+                    "public" : params["public"]
+                }
             }
-        }
+        else:
+            returner = {
+                "success": result[0]
+            }
     if data == "calendar_edit":
         result = c.the_user.get_calendar(params['id'])
         returner = {
