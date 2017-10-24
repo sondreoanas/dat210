@@ -78,7 +78,7 @@ def login(username, password):
             login_success = sec.check_password(password, user_password[0], user_password[1])
             if login_success:
                 session["login"] = True
-                c.the_user.clear()
+                #c.the_user.clear()
                 return login_success
     return False
 
