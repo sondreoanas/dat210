@@ -76,8 +76,7 @@ def login(username, password):
 
 # logout function
 def logout():
-    c.the_user.clear()
-    pass
+    return c.the_user.clear()
 
 
 # register user function
