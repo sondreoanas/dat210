@@ -149,8 +149,18 @@ def getData(data, params=None,):
                 "public" : params["public"]
             }
         }
-
     if data == "calendar_edit":
+        result = back_event.get_calendar(params['id'])
+        returner = {
+            "success": True,
+            "data": {
+                "id": result[0],
+                "name": result[1],
+                "public": result[2]
+            }
+        }
+
+    if data == "calendar_edit_form":
         returner = {
             "success": True,
             "data": {
@@ -185,7 +195,7 @@ def getData(data, params=None,):
             }
         }
 
-    if data == "event_edit":
+    if data == "event_edit_form":
         returner = {
             "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
             #event description mangler + intervall + terminate_date
@@ -199,17 +209,17 @@ def getData(data, params=None,):
             }
         }
 
-    if data == "event_edit_form":
+    if data == "event_edit":
+        result = back_event.get_event(params['id'])
         returner = {
-            "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
-            #event description mangler + intervall + terminate_date
+            "success": True,
             "data": {
                 "id" : params["id"],
-                "calendar_id": params["cal_id"],
+                "calendar_id": result[0],
                 "calendars" : getData("calendar_list"),
-                "name": params['name'],
-                "start": params['start'],
-                "end":  params['end']
+                "name": result[1],
+                "start": result[2],
+                "end":  result[3]
             }
         }
 
