@@ -138,8 +138,8 @@ def edit_user_db(username_old, username_new, password_hash, salt, name):
     try:
         sql = "UPDATE user " \
             "SET Username = %s, Name = %s, Password = %s, Salt = %s " \
-            "WHERE CalendarId = %s "
-        cur.execute(sql, (username, name, password_hash, salt))
+            "WHERE Username = %s "
+        cur.execute(sql, (username_new, name, password_hash, salt, username_old))
         user_id = cur.lastrowid
         db.commit()
         return user_id
