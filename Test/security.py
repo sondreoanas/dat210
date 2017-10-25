@@ -50,6 +50,10 @@ def check_input(input):
         if input in injection: return NameError
         return input.strip('"\'')
 
+def check_equal(string_1, string_2):
+    if string_1 == string_2:return True
+    else: return False
+
 
 
 

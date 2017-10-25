@@ -1,52 +1,18 @@
 import back_user
 import back_event
 import config as c
+import security
 import time
 import datetime
 
-
-
 def getData(data, params=None,):
+    functions = {
+        'loadview': load_view(),
+
+    }
     returner = {}
-
-
-    if data == 'loadview':
-        events_db = c.the_user.get_user_events()
-
-        returner = {'events':[]}
-        for event_id in events_db:
-            event = c.the_user.get_user_event(event_id)
-            start = time.mktime(event[3].timetuple()) * 1000
-            end = time.mktime(event[4].timetuple()) * 1000
-            event = {
-                "id": event_id,
-                "name": event[1],
-                "start": start,
-                "end": end
-            }
-            returner['events'].append(event)
-        """
-        events_db = c.the_user.get_user_events()
-        returner = {'events': []}
-        for event_id in events_db:
-            if 'events' in cal_db[cal_id].keys():
-                for event_id in cal_db[cal_id]['events']:
-                    start = cal_db[cal_id]['events'][event_id]['start']
-                    end = cal_db[cal_id]['events'][event_id]['end']
-
-                    start = time.mktime(start.timetuple()) * 1000
-                    end = time.mktime(end.timetuple()) * 1000
-
-
-                    event = {
-                        'id': event_id,
-                        'start': start,
-                        'end': end,
-                        'name': cal_db[cal_id]['events'][event_id]['name']
-                    }
-                    returner['events'].append(event)
-        """
-
+    if data in functions:
+        functions[data]
 
     if data == "login":
         returner = {
@@ -124,17 +90,24 @@ def getData(data, params=None,):
 #### PUT DATA #####
 
     if data == "newuser":
-        if params['password'] == params['password_repeat']:
-            result = back_user.register_user(params['email'], params['password'], params['nickname'])
+        result = back_user.register_user(params['email'], params['password'], params['nickname'])
+        if security.check_equal(params['password'],params['password_repeat']):
+            if result:
+                returner = {
+                    "success": result,
+                    "data": {
+                        "email": params["email"],
+                        "nickname": params["nickname"]
+                    }
+                }
         else:
-            result = False
-        returner = {
-            "success": result,
-            "data": {
-                "email": params["email"],
-                "nickname": params["nickname"]
+            returner = {
+                "success": result,
+                "data": {
+                    "email": params["email"],
+                    "nickname": params["nickname"]
+                }
             }
-        }
     if data == "edit_user":
         if params['password_repeat'] == params['password']:
             result = back_user.edit_user(params['username_old'],params['username'],params['password'],)
@@ -242,3 +215,20 @@ def getData(data, params=None,):
         }
 
     return returner
+
+
+def load_view():
+    events_db = c.the_user.get_user_events()
+    events = {'events':[]}
+    for event_id in events_db:
+        event = c.the_user.get_user_event(event_id)
+        start = time.mktime(event[3].timetuple()) * 1000
+        end = time.mktime(event[4].timetuple()) * 1000
+        event = {
+            "id": event_id,
+            "name": event[1],
+            "start": start,
+            "end": end
+        }
+        events['events'].append(event)
+    return events
