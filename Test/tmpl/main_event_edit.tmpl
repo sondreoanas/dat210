@@ -16,7 +16,7 @@
                         <select id="form_event_calendar" name="form_event_calendar">
                             <%for(var i in this.data.calendars) {%>
                                 <option value="<%this.data.calendars[i].id%>" <%if(this.data.calendars[i].id == this.data.calendar_id) {%>selected<%}%>>
-                                    <%this.data.calendars[i].name%>
+                                    <%this.data.calendars[i].name%> - <%this.data.calendars[i].id%> - <%this.data.calendar_id%>
                                     <%if(this.data.calendars[i].public) {%>
                                      - public
                                     <%}%>

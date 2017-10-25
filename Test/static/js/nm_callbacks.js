@@ -4,6 +4,9 @@ cb.prototype.login = function(response){
 	if(response.success){
 		router.navigate('/loggedin');
 	}else{
+		if(response.notifications){
+			notifications.retrieve(response.notifications);
+		}
 		router.navigate();
 	}
 }
