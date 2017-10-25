@@ -2,6 +2,7 @@ import back_user
 import back_event
 import config as c
 import time
+import notifications as n
 import datetime
 
 
@@ -49,12 +50,22 @@ def getData(data, params=None,):
 
 
     if data == "login":
-        returner = {
-            "success": back_user.login(params['username'],params['password']),
-            "data": {
-                "username" : params["username"]
+        result = back_user.login(params['username'],params['password'])
+        if result:
+            returner = {
+                "success": result,
+                "data": {
+                    "username" : params["username"]
+                }
             }
-        }
+        else:
+            returner = {
+                "notifications": [n.notification(1)],
+                "success": result,
+                "data": {
+                    "username" : params["username"]
+                }
+            }
 
     if data == "forgotpass":
         returner = {
@@ -77,6 +88,15 @@ def getData(data, params=None,):
                         "My Events" : [0,"event/list"]
                     }],
                     "Loggout" : [0,"/loggedout"]
+                }
+            }
+
+    if data == "frontmenu":
+        returner = {
+                "items": {
+                    "Login" : [0,"/login"],
+                    "New user" : [0,"/newuser"],
+                    "Forgot password?" : [0,"/forgotpass"]
                 }
             }
 
@@ -215,7 +235,7 @@ def getData(data, params=None,):
             #event description mangler + intervall + terminate_date
             "data": {
                 "id" : params["id"],
-                "calendar_id": params["cal_id"],
+                "calendar_id": params["calendar_id"],
                 "calendars" : getData("calendar_list"),
                 "name": params['name'],
                 "start": params['start'],
@@ -224,6 +244,7 @@ def getData(data, params=None,):
         }
 
     if data == "event_edit":
+        #MANGLER calendar_id, gir nå event_id
         result = c.the_user.get_user_event(params['id'])
         returner = {
             "success": True,
