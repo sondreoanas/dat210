@@ -24,7 +24,9 @@ def check_password(user_password, client_password, salt):
 # Creates a password using a unique salt and a hashing algorithm
 
 def create_password(user_password):
-    salt = os.urandom(10)
+    # Oppdatering: hvis ikke oppdatert i databasen
+    #salt = os.urandom(10)
+    salt = os.urandom(10).hex()
     client_password = pbkdf2_hex(user_password, salt, iterations=50000, keylen=None, hashfunc=None)
     return [client_password, salt]
 
