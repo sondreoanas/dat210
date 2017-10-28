@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.3.0
+	version			: 1.0.0
 	last updated	: 28.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -46,7 +46,6 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				"the response from the server.");
 			return -1;
 		}
-		//var 
 		button.addEventListener("click", function(e){
 			e.preventDefault();
 			var form = document.getElementById(button.dataset.formid);
@@ -98,7 +97,7 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			}else if(button.dataset.addlastchild != null){
 				this.addLastChild(targetId, button.dataset.addlastchild);
 			}else{
-				Tool.printError("Markus 1 did something wrong, ask him to fix it.");
+				Tool.printError("Markus F did something wrong, ask him to fix it.");
 			}
 		}
 	}
@@ -125,12 +124,21 @@ mf_AjaxHandler.prototype.searchElement = function(element){
 	}
 }
 mf_AjaxHandler.prototype.findAjaxData = function(element){
+	// not backwards compatability warning
+	if(!element.dataset.target && (element.dataset.fill || element.dataset.replace)){
+		Tool.printError("Element with id \"" + element.id + "\" has a data-fill attribute but no target. " +
+			"This is not supported as of version 1.0.0. If you want to load data on load, try \"data-load\" instad. " +
+			"See \"html/htmlAjaxInstructions.txt\" for more info."
+		);
+		return false;
+	}
+	//
 	if(element.tagName == "SCRIPT" && element.dataset.run == ""){
 		var code = element.innerHTML;
 		mf_AjaxHandler.evaluateScriptQue.push(code);
 		return false;
 	}
-	if(element.dataset.timeline == "" || !element.dataset.target && (element.dataset.fill || element.dataset.replace)){
+	if(element.dataset.timeline == "" || !element.dataset.target && element.dataset.load){
 		if(element.dataset.timeline == ""){ // load "mf_timeline.js"
 			var index = mf_addTimeline(element);
 			if(element.dataset.position || element.dataset.zoom){
@@ -147,10 +155,11 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 				mf_timeline.timelines[index].zoom = zoom;
 			}
 		}else{ // load in other content
-			if(element.dataset.fill){
-				this.fillElementArgElement(element, element.dataset.fill);
-			}else{ // element.dataset.replace
-				this.replaceElementArgElement(element, element.dataset.replace);
+			if(element.dataset.load){
+				this.fillElementArgElement(element, element.dataset.load);
+			}else{
+				Tool.printError("Markus F did something wrong, ask him to fix it.");
+				return false;
 			}
 		}
 		return true;
