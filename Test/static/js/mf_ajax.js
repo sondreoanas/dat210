@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.2.3
-	last updated	: 24.10.2017
+	version			: 1.0.0
+	last updated	: 28.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -73,7 +73,13 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				"It needs a target to fill/replace/before/after/remove/addfirstchild.");
 			return -1;
 		}
-		button.addEventListener("click", function(e){
+		if(button.tagName == "BUTTON"){
+			button.addEventListener("click", action.bind(this));
+		}else if(button.tagName == "SELECT"){
+			button.addEventListener("change", action.bind(this));
+		}
+		button.addEventListener("click", action.bind(this));
+		function action(e){
 			e.preventDefault();
 			var targetId = button.dataset.target;
 			if(button.dataset.fill != null){
@@ -91,9 +97,9 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			}else if(button.dataset.addlastchild != null){
 				this.addLastChild(targetId, button.dataset.addlastchild);
 			}else{
-				Tool.printError("Markus 1 did something wrong, ask him to fix it.");
+				Tool.printError("Markus F did something wrong, ask him to fix it.");
 			}
-		}.bind(this));
+		}
 	}
 }
 // check Element content
@@ -118,12 +124,21 @@ mf_AjaxHandler.prototype.searchElement = function(element){
 	}
 }
 mf_AjaxHandler.prototype.findAjaxData = function(element){
+	// not backwards compatability warning
+	if(!element.dataset.target && (element.dataset.fill || element.dataset.replace)){
+		Tool.printError("Element with id \"" + element.id + "\" has a data-fill attribute but no target. " +
+			"This is not supported as of version 1.0.0. If you want to load data on load, try \"data-load\" instad. " +
+			"See \"html/htmlAjaxInstructions.txt\" for more info."
+		);
+		return false;
+	}
+	//
 	if(element.tagName == "SCRIPT" && element.dataset.run == ""){
 		var code = element.innerHTML;
 		mf_AjaxHandler.evaluateScriptQue.push(code);
 		return false;
 	}
-	if(element.dataset.timeline == "" || !element.dataset.target && (element.dataset.fill || element.dataset.replace)){
+	if(element.dataset.timeline == "" || !element.dataset.target && element.dataset.load){
 		if(element.dataset.timeline == ""){ // load "mf_timeline.js"
 			var index = mf_addTimeline(element);
 			if(element.dataset.position || element.dataset.zoom){
@@ -140,10 +155,11 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 				mf_timeline.timelines[index].zoom = zoom;
 			}
 		}else{ // load in other content
-			if(element.dataset.fill){
-				this.fillElementArgElement(element, element.dataset.fill);
-			}else{ // element.dataset.replace
-				this.replaceElementArgElement(element, element.dataset.replace);
+			if(element.dataset.load){
+				this.fillElementArgElement(element, element.dataset.load);
+			}else{
+				Tool.printError("Markus F did something wrong, ask him to fix it.");
+				return false;
 			}
 		}
 		return true;
@@ -358,7 +374,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 		responce.template = templater(responce.template, responce.data);
 		//notification(responce.notification);
     
-    while(element.firstChild){
+		while(element.firstChild){
 			element.removeChild(element.firstChild);
 		}
 
@@ -482,7 +498,6 @@ mf_AjaxHandler.prototype.checkDoneAjaxLoadingAndDecrement = function(){
 
 var mf_ajaxHandler = new mf_AjaxHandler();
 window.addEventListener("load", mf_ajaxHandler.initAjax.bind(mf_ajaxHandler));
-
 
 
 
