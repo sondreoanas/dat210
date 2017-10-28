@@ -213,7 +213,7 @@ Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
 		// {events:[{start, end, name, repeatData},{start,...},...]}
 		
-		//repeatdata = {
+		//repeatdata = \{
 		//	year: null/{m, r}, // null or modulus and rest
 		//	month: null/{m, r, perY/perM},
 		//	week: null/{m, r, perY/perM/perW}
@@ -221,7 +221,7 @@ Timeline.prototype.loadEvents = function(){
 		//	hour: null/{m, r}
 		//	minute: null/{m, r}
 		//	second: null/{m, r}
-		//}
+		//\}
 		var eventData = JSON.parse(responseText).events;
 		if(!eventData){
 			Tool.printError("Wrong format in responce from server on /loadViewEvents");
