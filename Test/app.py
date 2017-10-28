@@ -125,9 +125,19 @@ def calendar_edit(id):
     return render_template('index.html')
 
 
-@app.route("/event/edit/<int:id>")
-def event_edit(id):
+# @app.route("/event/edit/<int:id>")
+# def event_edit(id):
+#     return render_template('index.html')
+
+
+@app.route("/event/edit/<int:calendar_id>")
+def event_edit(calendar_id):
     return render_template('index.html')
+
+@app.route("/event/edit/<int:calendar_id>/<int:event_id>")
+def event_edit(calendar_id, event_id):
+    return render_template('index.html')
+
 
 
 @app.route("/")
