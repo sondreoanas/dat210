@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 0.2.3
-	last updated	: 24.10.2017
+	version			: 0.3.0
+	last updated	: 28.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -46,6 +46,7 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				"the response from the server.");
 			return -1;
 		}
+		//var 
 		button.addEventListener("click", function(e){
 			e.preventDefault();
 			var form = document.getElementById(button.dataset.formid);
@@ -73,7 +74,13 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				"It needs a target to fill/replace/before/after/remove/addfirstchild.");
 			return -1;
 		}
-		button.addEventListener("click", function(e){
+		if(button.tagName == "BUTTON"){
+			button.addEventListener("click", action.bind(this));
+		}else if(button.tagName == "SELECT"){
+			button.addEventListener("change", action.bind(this));
+		}
+		button.addEventListener("click", action.bind(this));
+		function action(e){
 			e.preventDefault();
 			var targetId = button.dataset.target;
 			if(button.dataset.fill != null){
@@ -93,7 +100,7 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 			}else{
 				Tool.printError("Markus 1 did something wrong, ask him to fix it.");
 			}
-		}.bind(this));
+		}
 	}
 }
 // check Element content
@@ -358,7 +365,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 		responce.template = templater(responce.template, responce.data);
 		//notification(responce.notification);
     
-    while(element.firstChild){
+		while(element.firstChild){
 			element.removeChild(element.firstChild);
 		}
 
