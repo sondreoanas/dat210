@@ -1,7 +1,7 @@
 /*
 	mf_ajax.js
 	
-	version			: 1.0.0
+	version			: 1.0.2
 	last updated	: 28.10.2017
 	name			: Markus Fjellheim
 	description		:
@@ -138,7 +138,7 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 		mf_AjaxHandler.evaluateScriptQue.push(code);
 		return false;
 	}
-	if(element.dataset.timeline == "" || !element.dataset.target && element.dataset.load){
+	if(element.dataset.timeline == "" || element.dataset.load){
 		if(element.dataset.timeline == ""){ // load "mf_timeline.js"
 			var index = mf_addTimeline(element);
 			if(element.dataset.position || element.dataset.zoom){
@@ -367,18 +367,18 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 	mf_AjaxHandler.nrOfCallsInProgress++;
 	//
 	mf_AjaxHandler.ajaxGet(url, function(responseText){
-		var responce = JSON.parse(responseText); // responce = {template: someTemplate, data: somedata}
+		var response = JSON.parse(responseText); // response = {template: someTemplate, data: somedata}
 		if(data){
-			responce.data = data;
+			response.data = data;
 		}
-		responce.template = templater(responce.template, responce.data);
-		//notification(responce.notification);
+		response.template = templater(response.template, response.data);
+		//notification(response.notification);
     
 		while(element.firstChild){
 			element.removeChild(element.firstChild);
 		}
 
-		element.innerHTML = responce.template;
+		element.innerHTML = response.template;
 
 /*
 
@@ -388,7 +388,7 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 			element.removeChild(element.firstChild);
 		}
 		// fill element with new children
-		var dummy = parser.parseFromString(responce.template, "text/html").body;
+		var dummy = parser.parseFromString(response.template, "text/html").body;
 		for(var i=0;i<dummy.children.length; i++){
 			element.appendChild(dummy.children[i]);
 		}
