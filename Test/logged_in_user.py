@@ -10,7 +10,7 @@ class LoggedInUser:
 
     def __getitem__(self, item):
         return self.__the_user[item]
-    
+
     def keys(self):
         """this is necessary when i try to overload the UserDict.Mixin"""
         return self.__the_user.values()
@@ -113,7 +113,7 @@ class LoggedInUser:
 
     def clear(self):
         """clears the class"""
-        #self.__the_user = 
+        self.__the_user = LoggedInUser(dict())
         return True
 
     def contents(self):

@@ -22,7 +22,7 @@ def init_logged_in_user(username):
         c.the_user.set_username(username)
         c.the_user.set_name(db.get_user_name_db(username)[0])
         c.the_user.set_userid(db.get_userid_db(username)[0])
-        #session["the_user"] = c.the_user.contents()
+        session["the_user"] = c.the_user.contents()
 
 
 # check for valid username function
@@ -77,7 +77,7 @@ def login(username, password):
         if user_password:
             login_success = sec.check_password(password, user_password[0], user_password[1])
             if login_success:
-                #session["login"] = True
+                session["login"] = True
                 #c.the_user.clear()
                 return login_success
     return False
@@ -85,7 +85,7 @@ def login(username, password):
 
 # logout function
 def logout():
-    #session.clear()
+    session.clear()
     return c.the_user.clear()
 
 
