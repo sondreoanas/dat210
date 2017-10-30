@@ -97,11 +97,11 @@ def register_user(username, password, name):
         return [False]
     if not user_exist(username):
         password_hashed = sec.create_password(password)
-        db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
+        user_id = db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
         if user_exist(username):
             cal_name = name + "\'s calendar"
             cal_id = db.add_new_calendar_db(cal_name, 0)
-            db.add_new_usercalendar_db(cal_id)
+            db.add_new_usercalendar_db(user_id, cal_id)
             return [True, username]
     return [False]
 

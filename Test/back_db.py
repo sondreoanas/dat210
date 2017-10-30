@@ -126,6 +126,7 @@ def set_new_user_db(username, password_hash, salt, name):
         cur.execute(sql2, (username, password_hash, salt, name))
         db.commit()
         print("successfull creation")
+        return cur.lastrowid
     except mysql.connector.Error as err:
         print("unsuccessful")
         return False
@@ -239,17 +240,19 @@ def edit_calendar_db(calendar_id, calendar_name, public_bool):
     finally:
         cur.close()
 
-def add_new_usercalendar_db(calendar_id):
+def add_new_usercalendar_db(user_id, calendar_id):
     db = get_db()
     cur = db.cursor()
+    print(c.the_user.get_userid())
     try:
         sql = "INSERT INTO usercalendars " \
             "(UserId, CalendarId, Adminlevel, Notifications) " \
             "VALUES (%s, %s, %s, %s) "
-        cur.execute(sql, (c.the_user.get_userid(), calendar_id, 3, 0))
+        cur.execute(sql, (user_id, calendar_id, 3, 0))
         db.commit()
         return True
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
