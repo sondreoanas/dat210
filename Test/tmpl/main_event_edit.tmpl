@@ -33,6 +33,10 @@
                         <input type="text" id="form_event_end" name="form_event_end" placeholder="event end date and time_" value="<%this.data.end%>">
                         
                     </fieldset>
+
+                    <script data-run>
+                        main_event_new_init_flatpicker();
+                    </script>
     
                     <button data-formid="forms_event_edit" data-callback="cb.event_edit">Save event</button>
 
