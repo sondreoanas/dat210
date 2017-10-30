@@ -1,5 +1,6 @@
 import back_user
 import back_event
+import back_db as db
 import config as c
 import time
 import notifications as n
@@ -87,6 +88,10 @@ def getData(data, params=None,):
                         "New Event" : [0,"event/new"],
                         "My Events" : [0,"event/list"]
                     }],
+                    "Tasks" : [1,{
+                        "New Task" : [0,"task/new"],
+                        "My Tasks" : [0,"task/list"]
+                    }],
                     "Loggout" : [0,"/loggedout"]
                 }
             }
@@ -118,6 +123,30 @@ def getData(data, params=None,):
                 "public": cal_db[cal_id]['calendar_public']
             }
             returner.append(calendar)
+
+
+    if data == "event_calendar":
+
+        returner = {"calendar_id": params["args"].get("calendar_id", 0)}
+
+
+    if data == "event_calendar_list":
+
+        calendar_id = params["args"].get("calendar_id", 0)
+
+        calendar_events = db.get_all_calendar_events_db(calendar_id)
+
+        returner = []
+        for event_id, _ in calendar_events:
+            event = c.the_user.get_user_event(event_id)
+            event = {
+                "id": event_id,
+                "calendar_id": calendar_id,
+                "name": event[1],
+                "start": str(event[3]),
+                "end": str(event[4])
+            }
+            returner.append(event)
 
     if data == "event_list":
         #returner = [
@@ -245,18 +274,41 @@ def getData(data, params=None,):
 
     if data == "event_edit":
         #MANGLER calendar_id, gir nå event_id
-        result = c.the_user.get_user_event(params['id'])
+        calendar_id = params["args"].get('calendar_id', 0)
+        event_id = params["args"].get('event_id', 0)
+        result = c.the_user.get_user_event(event_id)
         returner = {
             "success": True,
             "data": {
-                "id" : params["id"],
-                "calendar_id": result[0],
+                "id" : event_id,
+                "calendar_id": calendar_id,
                 "calendars" : getData("calendar_list"),
                 "name": result[1],
                 "start": str(result[3]),
                 "end":  str(result[4])
             }
         }
+
+    if data == "task_new":
+
+        calendar_id = params.get('form_task_calendar', 0)
+        name = params.get('form_task_name', 0)
+        start = params.get('form_task_start', 0)
+        todos = params.getlist('todos')
+
+        returner = {
+            "success": True,
+            "data": {
+                "id" : 1,
+                "calendar_id": calendar_id,
+                "name": name,
+                "start": start,
+                "todos": todos
+            }
+        }
+
+
+
 
     if data == "loggout":
         returner = {
