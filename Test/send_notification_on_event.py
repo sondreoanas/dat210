@@ -131,9 +131,8 @@ def send_notification():
 
 def run_email_eventnotification():
     while True:
-        print("Running")
         send_notification()
-        time.sleep(60) # Running every 10th min
+        time.sleep(600) # Running every 10th min
 
 
 
