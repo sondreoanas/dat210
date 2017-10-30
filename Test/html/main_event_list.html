@@ -8,14 +8,9 @@
                 <h2>Your events</h2>
 
                 <label for="event_list_calendar">Pick calendar:</label>
-                <select id="event_list_calendar" data-load="/getTMPL?tmpl=calendar_list_option&data=calendar_list" onchange="router.navigate('event/edit/'+this.value)">
+                <select id="event_list_calendar" data-load="/getTMPL?tmpl=calendar_list_option&data=calendar_list" onchange="router.navigate('event/list/'+this.value)">
                         
                 </select>
-
-                <ul class="list" id="event_list_output">
-
-                </ul>
-    
     
             </div>
         </div>

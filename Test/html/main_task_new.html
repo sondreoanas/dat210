@@ -1,0 +1,55 @@
+<main id="main" data-location="task_new">
+
+    <section id="task_new" class="ffix page">
+            
+        <div class="ghost">
+            <div class="box form_task_new ffix">
+    
+                <h2>Create new task</h2>
+    
+                <form id="forms_task_new" action="new_form">
+                    <fieldset>
+
+                        <label for="form_task_calendar">Calendar:</label>
+                        <select id="form_task_calendar" name="form_task_calendar" data-load="/getTMPL?tmpl=calendar_list_option&data=calendar_list">
+
+                        </select>
+
+                        <label for="form_task_name">Task name:</label>
+                        <input type="text" id="form_task_name" name="form_task_name" placeholder="task name_">
+                        <label for="form_task_start">Start:</label>
+                        <input type="text" id="form_task_start" name="form_task_start" placeholder="task start date and time_">
+
+                        ## RECURRING INTERFACE ##
+
+                    </fieldset>
+
+                    <fieldset>
+                        <label for="form_todo_name">Todo name:</label>
+                        <input type="text" id="form_todo_name" name="form_todo_name" placeholder="todo name_">
+                        <button onclick="main_task_new_add_todo();" type="button">Add new todo</button>
+                    </fieldset>
+
+                    <fieldset>
+                        <h3>My todos:</h3>
+                        <ul id="task_new_todo_list" data-pos="1">
+                        </ul>  
+                    </fieldset>
+
+                    <script data-run>
+
+                        
+                        main_task_new_init_flatpicker();
+                    </script>
+
+    
+                    <button data-formid="forms_task_new" data-callback="cb.task_new">Create new Task</button>
+            
+                </form>
+    
+            </div>
+        </div>
+    
+    </section>
+
+</main>
