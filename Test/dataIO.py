@@ -2,6 +2,7 @@ import back_user
 import back_event
 import config as c
 import time
+import notifications as n
 import datetime
 
 
@@ -11,9 +12,24 @@ def getData(data, params=None,):
 
 
     if data == 'loadview':
-        cal_db = c.the_user.get_user_calendars()
+        events_db = c.the_user.get_user_events()
+
+        returner = {'events':[]}
+        for event_id in events_db:
+            event = c.the_user.get_user_event(event_id)
+            start = time.mktime(event[3].timetuple()) * 1000
+            end = time.mktime(event[4].timetuple()) * 1000
+            event = {
+                "id": event_id,
+                "name": event[1],
+                "start": start,
+                "end": end
+            }
+            returner['events'].append(event)
+        """
+        events_db = c.the_user.get_user_events()
         returner = {'events': []}
-        for cal_id in cal_db:
+        for event_id in events_db:
             if 'events' in cal_db[cal_id].keys():
                 for event_id in cal_db[cal_id]['events']:
                     start = cal_db[cal_id]['events'][event_id]['start']
@@ -30,15 +46,26 @@ def getData(data, params=None,):
                         'name': cal_db[cal_id]['events'][event_id]['name']
                     }
                     returner['events'].append(event)
+        """
 
 
     if data == "login":
-        returner = {
-            "success": back_user.login(params['username'],params['password']),
-            "data": {
-                "username" : params["username"]
+        result = back_user.login(params['username'],params['password'])
+        if result:
+            returner = {
+                "success": result,
+                "data": {
+                    "username" : params["username"]
+                }
             }
-        }
+        else:
+            returner = {
+                "notifications": [n.notification(1)],
+                "success": result,
+                "data": {
+                    "username" : params["username"]
+                }
+            }
 
     if data == "forgotpass":
         returner = {
@@ -61,6 +88,15 @@ def getData(data, params=None,):
                         "My Events" : [0,"event/list"]
                     }],
                     "Loggout" : [0,"/loggedout"]
+                }
+            }
+
+    if data == "frontmenu":
+        returner = {
+                "items": {
+                    "Login" : [0,"/login"],
+                    "New user" : [0,"/newuser"],
+                    "Forgot password?" : [0,"/forgotpass"]
                 }
             }
 
@@ -91,19 +127,19 @@ def getData(data, params=None,):
         #     [454, "Event 04","October 17, 2017 12:00","October 26, 2017 12:00"]
         #]
 
-        cal_db = c.the_user.get_user_calendars()
+
+        events_db = c.the_user.get_user_events()
 
         returner = []
-        for cal_id in cal_db:
-            if 'events' in cal_db[cal_id].keys():
-                for event_id in cal_db[cal_id]['events']:
-                    event = {
-                        "id": event_id,
-                        "name": cal_db[cal_id]['events'][event_id]['name'],
-                        "start": str(cal_db[cal_id]['events'][event_id]['start']),
-                        "end": str(cal_db[cal_id]['events'][event_id]['end'])
-                    }
-                    returner.append(event)
+        for event_id in events_db:
+            event = c.the_user.get_user_event(event_id)
+            event = {
+                "id": event_id,
+                "name": event[1],
+                "start": str(event[3]),
+                "end": str(event[4])
+            }
+            returner.append(event)
 
 
 #### PUT DATA #####
@@ -199,7 +235,7 @@ def getData(data, params=None,):
             #event description mangler + intervall + terminate_date
             "data": {
                 "id" : params["id"],
-                "calendar_id": params["cal_id"],
+                "calendar_id": params["calendar_id"],
                 "calendars" : getData("calendar_list"),
                 "name": params['name'],
                 "start": params['start'],
@@ -208,6 +244,7 @@ def getData(data, params=None,):
         }
 
     if data == "event_edit":
+        #MANGLER calendar_id, gir nå event_id
         result = c.the_user.get_user_event(params['id'])
         returner = {
             "success": True,
@@ -216,8 +253,8 @@ def getData(data, params=None,):
                 "calendar_id": result[0],
                 "calendars" : getData("calendar_list"),
                 "name": result[1],
-                "start": str(result[2]),
-                "end":  str(result[3])
+                "start": str(result[3]),
+                "end":  str(result[4])
             }
         }
 
