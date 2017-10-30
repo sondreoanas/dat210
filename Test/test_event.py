@@ -273,9 +273,8 @@ class UsercalendarTest(unittest.TestCase):
     def test_00_get_user_calendars(self):
         with app.app_context():
             login_testuser()
-            logout_testuser()
-            login_testuser()
             usercalendars = c.the_user.get_user_calendars()
+            edit_event_db(1, "event_name", "event_description", search_parameters['start'], search_parameters['end'], 0, 0)
             self.assertEqual(len(usercalendars), nr_of_cals)
 
     def test_01_get_all_userevents(self):

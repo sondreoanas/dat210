@@ -38,8 +38,7 @@ def getTMPL():
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
     params = {
-        "id": request.args.get("id", None),
-        "args": request.args
+        "id": request.args.get("id", None)
     }
     with open('tmpl/' + tmpl +'.tmpl', 'r') as f:
         template = f.read()
@@ -109,11 +108,10 @@ def event_new_form():
     return json.dumps(io.getData("event_new", params))
 
 
-@app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
-def event_edit_form(calendar_id):
+@app.route("/event/edit/edit_form", methods=["POST"])
+def event_edit_form():
     params = {
         "id": request.form.get('form_event_id', 0),
-        "old_calendar_id": calendar_id,
         "calendar_id": request.form.get('form_event_calendar', 0),
         "name": request.form.get('form_event_name', 0),
         "start": request.form.get('form_event_start', 0),
@@ -131,20 +129,9 @@ def calendar_edit(id):
 # def event_edit(id):
 #     return render_template('index.html')
 
-
-@app.route("/event/list/<int:calendar_id>")
-def event_calendar(calendar_id):
-    return render_template('index.html')
-
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
-
-
-
-@app.route("/task/new_form", methods=["POST"])
-def task_new_form():
-    return json.dumps(io.getData("task_new", request.form))
 
 
 
@@ -158,7 +145,6 @@ def task_new_form():
 @app.route("/calendar/list")
 @app.route("/event/new")
 @app.route("/event/list")
-@app.route("/task/new")
 def index():
     return render_template('index.html')
 
