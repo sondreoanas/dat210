@@ -38,14 +38,20 @@ def edit_calendar(calendar_id, calendar_name, public_bool):
 
 def add_new_event(calendar_id, event_name, start_time, end_time):
     event_id = db.add_new_event_db(event_name, start_time, end_time)
+    print(calendar_id)
     if event_id:
-        if db.add_new_eventcalendar_db(event_id, calendar_id):
-            #event = db.get_event_db(event_id)
-            #c.the_user.set_user_events(calendar_id, event_id)
-            return [event_id, True]
-        else:
-            db.edit_event_db(event_id)
-    return False
+        print(event_id)
+        try:
+            calendar_id = int(calendar_id)
+            if db.add_new_eventcalendar_db(event_id, calendar_id):
+                #event = db.get_event_db(event_id)
+                #c.the_user.set_user_events(calendar_id, event_id)
+                return [event_id, True]
+            else:
+                db.edit_event_db(event_id)
+        except ValueError:
+            db.delete_event_db(event_id)
+    return [0,False]
 
 def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
     return db.edit_event_db(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)
