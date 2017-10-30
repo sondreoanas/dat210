@@ -77,16 +77,14 @@ def login(username, password):
         if user_password:
             login_success = sec.check_password(password, user_password[0], user_password[1])
             if login_success:
-                #session["login"] = True
-                #c.the_user.clear()
                 return db.get_userid_db(username)[0]
     return False
 
 
 # logout function
 def logout():
-    #session.clear()
-    return c.the_user.clear()
+    session.clear()
+    return True
 
 
 # register user function
@@ -94,15 +92,18 @@ def register_user(username, password, name):
     validate_username = valid_username(username)
     validate_password = valid_password(password)
     if not validate_username[0]:
-        return False
+        return [False]
     elif not validate_password[0]:
-        return False
+        return [False]
     if not user_exist(username):
         password_hashed = sec.create_password(password)
         db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
         if user_exist(username):
+            cal_name = name + "\'s calendar"
+            cal_id = db.add_new_calendar_db(cal_name, 0)
+            db.add_new_usercalendar_db(cal_id)
             return [True, username]
-    return False
+    return [False]
 
 
 def edit_user(username_old, username_new, password, name):

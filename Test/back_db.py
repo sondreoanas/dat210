@@ -290,12 +290,13 @@ def delete_event_db(event_id):
     cur = db.cursor()
     try:
         sql = "UPDATE eventn " \
-            "SET Deleted = %s " \
+            "SET Deleted = 1 " \
             "WHERE EventId = %s "
-        cur.execute(sql, (event_id))
+        cur.execute(sql, (event_id,))
         db.commit()
         return True
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
