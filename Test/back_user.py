@@ -79,7 +79,7 @@ def login(username, password):
             if login_success:
                 #session["login"] = True
                 #c.the_user.clear()
-                return login_success
+                return db.get_userid_db(username)[0]
     return False
 
 
