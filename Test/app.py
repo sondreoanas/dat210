@@ -38,7 +38,8 @@ def getTMPL():
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
     params = {
-        "id": request.args.get("id", None)
+        "id": request.args.get("id", None),
+        "args": request.args
     }
     with open('tmpl/' + tmpl +'.tmpl', 'r') as f:
         template = f.read()
