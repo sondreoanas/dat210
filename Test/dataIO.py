@@ -207,7 +207,7 @@ def getData(data, params=None,):
 
     if data == "event_edit_form":
         returner = {
-            "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
+            "success": back_event.edit_event(params['id'], params['name'],None, params['start'], params['end'], None, None),
             #event description mangler + intervall + terminate_date
             "data": {
                 "id" : params["id"],

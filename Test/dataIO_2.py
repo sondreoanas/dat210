@@ -1,9 +1,10 @@
 import back_user
 import back_event
-import config as c
+import back_db as db
 import security
 import time
 import datetime
+from flask import session
 
 def getData(data, params=None,):
     functions = {
@@ -14,6 +15,7 @@ def getData(data, params=None,):
         'forgotpass':forgotpass,
         'newuser':newuser,
         'edit_user':edit_user,
+        'logout':logout,
 
         'calendar_list':calendar_list,
         'calendar_new':calendar_new,
@@ -29,28 +31,39 @@ def getData(data, params=None,):
     }
 
     if data in functions:
-        functions[data](params)
+        return functions[data](params)
 
 
 """ HOME """    #----------------------------------------------
 
-def load_view():
-    events_db = c.the_user.get_user_events()
+def load_view(params):
+    cal_db = db.get_all_calendars_db(session['id'])
     events = {'events':[]}
-    for event_id in events_db:
-        event = c.the_user.get_user_event(event_id)
-        start = time.mktime(event[3].timetuple()) * 1000
-        end = time.mktime(event[4].timetuple()) * 1000
-        event = {
-            "id": event_id,
-            "name": event[1],
-            "start": start,
-            "end": end
-        }
-        events['events'].append(event)
+    if cal_db:
+        for cal_id, cal_name, cal_rights, cal_public in cal_db:
+            events_db = db.get_all_calendar_events_db(cal_id)
+            if events_db:
+                for event_id,cal_id in events_db:
+                    event_db = db.get_event_db(event_id)
+                    start = time.mktime(event_db[3].timetuple()) * 1000
+                    end = time.mktime(event_db[4].timetuple()) * 1000
+                    if event_db:
+                        event = {
+                            'id': event_id,
+                            'name': event_db[1],
+                            'start':start,
+                            'end':end
+                        }
+                        events['events'].append(event)
+                    else:
+                        return {'success':False}
+            else:
+                return {'success':False}
+    else:
+        return {'success':False}
     return events
 
-def nav():
+def nav(params):
     return {
         "items": {
             "Home" : [0,"/home"],
@@ -71,12 +84,13 @@ def nav():
 """ USER """    #----------------------------------------------
 
 def login(params):
-    return {
+    resultat = {
         "success": back_user.login(params['username'],params['password']),
         "data": {
             "username" : params["username"]
         }
     }
+    return resultat
 
 def forgotpass(params):
      return {
@@ -121,26 +135,33 @@ def edit_user(params):
     }
     return user
 
-def loggout():
+def logout(params):
+    username = session['username']
     user = {
-        "success": back_user.logout()
+        "success": back_user.logout(),
+        "data": {
+            'username':username
+        }
     }
     return user
 
 """ CALENDAR """    #----------------------------------------------
 
 def calendar_list(params):
-    cal_db = c.the_user.get_user_calendars()
+    cal_db = db.get_all_calendars_db(session['id'])
     calendars = []
-    for cal_id in cal_db:
-        calendar = {
-            "id": cal_id,
-            "name": cal_db[cal_id]['calendar_name'],
-            "rights": cal_db[cal_id]['calendar_rights'],
-            "public": cal_db[cal_id]['calendar_public']
-        }
-        calendars.append(calendar)
-    return calendars
+    if cal_db:
+        for cal_id, cal_name, cal_rights, cal_public in cal_db:
+            calendar = {
+                "id": cal_id,
+                "name": cal_name,
+                "rights": cal_rights,
+                "public": cal_public
+            }
+            calendars.append(calendar)
+        return calendars
+    else:
+        return {'success':False}
 
 def calendar_new(params):
     if params['public'] == 'public':
@@ -159,7 +180,7 @@ def calendar_new(params):
     return calendar
 
 def calendar_edit(params):
-    result = c.the_user.get_calendar(params['id'])
+    result = db.get_calendar_db(params['id'])
     calendar = {
         "success": True,
         "data": {
@@ -173,7 +194,7 @@ def calendar_edit(params):
 
 def calendar_edit_form(params):
     calendar = {
-        "success": back_event.edit_calendar(params['id'],params['name'],params['public']),
+        "success": db.edit_calendar_db(params['id'],params['name'],params['public']),
         "data": {
             "id" : params["id"],
             "name" : params['name'],
@@ -186,19 +207,32 @@ def calendar_edit_form(params):
 
 """ EVENT """   #----------------------------------------------
 
-def event_list():
-    events_db = c.the_user.get_user_events()
-    events = []
-    for event_id in events_db:
-        event = c.the_user.get_user_event(event_id)
-        event = {
-            "id": event_id,
-            "name": event[1],
-            "start": str(event[3]),
-            "end": str(event[4])
-        }
-        events.append(event)
-    return events
+def event_list(params):
+    cal_db = db.get_all_calendars_db(session['id'])
+    resultat = []
+    if cal_db:
+        for cal_id, cal_name, cal_rights, cal_public in cal_db:
+            calendar = {cal_id:[]}
+            events_db = db.get_all_calendar_events_db(cal_id)
+            if events_db:
+                for event_id,cal_id in events_db:
+                    event_db = db.get_event_db(event_id)
+                    if event_db:
+                        event = {
+                            'id': event_id,
+                            'name': event_db[1],
+                            'start':str(event_db[3]),
+                            'end':str(events_db[4])
+                        }
+                        calendar[cal_id].append(event)
+                    else:
+                        return {'success':False}
+            else:
+                return {'success':False}
+        resultat.append(calendar)
+    else:
+        return {'success':False}
+    return resultat
 
 def event_new(params):
     start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
@@ -218,7 +252,7 @@ def event_new(params):
 
 def event_edit_form(params):
     event_form = {
-        "success": back_event.edit_event(params['id'], params['name'], 0, params['start'], params['end'], 0, 0),
+        "success": db.edit_event_db(params['id'], params['name'], None, params['start'], params['end'], None, None),
         #event description mangler + intervall + terminate_date
         "data": {
             "id" : params["id"],
@@ -232,7 +266,7 @@ def event_edit_form(params):
     return event_form
 
 def event_edit(params):
-    result = c.the_user.get_user_event(params['id'])
+    result = db.get_event_db(params['id'])
     event = {
         "success": True,
         "data": {

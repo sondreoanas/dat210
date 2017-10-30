@@ -5,16 +5,16 @@
 """
 import dataIO_2 as io
 import json
-import config as c
-import back_user
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 
 app = Flask(__name__)
 app.secret_key = "any random string"
 
+""" HOME """ #------------------------------------------------------------
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
+    if not session['login']: return render_template('index.html')
     params = {
         "load_start": request.form.get('start', 0),
         "load_end": request.form.get('end', 0)
@@ -23,6 +23,7 @@ def loadViewEvents():
 
 @app.route("/getHTML")
 def getHTML():
+    if not session['login']: return render_template('index.html')
     html = request.args.get("html", None)
     with open('html/' + html +'.html', 'r') as f:
         template = f.read()
@@ -32,9 +33,9 @@ def getHTML():
     }
     return json.dumps(data)
 
-
 @app.route("/getTMPL")
 def getTMPL():
+    if not session['login']: return render_template('index.html')
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
     params = {
@@ -48,15 +49,22 @@ def getTMPL():
     }
     return json.dumps(jstring)
 
-  
+""" USER """ #------------------------------------------------------------
+
 @app.route("/login_form", methods=["POST"])
 def login():
     params = {
         "username": request.form.get('username', 0),
         "password": request.form.get('password', 0)
     }
-    return json.dumps(io.getData("login", params))
-
+    data = io.getData("login", params)
+    if isinstance(data['success'],int):
+        session['id'] = data['success']
+        session['username'] = params['username']
+        session['login'] = True
+    else:
+        print('failed to log in')
+    return json.dumps(data)
 
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
@@ -64,7 +72,6 @@ def forgotpass():
         "username": request.form.get('form_userid', 0)
     }
     return json.dumps(io.getData("forgotpass", params))
-
 
 @app.route("/newuser_form", methods=["POST"])
 def newuser():
@@ -76,6 +83,11 @@ def newuser():
     }
     return json.dumps(io.getData("newuser", params))
 
+@app.route("/logout")
+def logout():
+    return json.dumps(io.getData('logout'))
+
+""" CALENDAR """ #------------------------------------------------------------
 
 @app.route("/calendar/new_form", methods=["POST"])
 def calendar_new_form():
@@ -86,7 +98,6 @@ def calendar_new_form():
     print(params)
     return json.dumps(io.getData("calendar_new", params))
 
-
 @app.route("/calendar/edit/edit_form", methods=["POST"])
 def calendar_edit_form():
     params = {
@@ -96,6 +107,11 @@ def calendar_edit_form():
     }
     return json.dumps(io.getData("calendar_edit_form", params))
 
+@app.route("/calendar/edit/<int:id>")
+def calendar_edit(id):
+    return render_template('index.html')
+
+""" EVENTS """ #------------------------------------------------------------
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -106,7 +122,6 @@ def event_new_form():
         "end": request.form.get('form_event_end', 0)
     }
     return json.dumps(io.getData("event_new", params))
-
 
 @app.route("/event/edit/edit_form", methods=["POST"])
 def event_edit_form():
@@ -119,15 +134,10 @@ def event_edit_form():
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-
-@app.route("/calendar/edit/<int:id>")
-def calendar_edit(id):
-    return render_template('index.html')
-
-
 @app.route("/event/edit/<int:id>")
 def event_edit(id):
     return render_template('index.html')
+
 
 
 @app.route("/")

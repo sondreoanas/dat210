@@ -8,10 +8,6 @@ Sist oppdatert: 19.09.17 13:22 av Markus
 """
 from flask import Flask, g, abort, session
 import mysql.connector
-import re
-import back_event
-import config as c
-from datetime import datetime
 
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]

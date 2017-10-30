@@ -1,7 +1,5 @@
 """Calendar and events"""
-import back_user
 import back_db as db
-import config as c
 
 """def init_all_calendars():
     calendars = db.get_all_calendars_db(c.the_user.get_userid())
@@ -33,9 +31,6 @@ def add_new_calendar(calendar_name, public_bool):
             return [True, calendar_id]
     return False
 
-def edit_calendar(calendar_id, calendar_name, public_bool):
-    return db.edit_calendar_db(calendar_id, calendar_name, public_bool)
-
 def add_new_event(calendar_id, event_name, start_time, end_time):
     event_id = db.add_new_event_db(event_name, start_time, end_time)
     if event_id:
@@ -46,9 +41,6 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
         else:
             db.edit_event_db(event_id)
     return False
-
-def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
-    return db.edit_event_db(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)
 
 def add_new_task(interval):
     task_id = db.add_new_task_db(interval)
