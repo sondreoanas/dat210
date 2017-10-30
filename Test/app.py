@@ -109,10 +109,11 @@ def event_new_form():
     return json.dumps(io.getData("event_new", params))
 
 
-@app.route("/event/edit/edit_form", methods=["POST"])
-def event_edit_form():
+@app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
+def event_edit_form(calendar_id):
     params = {
         "id": request.form.get('form_event_id', 0),
+        "old_calendar_id": calendar_id,
         "calendar_id": request.form.get('form_event_calendar', 0),
         "name": request.form.get('form_event_name', 0),
         "start": request.form.get('form_event_start', 0),
