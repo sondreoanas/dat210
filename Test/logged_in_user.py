@@ -61,7 +61,6 @@ class LoggedInUser:
 
     def get_user_calendars(self):
         calendars = db.get_all_calendars_db(self.get_userid())
-        print(calendars)
         calendar_list = dict()
         if calendars:
             for (cal_id, cal_name, cal_rigts, cal_public) in calendars:
