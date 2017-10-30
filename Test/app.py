@@ -3,7 +3,7 @@
     this file is the core of the Calendar
     Sist oppdatert: Nils 17.10.2017
 """
-import dataIO as io
+import dataIO_2 as io
 import json
 import config as c
 import back_user
