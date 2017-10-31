@@ -61,26 +61,17 @@ def add_new_task(interval):
             return {"success": True, "task_id": task_id}
     return {"success": False}
 
-def search_events_usercalendar(calendar_id, interval_start, interval_end):
-    """returns the dict:
-    \"success\": bool,
-    \"search_results\": [
-        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
-        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
-        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
-        ...
-        ...
-        ]
-    """
-    events = db.get_events_usercalendar_interval(c.the_user.get_userid, calendar_id, interval_start, interval_end)
+
+def search_events_usercalendar(user_id, calendar_id, interval_start, interval_end):
+    events = db.get_events_usercalendar_interval(user_id, calendar_id, interval_start, interval_end)
     if events != False:
         search_results = []
         search_result = dict()
         for event in events:
             search_result = {
-                'event_id': event[0],
-                'start': event[1],
-                'end': event[2]
+                'name': event[0],
+                'start': event[2],
+                'end': event[3]
             }
             search_results.append(search_result.copy())
         return {"success": True, "search_results": search_results}

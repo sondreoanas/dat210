@@ -18,8 +18,8 @@ app.secret_key = "any random string"
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
     params = {
-        "load_start": request.form.get('start', 0),
-        "load_end": request.form.get('end', 0)
+        "load_start": request.get_json().get('start', 0),
+        "load_end": request.get_json().get('end', 0)
     }
     return json.dumps(io.getData("loadview",params))
 
@@ -80,9 +80,9 @@ def newuser():
     }
     return json.dumps(io.getData("newuser", params))
 
-@app.route("/logout")
-def logout():
-    return json.dumps(io.getData('logout'))
+@app.route("/loggout")
+def loggout():
+    return json.dumps(io.getData('loggout'))
 
 """ CALENDAR """ #------------------------------------------------------------
 
@@ -138,6 +138,10 @@ def event_edit_form(calendar_id):
 # @app.route("/event/edit/<int:id>")
 # def event_edit(id):
 #     return render_template('index.html')
+
+@app.route("/event/list/<int:id>")
+def event_list(id):
+    return render_template('index.html')
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
