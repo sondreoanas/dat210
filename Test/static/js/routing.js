@@ -27,7 +27,7 @@ router
     },
     'loggedout': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_loggedout&data=loggout");
-        mf_ajaxHandler.removeElement(elementid = "mainmenu");
+        mf_ajaxHandler.replaceElement(elementid = "mainmenu", url = "/getTMPL?tmpl=nav&data=frontmenu");
     },
 
 // HOME
@@ -59,9 +59,19 @@ router
         loadmenu();
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_event_list");
     },
-    'event/edit/:id': function (params) {
+    'event/list/:calendar_id': function (params) {
         loadmenu();
-        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_event_edit&data=event_edit&id="+params.id);
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_event_list_calendar&data=event_calendar&calendar_id="+params.calendar_id);
+    },
+    'event/edit/:calendar_id/:event_id': function (params) {
+        loadmenu();
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_event_edit&data=event_edit&calendar_id="+params.calendar_id+"&event_id="+params.event_id);
+    },
+
+// EVENT
+    'task/new': function () {
+        loadmenu();
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_task_new");
     },
 
 // DEFAULT

@@ -4,6 +4,9 @@ cb.prototype.login = function(response){
 	if(response.success){
 		router.navigate('/loggedin');
 	}else{
+		if(response.notifications){
+			notifications.retrieve(response.notifications);
+		}
 		router.navigate();
 	}
 }
@@ -60,6 +63,16 @@ cb.prototype.event_edit = function(response){
 	if(response.success){
 		console.log(response.data)
 		router.navigate('event/edit/'+response.data.id);
+		//mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=newuser");
+	}else{
+		//mf_ajaxHandler.replaceElement(elementid = "login", url = "/getHTML?html=form_login");
+	}	
+}
+
+cb.prototype.task_new = function(response){	
+	if(response.success){
+		console.log(response.data)
+		//router.navigate('event/edit/'+response.data.id);
 		//mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=newuser");
 	}else{
 		//mf_ajaxHandler.replaceElement(elementid = "login", url = "/getHTML?html=form_login");

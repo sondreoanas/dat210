@@ -1,7 +1,7 @@
 <%for(var i in this) {%>
     <li>
-        <%this[i]["name"]%>
-        <button onclick="javascript:router.navigate('event/edit/<%this[i].id%>');" class="button_edit">Edit</button>
+        <%this[i].name%>
+        <button onclick="javascript:router.navigate('event/edit/<%this[i].calendar_id%>/<%this[i].id%>');" class="button_edit">Edit</button>
         <span>Start: <%this[i].start%></span>
         <span>End: <%this[i].end%></span>
     </li>
