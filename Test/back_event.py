@@ -41,20 +41,37 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             db.delete_event_db(event_id)
     return {"success": False}
 
-def edit_event(user_id, calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
-    """denne funksjonen er redudant og kan funksjonen edit_event_db kan kalle direkte
+def edit_event(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
+    """returns the dict:
+    \"success\": bool
+
+    denne funksjonen er redudant og kan funksjonen edit_event_db kan kalle direkte
     edit_event_db returnerer True eller False
     """
-    return db.edit_event_db(user_id, calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)
+    return {"success": db.edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)}
 
 def add_new_task(interval):
+    """returns the dict:
+    \"success\": bool,
+    \"task_id\": task_id
+    """
     task_id = db.add_new_task_db(interval)
     if task_id:
         if db.add_new_usertask_db(task_id, c.the_user.get_userid()):
-            return task_id
-    return False
+            return {"success": True, "task_id": task_id}
+    return {"success": False}
 
 def search_events_usercalendar(calendar_id, interval_start, interval_end):
+    """returns the dict:
+    \"success\": bool,
+    \"search_results\": [
+        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
+        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
+        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
+        ...
+        ...
+        ]
+    """
     events = db.get_events_usercalendar_interval(c.the_user.get_userid, calendar_id, interval_start, interval_end)
     if events != False:
         search_results = []
@@ -66,5 +83,5 @@ def search_events_usercalendar(calendar_id, interval_start, interval_end):
                 'end': event[2]
             }
             search_results.append(search_result.copy())
-        return search_results
-    return events
+        return {"success": True, "search_results": search_results}
+    return {"success": False}

@@ -272,7 +272,7 @@ def add_new_event_db(name, start_time, end_time):
     finally:
         cur.close()
 
-def edit_event_db(user_id, calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
+def edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
     db = get_db()
     cur = db.cursor()
     try:
@@ -334,7 +334,7 @@ def add_new_task_db(interval):
         db.commit()
         return task_id
     except mysql.connector.Error as err:
-        return err
+        return False
     finally:
         cur.close()
 
