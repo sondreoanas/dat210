@@ -4,6 +4,7 @@ import back_db as db
 import time
 import notifications as n
 import datetime
+from flask import session
 
 
 
@@ -17,7 +18,7 @@ def getData(data, params=None,):
         'forgotpass':forgotpass,
         'newuser':newuser,
         'edit_user':edit_user,
-        'logout':logout,
+        'loggout':loggout,
 
         'calendar_list':calendar_list,
         'calendar_new':calendar_new,
@@ -38,23 +39,27 @@ def getData(data, params=None,):
 """ HOME """    #----------------------------------------------
 
 def load_view(params):
-    cal_db = db.get_all_calendars_db(session['id'])
+    user_id = session['id']
+    cal_db = db.get_all_calendars_db(user_id)
     events = {'events':[]}
+    start = datetime.datetime.fromtimestamp(params['load_start']/1000.0).isoformat()
+    end = datetime.datetime.fromtimestamp(params['load_end']/1000.0).isoformat()
     for cal_id, cal_name, cal_rights, cal_public in cal_db:
-        events_db = db.get_all_calendar_events_db(cal_id)
+        events_db = back_event.search_events_usercalendar(user_id,cal_id,start,end)
         if events_db:
-            for event_id,cal_id in events_db:
-                event_db = db.get_event_db(event_id)
-                start = time.mktime(event_db[3].timetuple()) * 1000
-                end = time.mktime(event_db[4].timetuple()) * 1000
+            for event in events_db['search_results']:
+                print(event)
+                start_event = time.mktime(event['start'].timetuple()) * 1000
+                end_event = time.mktime(event['end'].timetuple()) * 1000
                 event = {
-                    'start':start,
-                    'end':end,
-                    'name': event_db[1]
+                    'start':start_event,
+                    'end':end_event,
+                    'name': event['name']
                 }
                 events['events'].append(event)
         else:
             continue
+    print(events)
     return events
 
 def nav(params):
@@ -89,9 +94,11 @@ def frontmenu(params):
 
 def login(params):
     result = back_user.login(params['username'],params['password'])
-    if result:
+    if result['success']:
+        session['id'] = result['user_id']
+        session['login'] = True
         resultat = {
-            "success": result,
+            "success": result['success'],
             "data": {
                 "username" : params["username"]
             }
@@ -99,7 +106,7 @@ def login(params):
     else:
         resultat = {
                 "notifications": [n.notification(1)],
-                "success": result,
+                "success": result['success'],
                 "data": {
                     "username" : params["username"]
                 }
@@ -149,7 +156,7 @@ def edit_user(params):
     }
     return user
 
-def logout(params):
+def loggout(params):
     username = session['username']
     user = {
         "success": back_user.logout(),
@@ -165,18 +172,15 @@ def logout(params):
 def calendar_list(params):
     cal_db = db.get_all_calendars_db(session['id'])
     calendars = []
-    if cal_db:
-        for cal_id, cal_name, cal_rights, cal_public in cal_db:
-            calendar = {
-                "id": cal_id,
-                "name": cal_name,
-                "rights": cal_rights,
-                "public": cal_public
-            }
-            calendars.append(calendar)
-        return calendars
-    else:
-        return {'success':False}
+    for cal_id, cal_name, cal_rights, cal_public in cal_db:
+        calendar = {
+            "id": cal_id,
+            "name": cal_name,
+            "rights": cal_rights,
+            "public": cal_public
+        }
+        calendars.append(calendar)
+    return calendars
     
 def calendar_new(params):
     if params['public'] == 'public':
@@ -232,7 +236,7 @@ def event_calendar_list(params):
     calendar_events = db.get_all_calendar_events_db(calendar_id)
     returner = []
     for event_id, _ in calendar_events:
-        event = c.the_user.get_user_event(event_id)
+        event = db.get_event_db(event_id)
         event = {
             "id": event_id,
             "calendar_id": calendar_id,

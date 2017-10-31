@@ -18,7 +18,7 @@ UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "root"
+app.config["DATABASE_PASSWORD"] = "passord"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -461,7 +461,7 @@ def get_events_usercalendar_interval(user_id, calendar_id, interval_start, inter
     db = get_db() 
     cur = db.cursor()
     try:
-        sql = "SELECT E.EventId, E.Start, E.End " \
+        sql = "SELECT E.Name, E.EventId, E.Start, E.End " \
             "FROM eventn E, eventcalendar C " \
             "WHERE " \
             "CalendarId = (SELECT CalendarId FROM usercalendars WHERE UserId = %s AND CalendarId = %s) " \
@@ -471,6 +471,7 @@ def get_events_usercalendar_interval(user_id, calendar_id, interval_start, inter
         cur.execute(sql, (user_id, calendar_id, interval_start, interval_end, interval_start, interval_end))
         return cur.fetchall()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
