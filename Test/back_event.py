@@ -3,58 +3,49 @@ import back_user
 import back_db as db
 import config as c
 
-"""def init_all_calendars():
-    calendars = db.get_all_calendars_db(c.the_user.get_userid())
-    print(calendars)
-    if calendars:
-        for (cal_id, cal_name, cal_rigts, cal_public) in calendars:
-            c.the_user.set_user_calendars(cal_id, cal_name, cal_rigts, cal_public)
-
-def init_all_userevents():
-    init_userevents(c.the_user.get_user_calendars())
-
-def init_userevents(calendars):
-    if calendars:
-        for calendar_id in calendars:
-            calendar_events = db.get_all_calendar_events_db(calendar_id)
-            if calendar_events:
-                for (event_id, cal_id) in calendar_events:
-                    event = db.get_event_db(event_id)
-                    if event:
-                        c.the_user.set_user_events(cal_id, event_id, event[1], event[2], event[3], event[0], event[0])
-"""
-
 def add_new_calendar(calendar_name, public_bool):
+    """returns the dict:
+    \"success\": bool,
+    \"calendar_id\": calendar_id
+    """
+
     calendar_id = db.add_new_calendar_db(calendar_name, public_bool)
     if calendar_id:
         if db.add_new_usercalendar_db(calendar_id):
-            #calendar = db.get_calendar_db(c.the_user.get_userid, calendar_name, calendar_id)
-            #c.the_user.set_user_calendars(calendar[0], calendar[1])
-            return [True, calendar_id]
-    return False
+            return {"success": True, "calendar_id": calendar_id}
+    return {"success": False}
 
-def edit_calendar(calendar_id, calendar_name, public_bool):
-    return db.edit_calendar_db(calendar_id, calendar_name, public_bool)
+def edit_calendar(user_id, calendar_id, calendar_name, public_bool):
+    """returns the dict:
+    \"success\": bool
+
+    denne funksjonen kan redudant og edit_calendar_db kan kalles
+    direkte og vil enten returnere True eller false
+    """
+    return {"success": db.edit_calendar_db(user_id, calendar_id, calendar_name, public_bool)}
 
 def add_new_event(calendar_id, event_name, start_time, end_time):
+    """returns the dict:
+    \"success\": bool,
+    \"event_id\": event_id
+    """
     event_id = db.add_new_event_db(event_name, start_time, end_time)
-    print(calendar_id)
     if event_id:
-        print(event_id)
         try:
             calendar_id = int(calendar_id)
             if db.add_new_eventcalendar_db(event_id, calendar_id):
-                #event = db.get_event_db(event_id)
-                #c.the_user.set_user_events(calendar_id, event_id)
-                return [event_id, True]
+                return {"success": True, "event_id": event_id}
             else:
                 db.edit_event_db(event_id)
         except ValueError:
             db.delete_event_db(event_id)
-    return [0,False]
+    return {"success": False}
 
-def edit_event(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
-    return db.edit_event_db(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)
+def edit_event(user_id, calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
+    """denne funksjonen er redudant og kan funksjonen edit_event_db kan kalle direkte
+    edit_event_db returnerer True eller False
+    """
+    return db.edit_event_db(user_id, calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)
 
 def add_new_task(interval):
     task_id = db.add_new_task_db(interval)
