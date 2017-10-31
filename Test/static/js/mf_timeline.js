@@ -241,8 +241,8 @@ Timeline.prototype.loadEvents = function(){
 				start = e.start,
 				end = e.end,
 				name = e.name,
-				color = Tool.randomColor(1),
-				repeatFunctions = repeatFunctions
+				color = Tool.randomColor(1)
+				//repeatFunctions = repeatFunctions
 			));
 		}
 		this.calcuateEventCollisions();
