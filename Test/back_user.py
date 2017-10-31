@@ -139,8 +139,8 @@ def register_user(username, password, name):
 
 def edit_user(user_id, username_old, username_new, password, name):
     """if password has not been edited please send in the string \"use old password\"
-    if successfull return dict:
 
+    if successfull return dict:
     \"success\": True, \"user_id\": user_id
     if unsuccessfull returns dict:
     \"success\": False, \"error\": error message
