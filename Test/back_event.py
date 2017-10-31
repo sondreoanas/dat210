@@ -72,7 +72,7 @@ def search_events_usercalendar(calendar_id, interval_start, interval_end):
         ...
         ]
     """
-    events = db.get_events_usercalendar_interval(c.the_user.get_userid, calendar_id, interval_start, interval_end)
+    events = db.get_events_usercalendar_interval(1, calendar_id, interval_start, interval_end)
     if events != False:
         search_results = []
         search_result = dict()
