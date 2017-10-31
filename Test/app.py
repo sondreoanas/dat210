@@ -7,7 +7,6 @@ import dataIO as io
 import json
 import config as c
 import back_user
-import send_notification_on_event as snoe
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 import threading
 import time
@@ -150,26 +149,6 @@ def task_new_form():
     return json.dumps(io.getData("task_new", request.form))
 
 
-class threadingnotification(object):
-    #  Threading class for sending email notification
-
-    def __init__(self, interval=1):
-        """ Constructor
-        :type interval: int
-        :param interval: Check interval, in seconds
-        """
-        self.interval = interval
-
-        thread = threading.Thread(target=self.run, args=())
-        thread.daemon = True                            # Daemonize thread
-        thread.start()                                  # Start the execution
-
-    def run(self):
-        """ Method that runs forever """
-        snoe.run_email_eventnotification()
-
-        time.sleep(self.interval)
-
 @app.route("/")
 @app.route("/login")
 @app.route("/forgotpass")
@@ -185,5 +164,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == "__main__":
-    th = threadingnotification()
     app.run()
