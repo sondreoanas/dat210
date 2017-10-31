@@ -3,7 +3,7 @@
     this file is the core of the Calendar
     Sist oppdatert: Nils 17.10.2017
 """
-import dataIO_2 as io
+import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 
