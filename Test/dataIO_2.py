@@ -49,10 +49,9 @@ def load_view(params):
                     end = time.mktime(event_db[4].timetuple()) * 1000
                     if event_db:
                         event = {
-                            'id': event_id,
-                            'name': event_db[1],
                             'start':start,
-                            'end':end
+                            'end':end,
+                            'name': event_db[1]
                         }
                         events['events'].append(event)
                     else:
@@ -61,6 +60,7 @@ def load_view(params):
                 return {'success':False}
     else:
         return {'success':False}
+    print(events)
     return events
 
 def nav(params):
@@ -168,7 +168,7 @@ def calendar_new(params):
         params['public'] = True
     else:
         params['public'] = False
-    result = back_event.add_new_calendar(params['name'],params['public'])
+    result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
     calendar = {
         "success": result[0],
         "data": {
@@ -180,7 +180,7 @@ def calendar_new(params):
     return calendar
 
 def calendar_edit(params):
-    result = db.get_calendar_db(params['id'])
+    result = db.get_calendar_db(session['id'],params['id'])
     calendar = {
         "success": True,
         "data": {
@@ -216,13 +216,13 @@ def event_list(params):
             events_db = db.get_all_calendar_events_db(cal_id)
             if events_db:
                 for event_id,cal_id in events_db:
-                    event_db = db.get_event_db(event_id)
-                    if event_db:
+                    id,name,des,start,end = db.get_event_db(event_id)
+                    if id and name and start and end:
                         event = {
                             'id': event_id,
-                            'name': event_db[1],
-                            'start':str(event_db[3]),
-                            'end':str(events_db[4])
+                            'name': name,
+                            'start':str(start),
+                            'end':str(end)
                         }
                         calendar[cal_id].append(event)
                     else:
@@ -232,6 +232,7 @@ def event_list(params):
         resultat.append(calendar)
     else:
         return {'success':False}
+    print(resultat)
     return resultat
 
 def event_new(params):
