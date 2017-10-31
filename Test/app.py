@@ -6,12 +6,10 @@
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
-from mf_tasks import mf_page
 import threading
 import time
 
 app = Flask(__name__)
-app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
@@ -139,6 +137,10 @@ def event_edit_form(calendar_id):
 # @app.route("/event/edit/<int:id>")
 # def event_edit(id):
 #     return render_template('index.html')
+
+@app.route("/event/list/<int:id>")
+def event_list(id):
+    return render_template('index.html')
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
