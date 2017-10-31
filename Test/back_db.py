@@ -18,7 +18,7 @@ UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passord"
+app.config["DATABASE_PASSWORD"] = "root"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -453,7 +453,7 @@ def get_events_usercalendar_interval(user_id, calendar_id, interval_start, inter
             "AND E.EventId = C.EventId " \
             "AND E.Start BETWEEN %s AND %s AND E.End BETWEEN %s AND %s "
 
-        cur.execute(sql, (1201, 302, interval_start, interval_end, interval_start, interval_end))
+        cur.execute(sql, (user_id, calendar_id, interval_start, interval_end, interval_start, interval_end))
         return cur.fetchall()
     except mysql.connector.Error as err:
         return False
