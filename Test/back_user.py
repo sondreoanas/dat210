@@ -20,7 +20,7 @@ def valid_username(username):
         return [False, "Username already in use"]
     if match is None:
         return [False, "Not a valid email address"]
-    return True
+    return [True]
 
 
 # function to check if a user exists
@@ -39,8 +39,8 @@ def valid_password(password):
     #if match is None:
     #    return False
 
-    return True
-
+    return [True]
+"""
     if len(password) < 8:
         return False
     elif re.search('[0-9]', password) is None:
@@ -55,7 +55,7 @@ def valid_password(password):
         return False
     else:
         return True
-
+"""
 
 # login function
 def login(username, password):

@@ -123,7 +123,7 @@ def set_new_user_db(username, password_hash, salt, name):
         db.commit()
         print("successfull creation")
     except mysql.connector.Error as err:
-        print("unsuccessful")
+        print(err)
         return False
     finally:
         cur.close()
