@@ -6,12 +6,11 @@
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
-from mf_tasks import mf_page
 import threading
 import time
+import send_notification_on_event as snoe
 
 app = Flask(__name__)
-app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
@@ -140,6 +139,10 @@ def event_edit_form(calendar_id):
 # def event_edit(id):
 #     return render_template('index.html')
 
+@app.route("/event/list/<int:id>")
+def event_list(id):
+    return render_template('index.html')
+
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
@@ -161,5 +164,28 @@ def task_new_form():
 def index():
     return render_template('index.html')
 
+""" Threading""" #------------------------------------------------------------
+
+class threadingnotification(object):
+    #  Threading class for sending email notification
+
+    def __init__(self, interval=1):
+        """ Constructor
+        :type interval: int
+        :param interval: Check interval, in seconds
+        """
+        self.interval = interval
+
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True                            # Daemonize thread
+        thread.start()                                  # Start the execution
+
+    def run(self):
+        """ Method that runs forever """
+        snoe.run_email_eventnotification()
+
+        time.sleep(self.interval)
+
 if __name__ == "__main__":
+    th = threadingnotification()
     app.run()
