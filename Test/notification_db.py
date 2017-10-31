@@ -29,6 +29,7 @@ def get_notification_details():
     except pymysql.MySQLError as err:
         return []
     finally:
+        cur.close()
         return details
 
 
@@ -41,4 +42,5 @@ def set_notification_sent(EventId, CalendarId):
     except pymysql.MySQLError as err:
         return False
     finally:
+        cur.close()
         return True
