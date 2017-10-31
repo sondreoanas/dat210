@@ -6,6 +6,8 @@
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
+import threading
+import time
 
 app = Flask(__name__)
 app.secret_key = "any random string"
@@ -140,7 +142,9 @@ def event_edit_form(calendar_id):
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
 
-
+@app.route("/task/new_form", methods=["POST"])
+def task_new_form():
+    return json.dumps(io.getData("task_new", request.form))
 
 @app.route("/")
 @app.route("/login")
