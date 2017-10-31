@@ -111,5 +111,3 @@ def run_email_eventnotification():
         time.sleep(3) # Running every 10th min
 
 
-run_email_eventnotification()
-
