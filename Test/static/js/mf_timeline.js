@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.2.7
-	last updated	: 24.10.2017
+	version			: 0.3.0
+	last updated	: 31.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -28,6 +28,32 @@ function mf_addTimeline(element){
 	mf_timeline.timelines.push(newTimeline);
 	mf_testHandeler.addRecordTimeline(newTimeline);
 	return mf_timeline.timelines.length - 1; // index of the new timeline
+}
+// Task
+function mf_Task(name, interval, timestamp, width, height){
+	this.name = name;
+	this.interval = interval;
+	// example:
+	//	interval = {
+	//		yearInterval: {start: new Date("2018"), modulus = 2},
+	//		monthInterval: null,
+	//		monthNrInYear: null,
+	//		weekInterval: {start: new Date("this week"), modulus = 2},
+	//		weekNrInMonth: null,
+	//		weekNrInYear: null,
+	//		dayInterval: {start: new Date("today"), modulus = 2},
+	//		dayNrInWeek: null,
+	//		dayNrInMonth: 5,
+	//		dayNrInYear: null
+	//	}
+	this.timestamp = timestamp;
+	this.height = height;
+	this.width = width;
+	this.position = new Vec(0,0);
+	this.targetPosition = new Vec(0,0);
+}
+mf_Task.prototype.getRange = function(){
+	return Tool.getNextInterval(new Date(), true, this.interval);
 }
 // Event
 function mf_Event(start, end, name, color, repeatFunctions){
@@ -115,12 +141,29 @@ function Timeline(container){
 	
 	// buttons
 	this.buttons = [];
-	this.addButton = new Button(new Vec(this.canvas.width * 0.8, this.canvas.height * 0.9), "Add event", new Color(200,50,50,1));
-	this.addButton.radius = 60;
-	this.addButton.shape = Button.circle;
-	this.addButton.callBack = this.addEventStart.bind(this);
-	this.buttons.push(this.addButton);
-	this.aButtonWasClicked = false;
+	// // addEvent button
+	//this.addButton = new Button(new Vec(this.canvas.width * 0.8, this.canvas.height * 0.9), "Add event", new Color(200,50,50,1));
+	//this.addButton.radius = 60;
+	//this.addButton.shape = Button.circle;
+	//this.addButton.callBack = this.addEventStart.bind(this);
+	//this.buttons.push(this.addButton);
+	//this.aButtonWasClicked = false;
+	// // change to task view button
+	var button = new Button(new Vec(this.canvas.width * 0.5, this.canvas.height * 0.95), "Change to \'task view\'", new Color(200,50,50,1));
+	button.shape = Button.square;
+	button.width = this.canvas.width * 1;
+	button.height = this.canvas.height * 0.2;
+	button.callBack = function(thisButton){
+		this.mode = this.mode == Timeline.timelineView? Timeline.taskView: Timeline.timelineView;
+		var name1 = "Change to \'task view\'";
+		var name2 = "Change to \'timeline view\'";
+		if(thisButton.name == name1){
+			thisButton.name = name2;
+		}else{
+			thisButton.name = name1;
+		}
+	}.bind(this, button);
+	this.buttons.push(button);
 	
 	// re-size canvas
 	//this.canvas.style.border = "1px solid black";
@@ -173,13 +216,19 @@ function Timeline(container){
 	
 	// fill data
 	this.events = []; // visual events
-	//this.loadDummyData();
+	//this.loadDummyEvents();
 	this.loadEvents();
+	this.tasks = [];
+	this.loadDummyTasks();
+	this.taskHeight = this.canvas.height * 0.1;
 	
 	// status
+	// //
 	this.status = Timeline.standard;
 	this.startTime = 0;
 	this.endTime = 0;
+	// // timeline/task mode
+	this.mode = Timeline.timelineView;
 	
 	// render data
 	this.unitNameWidth = 100;
@@ -190,9 +239,13 @@ function Timeline(container){
 	this.resetTimeFuntion;
 	this.incrementTimeFunction;
 }
+//
 Timeline.standard = 0;
 Timeline.addEventSetStart = 1;
 Timeline.addEventSetEnd = 2;
+// view mode
+Timeline.timelineView = 0;
+Timeline.taskView = 1;
 Timeline.prototype.reSizeToContainer = function(){
 	
 	var oldWidth = this.canvas.width;
@@ -209,6 +262,35 @@ Timeline.prototype.reSizeToContainer = function(){
 		this.buttons[i].pos.y *= this.canvas.height / oldHeight;
 	}
 }
+Timeline.prototype.loadDummyTasks = function(){
+	mf_AjaxHandler.ajaxPost({calId:1}, "/getTasks", function(r){
+		var response = JSON.parse(r);
+		//{
+		//	tasks: [
+		//		{
+		//			id: id,
+		//			name: name,
+		//			interval: interval,
+		//			deleted: deleted,
+		//			isDone: sDone,
+		//			parentId: parentId,
+		//			calendarId: calendarId,
+		//			timestamp: timestamp
+		//		},
+		//		{...}
+		//	]
+		//}
+		if(!response || !response.tasks){
+			Tool.printError("Wrong task format.");
+			return -1;
+		}
+		response = response.tasks;
+		for(var i=0; i<response.length; i++){
+			var t = response[i];
+			this.tasks.push(new mf_Task(t.name, t.interval, t.timestamp, this.canvas.width * 0.5, this.taskHeight));
+		}
+	}.bind(this));
+}
 Timeline.prototype.loadEvents = function(){
 	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
 		// {events:[{start, end, name, repeatData},{start,...},...]}
@@ -224,7 +306,7 @@ Timeline.prototype.loadEvents = function(){
 		//\}
 		var eventData = JSON.parse(responseText).events;
 		if(!eventData){
-			Tool.printError("Wrong format in responce from server on /loadViewEvents");
+			Tool.printError("Wrong format in response from server on /loadViewEvents");
 			return -1;
 		}
 		
@@ -249,7 +331,7 @@ Timeline.prototype.loadEvents = function(){
 		
 	}.bind(this));
 }
-Timeline.prototype.loadDummyData = function(){
+Timeline.prototype.loadDummyEvents = function(){
 	this.events = [
 		new mf_Event(
 			start = new Date(2017, 8, 17, 0, 0).getTime(),
@@ -392,16 +474,34 @@ Timeline.prototype.loop = function(){
 	this.checkButtons();
 	
 	// calcuate touchMotion
-	this.calculateTouchMotionOneFinger();
+	this.globalControls();
 	
 	// calcuate motion
 	this.position = (this.targetPosition - this.position) * 0.2 + this.position;
 	
-	// render
-	this.render();
+	// clear
+	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	
+	// render content
+	if(this.mode == Timeline.timelineView){
+		this.timelineControls();
+		this.renderTimeline();
+	}else if(this.mode == Timeline.taskView){
+		this.renderTaskView();
+	}else{
+		Tool.printError("Timeline mode not found.");
+	}
+	
+	// render buttons
+	this.renderButtons();
+	
+	// draw filter
+	if(!this.isActive){
+		this.drawBox(0, 0, this.canvas.width, this.canvas.height, color = Tool.rgba(255,255,255,0.5), fill = true, width = 0);
+	}
 	
 	// handle status
-	this.handleStatus();
+	//this.handleStatus();
 	
 	// endstuff
 	// mouse and touch
@@ -555,12 +655,32 @@ Timeline.prototype.addEventConfirmEnd = function(){
 	);
 	this.events.push(newEvent);
 	this.calcuateEventCollisions();
-	//mf_AjaxHandler.ajaxPostForm({start: newEvent.start, end: newEvent.end, name: newEvent.name}, "/addEvent", function(responce){alert(responce);});
+	//mf_AjaxHandler.ajaxPostForm({start: newEvent.start, end: newEvent.end, name: newEvent.name}, "/addEvent", function(response){alert(response);});
 }
-Timeline.prototype.render = function(){
-	
-	// clear
-	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+Timeline.prototype.renderTaskView = function(){
+	// calculate target positions
+	for(var i=0; i<this.tasks.length; i++){
+		var t = this.tasks[i];
+		t.targetPosition = new Vec(this.canvas.width * 0.5, (this.canvas.height - t.height * 1.5) - t.height * i);
+	}
+	// move towards target positions
+	for(var i=0; i<this.tasks.length; i++){
+		var t = this.tasks[i];
+		var movementSpeed = 0.1 * Math.pow(1.1, this.tasks.length - i);
+		t.position = Vec.lerp(t.position, t.targetPosition, movementSpeed);
+	}
+	// render
+	for(var i=0; i<this.tasks.length; i++){
+		var t = this.tasks[i];
+		// background
+		this.drawRectOutline(t.position.x - t.width * 0.5, t.position.y - t.height * 0.5,
+			t.position.x + t.width * 0.5, t.position.y + t.height * 0.5,
+			new Color(150, 150, 0), Color.mulRGB(new Color(150, 150, 0), 0.9), 1);
+		// name
+		this.drawText(t.name, t.position.x, t.position.y, new Color(255,255,255));
+	}
+}
+Timeline.prototype.renderTimeline = function(){
 	
 	// debug
 	for(var i=0; i<this.touchList.length; i++){
@@ -574,14 +694,6 @@ Timeline.prototype.render = function(){
 	
 	// render date structure
 	this.renderDateStructure();
-	
-	// render buttons
-	this.renderButtons();
-	
-	// draw filter
-	if(!this.isActive){
-		this.drawBox(0, 0, this.canvas.width, this.canvas.height, color = Tool.rgba(255,255,255,0.5), fill = true, width = 0);
-	}
 }
 Timeline.prototype.renderButtons = function(){
 	for(var i=0; i<this.buttons.length; i++){
@@ -599,7 +711,7 @@ Timeline.prototype.renderDateStructure = function(){
 			Tool.resetDateTo(date, Tool.year);
 		},
 		function incrementTimeFunction(date){
-			Tool.incrementDate(date, Tool.year, 1);
+			Tool.incrementDateTo(date, Tool.year, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -612,7 +724,7 @@ Timeline.prototype.renderDateStructure = function(){
 			Tool.resetDateTo(date, Tool.month);
 		},
 		function incrementTimeFunction(date){
-			Tool.incrementDate(date, Tool.month, 1);
+			Tool.incrementDateTo(date, Tool.month, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -634,7 +746,7 @@ Timeline.prototype.renderDateStructure = function(){
 			Tool.resetDateTo(date, Tool.week);
 		},
 		function incrementTimeFunction(date){
-			Tool.incrementDate(date, Tool.week, 1);
+			Tool.incrementDateTo(date, Tool.week, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -647,7 +759,7 @@ Timeline.prototype.renderDateStructure = function(){
 			Tool.resetDateTo(date, Tool.day);
 		},
 		function incrementTimeFunction(date){
-			Tool.incrementDate(date, Tool.day, 1);
+			Tool.incrementDateTo(date, Tool.day, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -664,7 +776,7 @@ Timeline.prototype.renderDateStructure = function(){
 			Tool.resetDateTo(date, Tool.hour);
 		},
 		function incrementTimeFunction(date){
-			Tool.incrementDate(date, Tool.hour, 1);
+			Tool.incrementDateTo(date, Tool.hour, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -681,7 +793,7 @@ Timeline.prototype.renderDateStructure = function(){
 			Tool.resetDateTo(date, Tool.minute);
 		},
 		function incrementTimeFunction(date){
-			Tool.incrementDate(date, Tool.minute, 1);
+			Tool.incrementDateTo(date, Tool.minute, 1);
 		}
 	);
 	offset += this.unitNameHeight;
@@ -996,7 +1108,19 @@ Timeline.prototype.getNrOfTouches = function(){
 	}
 	return n;
 }
-Timeline.prototype.calculateTouchMotionOneFinger = function(){
+Timeline.prototype.globalControls = function(){
+	// activate screen
+	if(
+		(
+			this.mouseClicked()
+		) &&
+		this.status == Timeline.standard &&
+		!this.aButtonWasClicked){
+		
+		this.isActive = !this.isActive;
+	}
+}
+Timeline.prototype.timelineControls = function(){
 	// controls
 	var zoomSensitivity = 2;
 	var scrollSensitivity = 1;
@@ -1038,28 +1162,6 @@ Timeline.prototype.calculateTouchMotionOneFinger = function(){
 		// movement
 		this.targetPosition += deltaX;
 		this.position += deltaX;
-	}
-	// activate screen
-	// // touch click
-	var touchClick = false;
-	for(var i=0; i<this.touchList.length; i++){
-		var t = this.touchList[i];
-		if(!t.isDown && t.timeUp == 1 && t.timeDown <= mf_timeline.fps * 0.15 && // clicked for less than 0.15 seconds ...
-			Math.abs(t.x - t.x0) + Math.abs(t.y - t.y0) < 10){ // ... and didn't move much.){
-			touchClick = true;
-		}
-	}
-	// // mouse click
-	if(
-		(
-			touchClick
-			||
-			this.mouseClicked()
-		) &&
-		this.status == Timeline.standard &&
-		!this.aButtonWasClicked){
-		
-		this.isActive = !this.isActive;
 	}
 }
 Timeline.prototype.touchStartOneFinger = function(event){
@@ -1152,7 +1254,7 @@ Timeline.prototype.mouseClicked = function(){
 		Vec.lgth(Vec.sub(this.mouseData.pos, this.mouseData.pos0)) < 10; // ... and didn't move much.
 }
 // Color
-function Color(r, g, b, a){ // TODO: integrate random color here
+function Color(r, g, b, a = 1){ // TODO: integrate random color here
 	this.r = r;
 	this.g = g;
 	this.b = b;
@@ -1192,158 +1294,6 @@ function Button(pos, name, color){
 }
 Button.square = 0;
 Button.circle = 1;
-// Tool
-function Tool(){
-	
-}
-Tool.rgba = function(r, g, b, a){
-	return "rgba(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + "," + a + ")";
-}
-Tool.randomColor = function(brightness = Math.random()){ // TODO: move to color class
-	var r = Math.random() * 256;
-	var g = Math.random() * 256;
-	var b = Math.random() * 256;
-	var f = brightness / (r + g + b) * 255;
-	r *= f;
-	g *= f;
-	b *= f;
-	return "rgba(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ",1)";
-}
-Tool.clamp = function(value, max, min){
-	if(max < min){
-		return (max + min) * 0.5;
-	}
-	if(value > max){
-		return max;
-	}
-	if(value < min){
-		return min;
-	}
-	return value;
-}
-Tool.softCenter = function(value, range, slope){
-	// will make values closer to 0 roughly within range. 'slope' is the slope of the derivative at value = 0.
-	return value * ((1 - 1 / (1 + Math.pow(Math.abs(value / range),5))) * (1 - slope) + slope);
-}
-Tool.softRange = function(value, range, slope){
-	// will clamp the value in between +- range. The slope tells the derivative of the function at value = 0.
-	return range * value / (range / slope + Math.abs(value));
-}
-Tool.unixMillisecondsToDays = function(utc){
-	return utc / 1000 / 60 / 60 / 24;
-}
-Tool.widthOfString = function(string, font){
-	var canvas = document.createElement("canvas");
-	var ctx = canvas.getContext("2d");
-	ctx.font = font;
-	return ctx.measureText(string).width;
-}
-Tool.lerp = function(v1, v2, f){
-	return v1 + (v2 - v1) * f;
-}
-Tool.copyStringToClipboard = function(string){
-	var textArea = document.createElement("textarea");
-	
-	textArea.value = string;
-	document.body.appendChild(textArea);
-	textArea.select();
-	try {
-		var successful = document.execCommand('copy');
-		document.body.removeChild(textArea);
-		if(successful){
-			return true;
-		}else{
-			return false;
-		}
-	} catch (err) {
-		return false;
-		document.body.removeChild(textArea);
-	}
-}
-Tool.millisecond = 0;
-Tool.second = 1;
-Tool.minute = 2;
-Tool.hour = 3;
-Tool.day = 4;
-Tool.week = 5;
-Tool.month = 6;
-Tool.year = 7;
-Tool.resetDateTo = function(date, resolution){
-	// Will reset the date to the resolution.
-	// Example: var startOfWeek = Tool.resetDateTo(new Date(), Tool.week);
-	if(resolution == Tool.millisecond){
-		
-	}else if(resolution == Tool.second){
-		date.setMilliseconds(0);
-	}else if(resolution == Tool.minute){
-		date.setMilliseconds(0);
-		date.setSeconds(0);
-	}else if(resolution == Tool.hour){
-		date.setMilliseconds(0);
-		date.setSeconds(0);
-		date.setMinutes(0);
-	}else if(resolution == Tool.day){
-		date.setMilliseconds(0);
-		date.setSeconds(0);
-		date.setMinutes(0);
-		date.setHours(0);
-	}else if(resolution == Tool.week){
-		date.setMilliseconds(0);
-		date.setSeconds(0);
-		date.setMinutes(0);
-		date.setHours(0);
-		date.setDate(date.getDate() - (date.getDay() + 6) % 7);
-	}else if(resolution == Tool.month){
-		date.setMilliseconds(0);
-		date.setSeconds(0);
-		date.setMinutes(0);
-		date.setHours(0);
-		date.setDate(1);
-	}else if(resolution == Tool.year){
-		date.setMilliseconds(0);
-		date.setSeconds(0);
-		date.setMinutes(0);
-		date.setHours(0);
-		date.setDate(1);
-		date.setMonth(0);
-	}else{
-		Tool.printError("Resolution \"" + resolution + "\" not recognized.", 2);
-	}
-}
-Tool.incrementDate = function(date, resolution, steps){
-	// Example: var twoWeeksFromNow = Tool.incrementDate(new Date(), Tool.week, 2);
-	if(resolution == Tool.millisecond){
-		date.setTime(date.getTime() + 1 * steps);
-	}else if(resolution == Tool.second){
-		date.setTime(date.getTime() + 1000 * steps);
-	}else if(resolution == Tool.minute){
-		date.setTime(date.getTime() + 1000 * 60 * steps);
-	}else if(resolution == Tool.hour){
-		date.setTime(date.getTime() + 1000 * 60 * 60 * steps);
-	}else if(resolution == Tool.day){
-		date.setDate(date.getDate() + steps);
-	}else if(resolution == Tool.week){
-		date.setDate(date.getDate() + 7 * steps);
-	}else if(resolution == Tool.month){
-		date.setMonth(date.getMonth() + steps);
-	}else if(resolution == Tool.year){
-		date.setFullYear(date.getFullYear() + steps);
-	}else{
-		Tool.printError("Resolution \"" + resolution + "\" not recognized.", 2);
-		
-	}
-}
-Tool.printError = function(message, level = 1){
-	// level >= 0
-	// Prints out an error with stack trace. The level is how many functions up the stack will start.
-	// Standard is one level above where the function is called
-	console.error(message + "\n" + Tool.getStackTrace(level + 1));
-}
-Tool.getStackTrace = function(level = 1){
-	var error = Error().stack.split("\n");
-	error.splice(1, level);
-	return error.join("\n");
-}
 
 
 

@@ -1,8 +1,8 @@
 /*
 	mf_ajax.js
 	
-	version			: 1.0.2
-	last updated	: 28.10.2017
+	version			: 1.0.3
+	last updated	: 31.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -173,8 +173,8 @@ mf_AjaxHandler.prototype.addLastChild = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.addLastChild, elementId, url, data)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
-	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -194,8 +194,8 @@ mf_AjaxHandler.prototype.addFirstChild = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.addFirstChild, elementId, url, data)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
-	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -215,7 +215,7 @@ mf_AjaxHandler.prototype.removeElement = function(elementId){
 	if(!this.checkDomLoaded(this.removeElement, elementId)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -227,8 +227,8 @@ mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url, data = nul
 	if(!this.checkDomLoaded(this.placeAfterElement, elementId, url, data)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
-	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -266,8 +266,8 @@ mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url, data = nu
 	if(!this.checkDomLoaded(this.placeBeforeElement, elementId, url, data)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
-	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -305,8 +305,8 @@ mf_AjaxHandler.prototype.replaceElement = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.replaceElement, elementId, url, data)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
-	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");
@@ -344,8 +344,8 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, url, data = null){
 	if(!this.checkDomLoaded(this.fillElement, elementId, url, data)){
 		return;
 	}
-	if(!elementId){Tool.printError("Missing argument \"elementId\"", 2);return -1;}
-	if(!url){Tool.printError("Missing argument \"url\"", 2);return -1;}
+	if(!elementId){Tool.printError("Missing argument \"elementId\"", 1);return -1;}
+	if(!url){Tool.printError("Missing argument \"url\"", 1);return -1;}
 	var element = document.getElementById(elementId);
 	if(!element){
 		Tool.printError("no element of id: \"" + elementId + "\" is found.");

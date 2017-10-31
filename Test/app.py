@@ -8,8 +8,10 @@ import json
 import config as c
 import back_user
 from flask import Flask, request, redirect, url_for, render_template, flash, session
+from mf_tasks import mf_page
 
 app = Flask(__name__)
+app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 
