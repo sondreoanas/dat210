@@ -18,7 +18,7 @@ UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passord"
+app.config["DATABASE_PASSWORD"] = "root"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -223,15 +223,16 @@ def add_new_calendar_db(calendar_name, public_bool):
     finally:
         cur.close()
 
-def edit_calendar_db(calendar_id, calendar_name, public_bool):
+def edit_calendar_db(user_id, calendar_id, calendar_name, public_bool):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "UPDATE calendar " \
             "SET Name = %s, Public = %s " \
-            "WHERE CalendarId = %s "
-        cur.execute(sql, (calendar_name, public_bool, calendar_id))
-        calendar_id = cur.lastrowid
+            "WHERE CalendarId = %s AND CalendarId = (SELECT CalendarId " \
+            "FROM usercalendars " \
+            "WHERE CalendarId = %s AND UserId = %s AND Adminlevel >= 2) "
+        cur.execute(sql, (calendar_name, public_bool, calendar_id, calendar_id, user_id))
         db.commit()
         return True
     except mysql.connector.Error as err:
@@ -264,22 +265,25 @@ def add_new_event_db(name, start_time, end_time):
                "(Name, Start, End) " \
                "VALUES (%s, %s, %s) "
         cur.execute(sql, (name, start_time, end_time))
-        event_id = cur.lastrowid
         db.commit()
-        return event_id
+        return cur.lastrowid
     except mysql.connector.Error as err:
         return False
     finally:
         cur.close()
 
-def edit_event_db(event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
+def edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "UPDATE eventn " \
             "SET Name = %s, Description = %s, Start = %s, End = %s, `Interval` = %s, Terminatedate = %s " \
-            "WHERE EventId = %s "
-        cur.execute(sql, (event_name, event_description, event_start, event_end, event_interval, event_terminatedate, event_id))
+            "WHERE EventId = %s AND EventId = (SELECT EventId " \
+            "FROM eventcalendar " \
+            "WHERE EventId = %s AND CalendarId = (SELECT CalendarId " \
+            "FROM usercalendars " \
+            "WHERE CalendarId = %s AND UserId = %s AND Adminlevel >= 2)) "
+        cur.execute(sql, (event_name, event_description, event_start, event_end, event_interval, event_terminatedate, event_id, event_id, calendar_id, user_id))
         db.commit()
         return True
     except mysql.connector.Error as err:
@@ -330,7 +334,7 @@ def add_new_task_db(interval):
         db.commit()
         return task_id
     except mysql.connector.Error as err:
-        return err
+        return False
     finally:
         cur.close()
 
@@ -449,7 +453,7 @@ def get_events_usercalendar_interval(user_id, calendar_id, interval_start, inter
             "AND E.EventId = C.EventId " \
             "AND E.Start BETWEEN %s AND %s AND E.End BETWEEN %s AND %s "
 
-        cur.execute(sql, (1201, 302, interval_start, interval_end, interval_start, interval_end))
+        cur.execute(sql, (user_id, calendar_id, interval_start, interval_end, interval_start, interval_end))
         return cur.fetchall()
     except mysql.connector.Error as err:
         return False
