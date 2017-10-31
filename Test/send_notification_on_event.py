@@ -1,3 +1,4 @@
+import mf_passwordTester
 import pymysql
 import smtplib
 import time
@@ -6,9 +7,11 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from email.utils import formatdate
 
+(loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
+
 connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='psw', # enter you db password
+                             user=loadedUsername,
+                             password=loadedPassword, # enter you db password
                              db='annualcycle',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
