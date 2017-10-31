@@ -26,14 +26,12 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = "any random string"
 
 
-
-# database connection
 def get_db():
+    """establishing database connection"""
     if not hasattr(g, "_db"):
         g.db = mysql.connector.connect(host=app.config["DATABASE_HOST"], user=app.config["DATABASE_USER"],
                                        password=app.config["DATABASE_PASSWORD"], database=app.config["DATABASE_DB"])
     return g.db
-
 
 @app.teardown_appcontext
 def teardown_db(error):
@@ -53,6 +51,7 @@ def get_username_db(username):
         cur.execute(sql, (username,))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -68,6 +67,7 @@ def get_user_name_db(username):
         cur.execute(sql, (username,))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -83,6 +83,7 @@ def get_userid_db(username):
         cur.execute(sql, (username,))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -98,6 +99,7 @@ def get_user_delete_status_db(username):
         cur.execute(sql, (username,))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -112,6 +114,7 @@ def get_password_db(username):
         cur.execute(sql, (username,))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -128,7 +131,7 @@ def set_new_user_db(username, password_hash, salt, name):
         print("successfull creation")
         return cur.lastrowid
     except mysql.connector.Error as err:
-        print("unsuccessful")
+        print(err)
         return False
     finally:
         cur.close()
@@ -144,6 +147,7 @@ def edit_user_db(user_id, username_old, username_new, password_hash, salt, name)
         db.commit()
         return cur.lastrowid
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -158,6 +162,7 @@ def get_all_calendars_db(user_id):
         cur.execute(sql, (user_id,))
         return cur.fetchall()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -175,6 +180,7 @@ def get_calendar_db(user_id, calendar_id):
         cur.execute(sql, (calendar_id, user_id))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -189,6 +195,7 @@ def get_all_calendar_events_db(calendar_id):
         cur.execute(sql, (calendar_id,))
         return cur.fetchall()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -203,6 +210,7 @@ def get_event_db(event_id):
         cur.execute(sql, (event_id,))
         return cur.fetchone()
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -219,6 +227,7 @@ def add_new_calendar_db(calendar_name, public_bool):
         db.commit()
         return calendar_id
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -236,6 +245,7 @@ def edit_calendar_db(user_id, calendar_id, calendar_name, public_bool):
         db.commit()
         return True
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -268,6 +278,7 @@ def add_new_event_db(name, start_time, end_time):
         db.commit()
         return cur.lastrowid
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -287,6 +298,7 @@ def edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_nam
         db.commit()
         return True
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -318,6 +330,7 @@ def add_new_eventcalendar_db(event_id, calendar_id):
         db.commit()
         return True
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -334,6 +347,7 @@ def add_new_task_db(interval):
         db.commit()
         return task_id
     except mysql.connector.Error as err:
+        print(err)
         return False
     finally:
         cur.close()
@@ -349,7 +363,8 @@ def add_new_usertask_db(task_id, user_id):
         db.commit()
         return True
     except mysql.connector.Error as err:
-        return err
+        print(err)
+        return False
     finally:
         cur.close()
 

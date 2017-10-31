@@ -63,6 +63,16 @@ def add_new_task(interval):
 
 
 def search_events_usercalendar(user_id, calendar_id, interval_start, interval_end):
+  """returns the dict:
+    \"success\": bool,
+    \"search_results\": [
+        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
+        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
+        {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
+        ...
+        ...
+        ]
+    """
     events = db.get_events_usercalendar_interval(user_id, calendar_id, interval_start, interval_end)
     if events != False:
         search_results = []
