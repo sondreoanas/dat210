@@ -6,6 +6,7 @@ Retrieve required data from DB when needed and send to frontend
 
 Sist oppdatert: 19.09.17 13:22 av Markus
 """
+import mf_passwordTester
 from flask import g, abort, session
 import mysql.connector
 import re
@@ -17,8 +18,10 @@ from app import app
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
-app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passord"
+(loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
+
+app.config["DATABASE_USER"] = loadedUsername
+app.config["DATABASE_PASSWORD"] = loadedPassword
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
