@@ -123,9 +123,9 @@ def register_user(username, password, name):
     validate_username = valid_username(username)
     validate_password = valid_password(password)
     if not validate_username["success"]:
-        return {"success": False, "error": valid_username["error"]}
+        return {"success": False, "error": validate_username["error"]}
     elif not validate_password["success"]:
-        return {"success": False, "error": valid_password["error"]}
+        return {"success": False, "error": validate_password["error"]}
     if not user_exist(username):
         password_hashed = sec.create_password(password)
         user_id = db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
