@@ -260,6 +260,8 @@ def generate_tasks(n):
     for x in range(n):
         cur = connection.cursor()
         try:
+            taskaname = "task #" + str(x)
+            startdate = datetime.datetime.now()
             pattern = ""
             ch = [0,2,3]
             chosen = random.choice(ch)
@@ -273,8 +275,8 @@ def generate_tasks(n):
                 pattern = taskpattern(0,0,0,0,1)
             else:
                 pattern = taskpattern(0,0,0,0,0)
-            sql = "INSERT INTO task (Intervall) VALUES (%s)"
-            cur.execute(sql, (pattern,))
+            sql = "INSERT INTO task (Name, Startdate, Intervall) VALUES (%s, %s, %s)"
+            cur.execute(sql, (taskaname, startdate, pattern))
             connection.commit()
         finally:
             cur.close()

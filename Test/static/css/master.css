@@ -202,19 +202,6 @@ a:focus {
     position: relative;
 }
 
-a:focus:before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 100%;
-    margin: 0 0 0 -16px;
-    width: 0;
-    height: 0;
-    border-left: 16px solid transparent;
-    border-right: 16px solid transparent;
-    border-top: 16px solid #008FCB;
-}
-
 img {
     border: 0;
     max-width: 100%;
@@ -471,47 +458,6 @@ button {
 /*	GENERAL CLASSES
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
-.buynow,
-.checkout {
-    padding: 0 20px;
-    line-height: 40px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-}
-
-.price {}
-
-.price>.old {
-    text-decoration: line-through;
-    font-size: 0.75em;
-}
-
-.promo {
-    width: 60px;
-    height: 40px;
-    background: red;
-    line-height: 40px;
-    text-align: center;
-    color: #fff;
-}
-
-.plus,
-.minus {
-    border: 0;
-    background: 0;
-    cursor: pointer;
-}
-
-.plus:before {
-    content: "\f040";
-    font: 2em/40px FontAwesome;
-}
-
-.minus:before {
-    content: "\f1f8";
-    font: 2em/40px FontAwesome;
-}
 
 
 /*	BOXES
@@ -542,9 +488,13 @@ button {
     list-style: none;
     padding:0;
 }
-#notifications > ul > li{
-    display: block;
+#notifications > li{
+    padding:10px;
+    margin:1px 0;
 }
-#notifications > ul > li.notif_red{
-    background-color:rgba(255,0,0,0.5);
+#notifications > li > h2{
+
+}
+#notifications > li.form{
+    background-color:rgba(255,0,0,0.8);
 }

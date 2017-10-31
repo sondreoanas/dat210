@@ -1,25 +1,26 @@
 """
     Flask
     this file is the core of the Calendar
-    Sist oppdatert: Nils 17.10.2017
+    Sist oppdatert: Nils 30.10.2017
 """
 import dataIO as io
 import json
-import config as c
-import back_user
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 from mf_tasks import mf_page
+import threading
+import time
 
 app = Flask(__name__)
 app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
+""" HOME """ #------------------------------------------------------------
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
     params = {
-        "load_start": request.form.get('start', 0),
-        "load_end": request.form.get('end', 0)
+        "load_start": request.get_json().get('start', 0),
+        "load_end": request.get_json().get('end', 0)
     }
     return json.dumps(io.getData("loadview",params))
 
@@ -40,7 +41,8 @@ def getTMPL():
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
     params = {
-        "id": request.args.get("id", None)
+        "id": request.args.get("id", None),
+        "args": request.args
     }
     with open('tmpl/' + tmpl +'.tmpl', 'r') as f:
         template = f.read()
@@ -50,7 +52,8 @@ def getTMPL():
     }
     return json.dumps(jstring)
 
-  
+""" USER """ #------------------------------------------------------------
+
 @app.route("/login_form", methods=["POST"])
 def login():
     params = {
@@ -78,6 +81,11 @@ def newuser():
     }
     return json.dumps(io.getData("newuser", params))
 
+@app.route("/loggout")
+def loggout():
+    return json.dumps(io.getData('loggout'))
+
+""" CALENDAR """ #------------------------------------------------------------
 
 @app.route("/calendar/new_form", methods=["POST"])
 def calendar_new_form():
@@ -98,6 +106,12 @@ def calendar_edit_form():
     }
     return json.dumps(io.getData("calendar_edit_form", params))
 
+@app.route("/calendar/edit/<int:id>")
+def calendar_edit(id):
+    return render_template('index.html')
+
+
+""" EVENT """ #------------------------------------------------------------
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -110,10 +124,11 @@ def event_new_form():
     return json.dumps(io.getData("event_new", params))
 
 
-@app.route("/event/edit/edit_form", methods=["POST"])
-def event_edit_form():
+@app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
+def event_edit_form(calendar_id):
     params = {
         "id": request.form.get('form_event_id', 0),
+        "old_calendar_id": calendar_id,
         "calendar_id": request.form.get('form_event_calendar', 0),
         "name": request.form.get('form_event_name', 0),
         "start": request.form.get('form_event_start', 0),
@@ -121,16 +136,17 @@ def event_edit_form():
     }
     return json.dumps(io.getData("event_edit_form", params))
 
+# @app.route("/event/edit/<int:id>")
+# def event_edit(id):
+#     return render_template('index.html')
 
-@app.route("/calendar/edit/<int:id>")
-def calendar_edit(id):
+@app.route("/event/edit/<int:calendar_id>/<int:event_id>")
+def event_edit(calendar_id, event_id):
     return render_template('index.html')
 
-
-@app.route("/event/edit/<int:id>")
-def event_edit(id):
-    return render_template('index.html')
-
+@app.route("/task/new_form", methods=["POST"])
+def task_new_form():
+    return json.dumps(io.getData("task_new", request.form))
 
 @app.route("/")
 @app.route("/login")

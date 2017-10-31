@@ -10,7 +10,7 @@ class LoggedInUser:
 
     def __getitem__(self, item):
         return self.__the_user[item]
-
+    
     def keys(self):
         """this is necessary when i try to overload the UserDict.Mixin"""
         return self.__the_user.values()
@@ -61,7 +61,6 @@ class LoggedInUser:
 
     def get_user_calendars(self):
         calendars = db.get_all_calendars_db(self.get_userid())
-        print(calendars)
         calendar_list = dict()
         if calendars:
             for (cal_id, cal_name, cal_rigts, cal_public) in calendars:
@@ -113,7 +112,7 @@ class LoggedInUser:
 
     def clear(self):
         """clears the class"""
-        self.__the_user = LoggedInUser(dict())
+        #self.__the_user = 
         return True
 
     def contents(self):

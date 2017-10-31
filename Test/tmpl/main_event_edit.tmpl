@@ -15,9 +15,9 @@
                         <label for="form_event_calendar">Calendar:</label>
                         <select id="form_event_calendar" name="form_event_calendar">
                             <%for(var i in this.data.calendars) {%>
-                                <option value="<%this.data.calendars[i][0]%>" <%if(this.data.calendars[i][0] == this.data.calendar_id) {%>selected<%}%>>
-                                    <%this.data.calendars[i][1]%>
-                                    <%if(this.data.calendars[i][2]) {%>
+                                <option value="<%this.data.calendars[i].id%>" <%if(this.data.calendars[i].id == this.data.calendar_id) {%>selected<%}%>>
+                                    <%this.data.calendars[i].name%> - <%this.data.calendars[i].id%> - <%this.data.calendar_id%>
+                                    <%if(this.data.calendars[i].public) {%>
                                      - public
                                     <%}%>
                                 </option>
@@ -33,6 +33,10 @@
                         <input type="text" id="form_event_end" name="form_event_end" placeholder="event end date and time_" value="<%this.data.end%>">
                         
                     </fieldset>
+
+                    <script data-run>
+                        main_event_new_init_flatpicker();
+                    </script>
     
                     <button data-formid="forms_event_edit" data-callback="cb.event_edit">Save event</button>
 
