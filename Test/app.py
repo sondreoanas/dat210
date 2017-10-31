@@ -8,6 +8,7 @@ import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 import threading
 import time
+import send_notification_on_event as snoe
 
 app = Flask(__name__)
 app.secret_key = "any random string"
@@ -163,5 +164,28 @@ def task_new_form():
 def index():
     return render_template('index.html')
 
+""" Threading""" #------------------------------------------------------------
+
+class threadingnotification(object):
+    #  Threading class for sending email notification
+
+    def __init__(self, interval=1):
+        """ Constructor
+        :type interval: int
+        :param interval: Check interval, in seconds
+        """
+        self.interval = interval
+
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True                            # Daemonize thread
+        thread.start()                                  # Start the execution
+
+    def run(self):
+        """ Method that runs forever """
+        snoe.run_email_eventnotification()
+
+        time.sleep(self.interval)
+
 if __name__ == "__main__":
+    th = threadingnotification()
     app.run()
