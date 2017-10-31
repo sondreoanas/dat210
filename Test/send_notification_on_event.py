@@ -1,4 +1,3 @@
-import mf_passwordTester
 import pymysql
 import smtplib
 import time
