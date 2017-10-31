@@ -12,11 +12,11 @@ import re
 import back_event
 import config as c
 from datetime import datetime
+from app import app
 
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
-app = Flask(__name__)
 app.config["DATABASE_USER"] = "root"
 app.config["DATABASE_PASSWORD"] = "passordetmitt"
 app.config["DATABASE_DB"] = "annualcycle"

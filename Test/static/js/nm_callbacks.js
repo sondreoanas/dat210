@@ -52,7 +52,7 @@ cb.prototype.calendar_edit = function(response){
 cb.prototype.event_new = function(response){	
 	if(response.success){
 		console.log(response.data)
-		router.navigate('event/edit/'+response.data.id);
+		router.navigate('event/edit/'+response.data.calendar_id+'/'+response.data.id);
 		//mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=newuser");
 	}else{
 		//mf_ajaxHandler.replaceElement(elementid = "login", url = "/getHTML?html=form_login");
@@ -62,7 +62,7 @@ cb.prototype.event_new = function(response){
 cb.prototype.event_edit = function(response){	
 	if(response.success){
 		console.log(response.data)
-		router.navigate('event/edit/'+response.data.id);
+		router.navigate('event/edit/'+response.data.calendar_id+'/'+response.data.id);
 		//mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=newuser");
 	}else{
 		//mf_ajaxHandler.replaceElement(elementid = "login", url = "/getHTML?html=form_login");

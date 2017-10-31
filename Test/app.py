@@ -126,12 +126,6 @@ def event_edit_form(calendar_id):
 def calendar_edit(id):
     return render_template('index.html')
 
-
-# @app.route("/event/edit/<int:id>")
-# def event_edit(id):
-#     return render_template('index.html')
-
-
 @app.route("/event/list/<int:calendar_id>")
 def event_calendar(calendar_id):
     return render_template('index.html')
@@ -163,4 +157,5 @@ def index():
     return render_template('index.html')
 
 if __name__ == "__main__":
+
     app.run()
