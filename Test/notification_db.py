@@ -23,8 +23,10 @@ def get_notification_details():
                     val[0]: val[1],
                 })
             details.append(temp)
+    except pymysql.MySQLError as err:
+        return []
     finally:
-        connection.close()
+        return details
 
 
 def set_notification_sent(EventId, CalendarId):
@@ -36,5 +38,4 @@ def set_notification_sent(EventId, CalendarId):
     except pymysql.MySQLError as err:
         return False
     finally:
-        connection.close()
-
+        return True
