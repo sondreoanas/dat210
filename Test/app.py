@@ -6,10 +6,12 @@
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
+from mf_tasks import mf_page
 import threading
 import time
 
 app = Flask(__name__)
+app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------

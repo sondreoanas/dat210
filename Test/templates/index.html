@@ -21,6 +21,8 @@
     <script src="{{ url_for("static", filename="js/navigo.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/routing.js") }}"></script>
     <script src="{{ url_for("static", filename="js/mf_control.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/mf_Tool.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/mf_unitTester.js") }}"></script>
     <script src="{{ url_for("static", filename="js/notifications.js") }}"></script>
 
 
@@ -77,6 +79,13 @@
                 <p>+47 40 40 40 40</p>
                 <a href="mailto:customer@service.com" title="Customer service email">customer@service.com</a>
             </section>
+			
+			<select data-target="social" data-addlastchild="/getHTML?html=mf_success">
+				<option value="volvo">Volvo</option>
+				<option value="saab">Saab</option>
+				<option value="mercedes">Mercedes</option>
+				<option value="audi">Audi</option>
+			</select>
     
             <section id="social">
                 <h2>Social media</h2>
