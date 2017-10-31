@@ -18,7 +18,7 @@ UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
 app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "root"
+app.config["DATABASE_PASSWORD"] = "passord"
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!

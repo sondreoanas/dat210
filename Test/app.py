@@ -5,13 +5,14 @@
 """
 import dataIO as io
 import json
-import config as c
-import back_user
 from flask import Flask, request, redirect, url_for, render_template, flash, session
+import threading
+import time
 
 app = Flask(__name__)
 app.secret_key = "any random string"
 
+""" HOME """ #------------------------------------------------------------
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
@@ -49,7 +50,8 @@ def getTMPL():
     }
     return json.dumps(jstring)
 
-  
+""" USER """ #------------------------------------------------------------
+
 @app.route("/login_form", methods=["POST"])
 def login():
     params = {
@@ -77,6 +79,11 @@ def newuser():
     }
     return json.dumps(io.getData("newuser", params))
 
+@app.route("/logout")
+def logout():
+    return json.dumps(io.getData('logout'))
+
+""" CALENDAR """ #------------------------------------------------------------
 
 @app.route("/calendar/new_form", methods=["POST"])
 def calendar_new_form():
@@ -97,6 +104,12 @@ def calendar_edit_form():
     }
     return json.dumps(io.getData("calendar_edit_form", params))
 
+@app.route("/calendar/edit/<int:id>")
+def calendar_edit(id):
+    return render_template('index.html')
+
+
+""" EVENT """ #------------------------------------------------------------
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -121,12 +134,6 @@ def event_edit_form(calendar_id):
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-
-@app.route("/calendar/edit/<int:id>")
-def calendar_edit(id):
-    return render_template('index.html')
-
-
 # @app.route("/event/edit/<int:id>")
 # def event_edit(id):
 #     return render_template('index.html')
@@ -135,7 +142,9 @@ def calendar_edit(id):
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
 
-
+@app.route("/task/new_form", methods=["POST"])
+def task_new_form():
+    return json.dumps(io.getData("task_new", request.form))
 
 @app.route("/")
 @app.route("/login")
