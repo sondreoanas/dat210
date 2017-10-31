@@ -63,7 +63,7 @@ def add_new_task(interval):
 
 
 def search_events_usercalendar(user_id, calendar_id, interval_start, interval_end):
-  """returns the dict:
+    """returns the dict:
     \"success\": bool,
     \"search_results\": [
         {\"event_name\": event_name, \"event_id\": event_is, \"\": start, \"\": end},
