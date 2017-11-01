@@ -1,11 +1,14 @@
 """
     Flask
     this file is the core of the Calendar
-    Sist oppdatert: Nils 17.10.2017
+    Sist oppdatert: Nils 30.10.2017
 """
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
+import threading
+import time
+import send_notification_on_event as snoe
 
 app = Flask(__name__)
 app.secret_key = "any random string"
@@ -16,8 +19,8 @@ app.secret_key = "any random string"
 def loadViewEvents():
     if not session['login']: return render_template('index.html')
     params = {
-        "load_start": request.form.get('start', 0),
-        "load_end": request.form.get('end', 0)
+        "load_start": request.get_json().get('start', 0),
+        "load_end": request.get_json().get('end', 0)
     }
     return json.dumps(io.getData("loadview",params))
 
@@ -39,7 +42,8 @@ def getTMPL():
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
     params = {
-        "id": request.args.get("id", None)
+        "id": request.args.get("id", None),
+        "args": request.args
     }
     with open('tmpl/' + tmpl +'.tmpl', 'r') as f:
         template = f.read()
@@ -83,9 +87,15 @@ def newuser():
     }
     return json.dumps(io.getData("newuser", params))
 
+<<<<<<< HEAD
 @app.route("/logout")
 def logout():
     return json.dumps(io.getData('logout'))
+=======
+@app.route("/loggout")
+def loggout():
+    return json.dumps(io.getData('loggout'))
+>>>>>>> dev
 
 """ CALENDAR """ #------------------------------------------------------------
 
@@ -111,7 +121,12 @@ def calendar_edit_form():
 def calendar_edit(id):
     return render_template('index.html')
 
+<<<<<<< HEAD
 """ EVENTS """ #------------------------------------------------------------
+=======
+
+""" EVENT """ #------------------------------------------------------------
+>>>>>>> dev
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -123,10 +138,17 @@ def event_new_form():
     }
     return json.dumps(io.getData("event_new", params))
 
+<<<<<<< HEAD
 @app.route("/event/edit/edit_form", methods=["POST"])
 def event_edit_form():
+=======
+
+@app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
+def event_edit_form(calendar_id):
+>>>>>>> dev
     params = {
         "id": request.form.get('form_event_id', 0),
+        "old_calendar_id": calendar_id,
         "calendar_id": request.form.get('form_event_calendar', 0),
         "name": request.form.get('form_event_name', 0),
         "start": request.form.get('form_event_start', 0),
@@ -134,10 +156,26 @@ def event_edit_form():
     }
     return json.dumps(io.getData("event_edit_form", params))
 
+<<<<<<< HEAD
 @app.route("/event/edit/<int:id>")
 def event_edit(id):
+=======
+# @app.route("/event/edit/<int:id>")
+# def event_edit(id):
+#     return render_template('index.html')
+
+@app.route("/event/list/<int:id>")
+def event_list(id):
     return render_template('index.html')
 
+@app.route("/event/edit/<int:calendar_id>/<int:event_id>")
+def event_edit(calendar_id, event_id):
+>>>>>>> dev
+    return render_template('index.html')
+
+@app.route("/task/new_form", methods=["POST"])
+def task_new_form():
+    return json.dumps(io.getData("task_new", request.form))
 
 
 @app.route("/")
@@ -153,5 +191,28 @@ def event_edit(id):
 def index():
     return render_template('index.html')
 
+""" Threading""" #------------------------------------------------------------
+
+class threadingnotification(object):
+    #  Threading class for sending email notification
+
+    def __init__(self, interval=1):
+        """ Constructor
+        :type interval: int
+        :param interval: Check interval, in seconds
+        """
+        self.interval = interval
+
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True                            # Daemonize thread
+        thread.start()                                  # Start the execution
+
+    def run(self):
+        """ Method that runs forever """
+        snoe.run_email_eventnotification()
+
+        time.sleep(self.interval)
+
 if __name__ == "__main__":
+    th = threadingnotification()
     app.run()
