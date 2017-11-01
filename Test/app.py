@@ -22,8 +22,11 @@ def loadViewEvents():
     if not session['login']: return render_template('index.html')
     params = {
         "load_start": request.get_json().get('start', 0),
-        "load_end": request.get_json().get('end', 0)
+        "load_end": request.get_json().get('end', 0),
+        "calendars":None
     }
+    if request.get_json().get('calendars',0):
+        params['calendars'] = request.get_json().get('calendars',0)
     return json.dumps(io.getData("loadview",params))
 
 @app.route("/getHTML")
@@ -144,8 +147,7 @@ def event_edit_form(calendar_id):
 
 @app.route("/event/list/<int:calendar_id>")
 def event_calendar(calendar_id):
-
-    return render_template('index.html')
+    return json.dumps('event_list',calendar_id)
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):

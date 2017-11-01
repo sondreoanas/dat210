@@ -36,12 +36,17 @@ def getData(data, params=None,):
 """ HOME """    #----------------------------------------------
 
 def load_view(params):
-    user_id = session['id']
-    cal_db = db.get_all_calendars_db(user_id)
+    cal_db = []
+    if params['calendars'] is not None:
+        cal_db = params['calendars']
+    else:
+        user_id = session['id']
+        for cal_id, cal_name, cal_rights, cal_public in db.get_all_calendars_db(user_id):
+            cal_db.append(cal_id)
     events = {'events':[]}
     start = datetime.datetime.fromtimestamp(params['load_start']/1000.0).isoformat()
     end = datetime.datetime.fromtimestamp(params['load_end']/1000.0).isoformat()
-    for cal_id, cal_name, cal_rights, cal_public in cal_db:
+    for cal_id in cal_db:
         events_db = back_event.search_events_usercalendar(user_id,cal_id,start,end)
         if events_db:
             for event in events_db['search_results']:
