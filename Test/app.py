@@ -3,6 +3,7 @@
     this file is the core of the Calendar
     Sist oppdatert: Nils 30.10.2017
 """
+#from mf_tasks import mf_page
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
@@ -11,6 +12,7 @@ import time
 import send_notification_on_event as snoe
 
 app = Flask(__name__)
+#app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
@@ -60,8 +62,8 @@ def login():
         "password": request.form.get('password', 0)
     }
     data = io.getData("login", params)
-    if isinstance(data['success'],int):
-        session['id'] = data['success']
+    if data['success']:
+        #session['id'] = data['success']
         session['username'] = params['username']
         session['login'] = True
     else:
@@ -139,10 +141,6 @@ def event_edit_form(calendar_id):
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-
-@app.route("/calendar/edit/<int:id>")
-def calendar_edit(id):
-    return render_template('index.html')
 
 @app.route("/event/list/<int:calendar_id>")
 def event_calendar(calendar_id):
