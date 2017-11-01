@@ -32,22 +32,39 @@ def check_time(time, diff):
 def send_notification():
     checkfortime = db.get_notification_details()
     for item in checkfortime:
+        keys = []
+        for key in item[0]:
+            keys.append(key)
+        for key in item[1]:
+            keys.append(key)
+        for key in item[2]:
+            keys.append(key)
+        for key in item[3]:
+            keys.append(key)
+        for key in item[4]:
+            keys.append(key)
+        for key in item[5]:
+            keys.append(key)
+        for key in item[6]:
+            keys.append(key)
+
         infouser = [] # structure: calendarname, email, eventname, calendarId, EventId
         infoevent = [] # structure: Start, notificationalerttime
-        for key3, start in item[3].items():
+
+        for key3, start in item[keys.index("Start")].items():
             infoevent.append(start)
-            for key4, notificationalerttime in item[4].items():
+            for key4, notificationalerttime in item[keys.index("Notificationalerttime")].items():
                 infoevent.append(notificationalerttime)
-                if check_time(start, notificationalerttime): # checking if the difference is less than user chosen limit
-                    for key0, calendarname in item[0].items():
+                if not check_time(start, notificationalerttime): # checking if the difference is less than user chosen limit
+                    for key0, calendarname in item[keys.index("Calendarname")].items():
                         infouser.append(calendarname)
-                    for key1, email in item[1].items():
+                    for key1, email in item[keys.index("Email")].items():
                         infouser.append(email)
-                    for key2, eventname in item[2].items():
+                    for key2, eventname in item[keys.index("Eventname")].items():
                         infouser.append(eventname)
-                    for key5, calendarId in item[5].items():
+                    for key5, calendarId in item[keys.index("CalendarId")].items():
                         infouser.append(calendarId)
-                    for key6, eventId in item[6].items():
+                    for key6, eventId in item[keys.index("EventId")].items():
                         infouser.append(eventId)
 
 
@@ -108,5 +125,3 @@ def run_email_eventnotification():
     while True:
         send_notification()
         time.sleep(600) # Running every 10th min
-
-
