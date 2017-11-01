@@ -28,6 +28,8 @@ def getData(data, params=None,):
         'calendar_edit_form':calendar_edit_form,
 
         'event_list':event_list,
+        'event_calendar': event_calendar,
+        'event_calendar_list':event_calendar_list,
         'event_new':event_new,
         'event_edit':event_edit,
         'event_edit_form':event_edit_form
@@ -216,6 +218,7 @@ def calendar_new(params):
     }
     return calendar
 
+
 def calendar_edit(params):
     result = db.get_calendar_db(session['id'],params['id'])
     calendar = {
@@ -244,21 +247,7 @@ def calendar_edit_form(params):
     }
     return calendar
 
-def calendar_new(params):
-    if params['public'] == 'public':
-        params['public'] = True
-    else:
-        params['public'] = False
-    result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
-    calendar = {
-        "success": result['success'],
-        "data": {
-            "id" : result['calendar_id'],
-            "name" : params["name"],
-            "public" : params["public"]
-        }
-    }
-    return calendar
+
 
 """ EVENT """    #----------------------------------------------
 
@@ -333,6 +322,7 @@ def event_edit_form(params):
 
 def event_edit(params):
     result = db.get_event_db(params['id'])
+    print(result)
     event = {
         "success": True,
         "data": {
@@ -345,6 +335,10 @@ def event_edit(params):
         }
     }
     return event
+
+
+
+""" TASKS """    #----------------------------------------------
 
 def task_new(params):
     calendar_id = params.get('form_task_calendar', 0)
