@@ -9,10 +9,6 @@ Sist oppdatert: 19.09.17 13:22 av Markus
 import mf_passwordTester
 from flask import g, abort, session
 import mysql.connector
-import re
-import back_event
-import config as c
-from datetime import datetime
 from app import app
 
 UPLOAD_FOLDER = "static/images"
@@ -257,7 +253,6 @@ def edit_calendar_db(user_id, calendar_id, calendar_name, public_bool):
 def add_new_usercalendar_db(user_id, calendar_id):
     db = get_db()
     cur = db.cursor()
-    print(c.the_user.get_userid())
     try:
         sql = "INSERT INTO usercalendars " \
             "(UserId, CalendarId, Adminlevel, Notifications) " \

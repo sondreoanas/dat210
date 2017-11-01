@@ -2,11 +2,10 @@ import back_user
 import back_event
 import back_db as db
 import time
+import security
 import notifications as n
 import datetime
 from flask import session
-
-
 
 def getData(data, params=None,):
     functions = {
@@ -29,8 +28,6 @@ def getData(data, params=None,):
         'event_new':event_new,
         'event_edit':event_edit,
         'event_edit_form':event_edit_form
-
-
     }
 
     if data in functions:
@@ -154,6 +151,7 @@ def edit_user(params):
     }
     return user
 
+
 def loggout(params):
     username = session['username']
     user = {
@@ -210,19 +208,35 @@ def calendar_edit(params):
 
 
 def calendar_edit_form(params):
-        if params['public'] == 'public':
-            params['public'] = True
-        else:
-            params['public'] = False
-        calendar = {
+    if params['public'] == 'public':
+        params['public'] = True
+    else:
+        params['public'] = False
+    calendar = {
             "success": db.edit_calendar_db(params['id'],params['name'],params['public']),
             "data": {
                 "id" : params["id"],
                 "name" : params['name'],
                 "public" : params['public']
             }
+    }
+    return calendar
+
+def calendar_new(params):
+    if params['public'] == 'public':
+        params['public'] = True
+    else:
+        params['public'] = False
+    result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
+    calendar = {
+        "success": result['success'],
+        "data": {
+            "id" : result['calendar_id'],
+            "name" : params["name"],
+            "public" : params["public"]
         }
-        return calendar
+    }
+    return calendar
 
 """ EVENT """    #----------------------------------------------
 
@@ -260,7 +274,6 @@ def event_list(params):
                 'end':str(end)
             }
             resultat.append(event)
-
     return resultat
 
 def event_new(params):
@@ -311,6 +324,7 @@ def event_edit(params):
         }
     }
     return event
+
 def task_new(params):
     calendar_id = params.get('form_task_calendar', 0)
     name = params.get('form_task_name', 0)
