@@ -208,6 +208,7 @@ def calendar_edit(params):
     }
     return calendar
 
+
 def calendar_edit_form(params):
         if params['public'] == 'public':
             params['public'] = True
@@ -267,6 +268,7 @@ def event_new(params):
     start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
     end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
     result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
+
     event = {
         "success": result['success'],
         "data": {
