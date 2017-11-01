@@ -3,16 +3,16 @@
     this file is the core of the Calendar
     Sist oppdatert: Nils 30.10.2017
 """
-#from mf_tasks import mf_page
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
 import threading
 import time
 import send_notification_on_event as snoe
+from mf_tasks import mf_page
 
 app = Flask(__name__)
-#app.register_blueprint(mf_page)
+app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
