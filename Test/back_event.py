@@ -1,9 +1,8 @@
 """Calendar and events"""
-import back_user
 import back_db as db
-import config as c
 
-def add_new_calendar(calendar_name, public_bool):
+
+def add_new_calendar(user_id,calendar_name, public_bool):
     """returns the dict:
     \"success\": bool,
     \"calendar_id\": calendar_id
@@ -11,7 +10,7 @@ def add_new_calendar(calendar_name, public_bool):
 
     calendar_id = db.add_new_calendar_db(calendar_name, public_bool)
     if calendar_id:
-        if db.add_new_usercalendar_db(calendar_id):
+        if db.add_new_usercalendar_db(user_id,calendar_id):
             return {"success": True, "calendar_id": calendar_id}
     return {"success": False}
 

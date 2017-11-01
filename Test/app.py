@@ -17,6 +17,7 @@ app.secret_key = "any random string"
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
+    if not session['login']: return render_template('index.html')
     params = {
         "load_start": request.get_json().get('start', 0),
         "load_end": request.get_json().get('end', 0)
@@ -33,7 +34,6 @@ def getHTML():
         "data" : {}
     }
     return json.dumps(data)
-
 
 @app.route("/getTMPL")
 def getTMPL():
@@ -59,8 +59,14 @@ def login():
         "username": request.form.get('username', 0),
         "password": request.form.get('password', 0)
     }
-    return json.dumps(io.getData("login", params))
-
+    data = io.getData("login", params)
+    if isinstance(data['success'],int):
+        session['id'] = data['success']
+        session['username'] = params['username']
+        session['login'] = True
+    else:
+        print('failed to log in')
+    return json.dumps(data)
 
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
@@ -68,7 +74,6 @@ def forgotpass():
         "username": request.form.get('form_userid', 0)
     }
     return json.dumps(io.getData("forgotpass", params))
-
 
 @app.route("/newuser_form", methods=["POST"])
 def newuser():
@@ -95,7 +100,6 @@ def calendar_new_form():
     print(params)
     return json.dumps(io.getData("calendar_new", params))
 
-
 @app.route("/calendar/edit/edit_form", methods=["POST"])
 def calendar_edit_form():
     params = {
@@ -110,7 +114,7 @@ def calendar_edit(id):
     return render_template('index.html')
 
 
-""" EVENT """ #------------------------------------------------------------
+""" EVENTS """ #------------------------------------------------------------
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -135,21 +139,28 @@ def event_edit_form(calendar_id):
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-# @app.route("/event/edit/<int:id>")
-# def event_edit(id):
-#     return render_template('index.html')
 
-@app.route("/event/list/<int:id>")
-def event_list(id):
+@app.route("/calendar/edit/<int:id>")
+def calendar_edit(id):
+    return render_template('index.html')
+
+@app.route("/event/list/<int:calendar_id>")
+def event_calendar(calendar_id):
+
     return render_template('index.html')
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
 
+@app.route("/home/<int:start>/<int:zoom>")
+def home_focus(start, zoom):
+    return render_template('index.html')
+
 @app.route("/task/new_form", methods=["POST"])
 def task_new_form():
     return json.dumps(io.getData("task_new", request.form))
+
 
 @app.route("/")
 @app.route("/login")
@@ -187,5 +198,7 @@ class threadingnotification(object):
         time.sleep(self.interval)
 
 if __name__ == "__main__":
+
     th = threadingnotification()
+
     app.run()
