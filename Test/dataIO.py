@@ -7,6 +7,9 @@ import notifications as n
 import datetime
 from flask import session
 
+# getData
+#
+
 def getData(data, params=None,):
     functions = {
         'loadview': load_view,
@@ -37,6 +40,9 @@ def getData(data, params=None,):
 
 """ HOME """    #----------------------------------------------
 
+# LoadView
+# Used to get Data for the home view
+
 def load_view(params):
     cal_db = []
     if params['calendars'] is not None:
@@ -64,6 +70,9 @@ def load_view(params):
             continue
     return events
 
+# Nav
+# Used to get the format of the navigation bar when a user IS logged in
+
 def nav(params):
         return {
                 "items": {
@@ -83,6 +92,10 @@ def nav(params):
                     "Loggout" : [0,"/loggedout"]
                 }
             }
+
+# Front Menu
+# Used to get the format of the navigation bar when a user IS NOT logged in
+
 def frontmenu(params):
         return {
                 "items": {
@@ -94,10 +107,14 @@ def frontmenu(params):
 
 """ USER """    #----------------------------------------------
 
+# Login
+#
+
 def login(params):
     result = back_user.login(params['username'],params['password'])
     if result['success']:
         session['id'] = result['user_id']
+        session['username'] = params['username']
         session['login'] = True
         resultat = {
             "success": result['success'],
@@ -289,7 +306,6 @@ def event_new(params):
     return event
 
 def event_edit_form(params):
-    print(params['start'])
     event_form = {
         "success": db.edit_event_db(params['id'], params['name'], None, params['start'], params['end'], None, None),
         #event description mangler + intervall + terminate_date
