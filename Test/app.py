@@ -134,6 +134,10 @@ def event_calendar(calendar_id):
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
 
+@app.route("/home/<int:start>/<int:zoom>")
+def home_focus(start, zoom):
+    return render_template('index.html')
+
 
 
 @app.route("/task/new_form", methods=["POST"])

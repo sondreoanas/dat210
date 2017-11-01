@@ -36,6 +36,13 @@ router
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_home");        
     },
 
+// HOME WITH FOCUS
+    'home/:start/:zoom': function (params) {
+        loadmenu();
+        data = {"start": params.start,"zoom":params.zoom};
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_home", data=data);        
+    },
+
 //CALENDAR
     'calendar/new': function () {
         loadmenu();
