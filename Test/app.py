@@ -140,10 +140,6 @@ def event_edit_form(calendar_id):
     return json.dumps(io.getData("event_edit_form", params))
 
 
-@app.route("/calendar/edit/<int:id>")
-def calendar_edit(id):
-    return render_template('index.html')
-
 @app.route("/event/list/<int:calendar_id>")
 def event_calendar(calendar_id):
 
