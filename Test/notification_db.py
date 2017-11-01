@@ -1,8 +1,11 @@
+import mf_passwordTester
 import pymysql
 
+(loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
+
 connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='psw', # enter you db password
+                             user=loadedUsername,
+                             password=loadedPassword, # enter you db password
                              db='annualcycle',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
@@ -26,6 +29,7 @@ def get_notification_details():
     except pymysql.MySQLError as err:
         return []
     finally:
+        cur.close()
         return details
 
 
@@ -38,4 +42,5 @@ def set_notification_sent(EventId, CalendarId):
     except pymysql.MySQLError as err:
         return False
     finally:
+        cur.close()
         return True
