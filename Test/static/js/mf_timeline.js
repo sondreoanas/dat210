@@ -323,11 +323,7 @@ Timeline.prototype.loadEvents = function(){
 				start = e.start,
 				end = e.end,
 				name = e.name,
-<<<<<<< HEAD
-				color = Tool.randomColor(1)
-=======
 				color = Tool.randomColor(1)//,
->>>>>>> dev
 				//repeatFunctions = repeatFunctions
 			));
 		}

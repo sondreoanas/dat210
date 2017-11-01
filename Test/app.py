@@ -26,7 +26,6 @@ def loadViewEvents():
 
 @app.route("/getHTML")
 def getHTML():
-    if not session['login']: return render_template('index.html')
     html = request.args.get("html", None)
     with open('html/' + html +'.html', 'r') as f:
         template = f.read()
@@ -38,7 +37,6 @@ def getHTML():
 
 @app.route("/getTMPL")
 def getTMPL():
-    if not session['login']: return render_template('index.html')
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
     params = {
@@ -87,15 +85,9 @@ def newuser():
     }
     return json.dumps(io.getData("newuser", params))
 
-<<<<<<< HEAD
-@app.route("/logout")
-def logout():
-    return json.dumps(io.getData('logout'))
-=======
 @app.route("/loggout")
 def loggout():
     return json.dumps(io.getData('loggout'))
->>>>>>> dev
 
 """ CALENDAR """ #------------------------------------------------------------
 
@@ -121,12 +113,8 @@ def calendar_edit_form():
 def calendar_edit(id):
     return render_template('index.html')
 
-<<<<<<< HEAD
-""" EVENTS """ #------------------------------------------------------------
-=======
 
-""" EVENT """ #------------------------------------------------------------
->>>>>>> dev
+""" EVENTS """ #------------------------------------------------------------
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -138,14 +126,9 @@ def event_new_form():
     }
     return json.dumps(io.getData("event_new", params))
 
-<<<<<<< HEAD
-@app.route("/event/edit/edit_form", methods=["POST"])
-def event_edit_form():
-=======
 
 @app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
 def event_edit_form(calendar_id):
->>>>>>> dev
     params = {
         "id": request.form.get('form_event_id', 0),
         "old_calendar_id": calendar_id,
@@ -156,10 +139,6 @@ def event_edit_form(calendar_id):
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-<<<<<<< HEAD
-@app.route("/event/edit/<int:id>")
-def event_edit(id):
-=======
 # @app.route("/event/edit/<int:id>")
 # def event_edit(id):
 #     return render_template('index.html')
@@ -170,7 +149,6 @@ def event_list(id):
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
->>>>>>> dev
     return render_template('index.html')
 
 @app.route("/task/new_form", methods=["POST"])

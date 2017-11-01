@@ -11,19 +11,7 @@ import mysql.connector
 import re
 import back_db as db
 import security as sec
-<<<<<<< HEAD
-=======
-import logged_in_user as liu
-
-
-def init_logged_in_user(username):
-    """takes in the username on successful login and initializes a logged in user"""
-    if user_exist(username):
-        c.the_user.set_username(username)
-        c.the_user.set_name(db.get_user_name_db(username)[0])
-        c.the_user.set_userid(db.get_userid_db(username)[0])
-        #session["the_user"] = c.the_user.contents()
->>>>>>> dev
+from flask import session
 
 
 # check for valid username function
@@ -37,13 +25,9 @@ def valid_username(username):
     if user_exist(username):
         return {"success": False, "error": "Username already in use"}
     if match is None:
-<<<<<<< HEAD
-        return [False, "Not a valid email address"]
-    return [True]
-=======
         return {"success": False, "error": "Not a valid email address"}
     return {"success": True}
->>>>>>> dev
+
 
 
 # function to check if a user exists
@@ -70,13 +54,8 @@ def valid_password(password):
     #if match is None:
     #    return False
 
-<<<<<<< HEAD
-    return [True]
-"""
-=======
     return {"success": True}
 
->>>>>>> dev
     if len(password) < 8:
         return {"success": False,
                 "error": "Password needs to contain at least 8 characters"}
@@ -96,13 +75,7 @@ def valid_password(password):
         return {"success": False,
                 "error": "You cannot use 123 in your password"}
     else:
-<<<<<<< HEAD
-        return True
-"""
-=======
         return {"success": True}
-
->>>>>>> dev
 
 # login function
 def login(username, password):
@@ -116,12 +89,6 @@ def login(username, password):
         if user_password:
             login_success = sec.check_password(password, user_password[0], user_password[1])
             if login_success:
-<<<<<<< HEAD
-                return db.get_userid_db(username)[0]
-
-    return False
-=======
-                init_logged_in_user(username)
                 return {"success": True, "user_id": db.get_userid_db(username)[0]}
     return {"success": False}
 
@@ -131,7 +98,6 @@ def logout():
     """clears session and returns True"""
     session.clear()
     return True
->>>>>>> dev
 
 
 # register user function
@@ -143,11 +109,11 @@ def register_user(username, password, name):
 
     validate_username = valid_username(username)
     validate_password = valid_password(password)
-    if not validate_username["success"]:
+    if validate_username["success"]:
         return {"success": False, "error": validate_username["error"]}
     elif not validate_password["success"]:
         return {"success": False, "error": validate_password["error"]}
-    if not user_exist(username):
+    if user_exist(username):
         password_hashed = sec.create_password(password)
         user_id = db.set_new_user_db(username, password_hashed[0], password_hashed[1], name)
         if user_exist(username):
