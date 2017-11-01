@@ -135,16 +135,22 @@ def event_edit_form(calendar_id):
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-# @app.route("/event/edit/<int:id>")
-# def event_edit(id):
-#     return render_template('index.html')
 
-@app.route("/event/list/<int:id>")
-def event_list(id):
+@app.route("/calendar/edit/<int:id>")
+def calendar_edit(id):
+    return render_template('index.html')
+
+@app.route("/event/list/<int:calendar_id>")
+def event_calendar(calendar_id):
+
     return render_template('index.html')
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
+    return render_template('index.html')
+
+@app.route("/home/<int:start>/<int:zoom>")
+def home_focus(start, zoom):
     return render_template('index.html')
 
 @app.route("/task/new_form", methods=["POST"])
@@ -187,5 +193,7 @@ class threadingnotification(object):
         time.sleep(self.interval)
 
 if __name__ == "__main__":
+
     th = threadingnotification()
+
     app.run()

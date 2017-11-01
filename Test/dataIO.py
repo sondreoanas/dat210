@@ -35,7 +35,7 @@ def getData(data, params=None,):
 
     if data in functions:
         return functions[data](params)
-    
+
 """ HOME """    #----------------------------------------------
 
 def load_view(params):
@@ -140,7 +140,7 @@ def forgotpass(params):
             "username" : params["username"]
         }
     }
-    
+
 def edit_user(params):
     if params['password_repeat'] == params['password']:
         result = back_user.edit_user(params['username_old'],params['username'],params['password'],)
@@ -179,7 +179,7 @@ def calendar_list(params):
         }
         calendars.append(calendar)
     return calendars
-    
+
 def calendar_new(params):
     if params['public'] == 'public':
         params['public'] = True
@@ -207,6 +207,7 @@ def calendar_edit(params):
         }
     }
     return calendar
+
 
 def calendar_edit_form(params):
         if params['public'] == 'public':
@@ -264,17 +265,18 @@ def event_list(params):
 
 def event_new(params):
     print(params['start'])
-    start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
-    end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
-    result = back_event.add_new_event(params['calendar_id'],params['name'],start,end)
+    start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
+    end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
+    result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
+
     event = {
         "success": result['success'],
         "data": {
             "id" : result['event_id'],
             "calendar_id": params["calendar_id"],
             "name": params["name"],
-            "start": params['start'],
-            "end": params['end']
+            "start": time.mktime(start.timetuple()) * 1000,
+            "end": time.mktime(end.timetuple()) * 1000
         }
     }
     return event
@@ -310,18 +312,18 @@ def event_edit(params):
     }
     return event
 def task_new(params):
-        calendar_id = params.get('form_task_calendar', 0)
-        name = params.get('form_task_name', 0)
-        start = params.get('form_task_start', 0)
-        todos = params.getlist('todos')
+    calendar_id = params.get('form_task_calendar', 0)
+    name = params.get('form_task_name', 0)
+    start = params.get('form_task_start', 0)
+    todos = params.getlist('todos')
 
-        returner = {
-            "success": True,
-            "data": {
-                "id" : 1,
-                "calendar_id": calendar_id,
-                "name": name,
-                "start": start,
-                "todos": todos
-            }
+    returner = {
+        "success": True,
+        "data": {
+            "id" : 1,
+            "calendar_id": calendar_id,
+            "name": name,
+            "start": start,
+            "todos": todos
         }
+    }

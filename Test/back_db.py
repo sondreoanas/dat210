@@ -18,6 +18,7 @@ from app import app
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
+
 (loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
 
 app.config["DATABASE_USER"] = loadedUsername
