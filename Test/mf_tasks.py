@@ -25,8 +25,9 @@ def getTasks():
 	db = back_db.get_db()
 	cur = db.cursor()
 	# SOME LOGIN TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	sql = "select * from task where calendarId = {};"
-	sql = sql.format(calId)
+	attributes = "TaskId, Name, task.Interval, Deleted, IsDone, ParentId, CalendarId, Timestamp"
+	sql = "select {} from task where calendarId = {};"
+	sql = sql.format(attributes, calId)
 	cur.execute(sql)
 	result = cur.fetchall()
 	newList = []
@@ -39,8 +40,8 @@ def getTasks():
 		for t in newList:
 			if t["isDone"] == 0:
 				continue
-			sql = "select * from task where parentId = {};"
-			sql = sql.format(t["id"])
+			sql = "select {} from task where parentId = {};"
+			sql = sql.format(attributes, t["id"])
 			cur.execute(sql)
 			result = cur.fetchall()
 			for r in result:
