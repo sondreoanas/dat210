@@ -55,7 +55,7 @@ def send_notification():
             infoevent.append(start)
             for key4, notificationalerttime in item[keys.index("Notificationalerttime")].items():
                 infoevent.append(notificationalerttime)
-                if not check_time(start, notificationalerttime): # checking if the difference is less than user chosen limit
+                if check_time(start, notificationalerttime): # checking if the difference is less than user chosen limit
                     for key0, calendarname in item[keys.index("Calendarname")].items():
                         infouser.append(calendarname)
                     for key1, email in item[keys.index("Email")].items():
