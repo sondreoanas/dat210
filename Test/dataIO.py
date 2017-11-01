@@ -48,7 +48,6 @@ def load_view(params):
         events_db = back_event.search_events_usercalendar(user_id,cal_id,start,end)
         if events_db:
             for event in events_db['search_results']:
-                print(event)
                 start_event = time.mktime(event['start'].timetuple()) * 1000
                 end_event = time.mktime(event['end'].timetuple()) * 1000
                 event = {
@@ -59,7 +58,6 @@ def load_view(params):
                 events['events'].append(event)
         else:
             continue
-    print(events)
     return events
 
 def nav(params):
@@ -261,16 +259,18 @@ def event_list(params):
                 'end':str(end)
             }
             resultat.append(event)
+
     return resultat
 
 def event_new(params):
+    print(params['start'])
     start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
     end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ").isoformat()
     result = back_event.add_new_event(params['calendar_id'],params['name'],start,end)
     event = {
-        "success": result[1],
+        "success": result['success'],
         "data": {
-            "id" : result[0],
+            "id" : result['event_id'],
             "calendar_id": params["calendar_id"],
             "name": params["name"],
             "start": params['start'],
@@ -280,6 +280,7 @@ def event_new(params):
     return event
 
 def event_edit_form(params):
+    print(params['start'])
     event_form = {
         "success": db.edit_event_db(params['id'], params['name'], None, params['start'], params['end'], None, None),
         #event description mangler + intervall + terminate_date
@@ -309,7 +310,6 @@ def event_edit(params):
     }
     return event
 def task_new(params):
-
         calendar_id = params.get('form_task_calendar', 0)
         name = params.get('form_task_name', 0)
         start = params.get('form_task_start', 0)
