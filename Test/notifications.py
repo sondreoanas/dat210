@@ -10,6 +10,16 @@ action = {
         "action": "confirm"
     }
 }
+global notif
+
+def notif_append(id):
+
+
+
+def notif():
+    temp = notif.copy()
+    notif=[]
+    return temp
 
 def notification(id):
 

@@ -20,14 +20,7 @@ app.secret_key = "any random string"
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
     if not session['login']: return render_template('index.html')
-    params = {
-        "load_start": request.get_json().get('start', 0),
-        "load_end": request.get_json().get('end', 0),
-        "calendars":None
-    }
-    if request.get_json().get('calendars',0):
-        params['calendars'] = request.get_json().get('calendars',0)
-    return json.dumps(io.getData("loadview",params))
+    return json.dumps(io.getData("loadview",request.get_json()))
 
 @app.route("/getHTML")
 def getHTML():
@@ -60,18 +53,15 @@ def getTMPL():
 
 @app.route("/login_form", methods=["POST"])
 def login():
-    params = {
-        "username": request.form.get('username', 0),
-        "password": request.form.get('password', 0)
-    }
-    return json.dumps(io.getData("login", params))
+    return json.dumps(io.getData("login", request.form))
 
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
-    params = {
-        "username": request.form.get('form_userid', 0)
-    }
-    return json.dumps(io.getData("forgotpass", params))
+    return json.dumps(io.getData("forgotpass", request.form))
+
+@app.route("/edituser_form", method=["POST"])
+def edituser():
+    return json.dumps(io.getData("edituser",request.form))
 
 @app.route("/newuser_form", methods=["POST"])
 def newuser():

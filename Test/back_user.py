@@ -55,7 +55,7 @@ def valid_password(password):
     #    return False
 
     return {"success": True}
-
+"""
     if len(password) < 8:
         return {"success": False,
                 "error": "Password needs to contain at least 8 characters"}
@@ -76,7 +76,7 @@ def valid_password(password):
                 "error": "You cannot use 123 in your password"}
     else:
         return {"success": True}
-
+"""
 # login function
 def login(username, password):
     """returns the dict:
