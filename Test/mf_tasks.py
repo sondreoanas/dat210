@@ -20,7 +20,7 @@ mf_page = Blueprint('mf_page', __name__, template_folder='templates')
 def getTasks():
 	json.dumps({"tasks": []})
 	cal_id = request.get_json().get("calId", -1)
-	if calId == -1:
+	if cal_id == -1:
 		return json.dumps({})
 
 	result = db.get_all_calendartask_db(cal_id)
