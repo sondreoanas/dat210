@@ -9,18 +9,24 @@ from flask import Flask, request, redirect, url_for, render_template, flash, ses
 import threading
 import time
 import send_notification_on_event as snoe
+from mf_tasks import mf_page
 
 app = Flask(__name__)
+app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
+    if not session['login']: return render_template('index.html')
     params = {
         "load_start": request.get_json().get('start', 0),
-        "load_end": request.get_json().get('end', 0)
+        "load_end": request.get_json().get('end', 0),
+        "calendars":None
     }
+    if request.get_json().get('calendars',0):
+        params['calendars'] = request.get_json().get('calendars',0)
     return json.dumps(io.getData("loadview",params))
 
 @app.route("/getHTML")
@@ -33,7 +39,6 @@ def getHTML():
         "data" : {}
     }
     return json.dumps(data)
-
 
 @app.route("/getTMPL")
 def getTMPL():
@@ -61,14 +66,12 @@ def login():
     }
     return json.dumps(io.getData("login", params))
 
-
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
     params = {
         "username": request.form.get('form_userid', 0)
     }
     return json.dumps(io.getData("forgotpass", params))
-
 
 @app.route("/newuser_form", methods=["POST"])
 def newuser():
@@ -95,7 +98,6 @@ def calendar_new_form():
     print(params)
     return json.dumps(io.getData("calendar_new", params))
 
-
 @app.route("/calendar/edit/edit_form", methods=["POST"])
 def calendar_edit_form():
     params = {
@@ -110,7 +112,7 @@ def calendar_edit(id):
     return render_template('index.html')
 
 
-""" EVENT """ #------------------------------------------------------------
+""" EVENTS """ #------------------------------------------------------------
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
@@ -135,21 +137,23 @@ def event_edit_form(calendar_id):
     }
     return json.dumps(io.getData("event_edit_form", params))
 
-# @app.route("/event/edit/<int:id>")
-# def event_edit(id):
-#     return render_template('index.html')
 
-@app.route("/event/list/<int:id>")
-def event_list(id):
-    return render_template('index.html')
+@app.route("/event/list/<int:calendar_id>")
+def event_calendar(calendar_id):
+    return json.dumps('event_list',calendar_id)
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
     return render_template('index.html')
 
+@app.route("/home/<int:start>/<int:zoom>")
+def home_focus(start, zoom):
+    return render_template('index.html')
+
 @app.route("/task/new_form", methods=["POST"])
 def task_new_form():
     return json.dumps(io.getData("task_new", request.form))
+
 
 @app.route("/")
 @app.route("/login")
@@ -187,5 +191,7 @@ class threadingnotification(object):
         time.sleep(self.interval)
 
 if __name__ == "__main__":
+
     th = threadingnotification()
+
     app.run()

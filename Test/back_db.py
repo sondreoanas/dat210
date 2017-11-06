@@ -6,19 +6,19 @@ Retrieve required data from DB when needed and send to frontend
 
 Sist oppdatert: 19.09.17 13:22 av Markus
 """
+import mf_passwordTester
 from flask import g, abort, session
 import mysql.connector
-import re
-import back_event
-import config as c
-from datetime import datetime
 from app import app
 
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
 
-app.config["DATABASE_USER"] = "root"
-app.config["DATABASE_PASSWORD"] = "passord"
+
+(loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
+
+app.config["DATABASE_USER"] = loadedUsername
+app.config["DATABASE_PASSWORD"] = loadedPassword
 app.config["DATABASE_DB"] = "annualcycle"
 app.config["DATABASE_HOST"] = "localhost"
 app.config["DEBUG"] = True  # only for development!
@@ -253,7 +253,6 @@ def edit_calendar_db(user_id, calendar_id, calendar_name, public_bool):
 def add_new_usercalendar_db(user_id, calendar_id):
     db = get_db()
     cur = db.cursor()
-    print(c.the_user.get_userid())
     try:
         sql = "INSERT INTO usercalendars " \
             "(UserId, CalendarId, Adminlevel, Notifications) " \

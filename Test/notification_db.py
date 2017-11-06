@@ -1,8 +1,11 @@
+import mf_passwordTester
 import pymysql
 
+(loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
+
 connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='Stavanger1996', # enter you db password
+                             user=loadedUsername,
+                             password=loadedPassword, # enter you db password
                              db='annualcycle',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
@@ -13,8 +16,9 @@ def get_notification_details():
     details = []
     try:
         sql = """SELECT c.Name Calendarname, us.Email, e.Name Eventname, e.Start, usc.Notificationalerttime, usc.CalendarId, e.EventId
-            FROM usercalendars usc, annualcycle.user us, calendar c, eventcalendar ec, eventn e
-            WHERE usc.Notifications = 1 and ec.EventId = e.EventId and e.Start >= NOW() and ec.Notificationsent=0 and usc.deleted=0 and us.deleted=0 and c.deleted=0 and ec.deleted=0 and e.deleted=0 and usc.Userdeleted=0;"""
+                from calendar c, annualcycle.user us, eventn e, eventcalendar ec, usercalendars usc
+                where ec.EventId = e.EventId and ec.CalendarId = c.CalendarId and usc.CalendarId = ec.CalendarId and usc.Notifications = 1 and e.Start >= NOW()
+                and ec.Notificationsent=0 and usc.deleted=0 and us.deleted=0 and c.deleted=0 and ec.deleted=0 and e.deleted=0 and usc.Userdeleted=0;"""
         cur.execute(sql)
         for arg in cur:
             temp = []
@@ -23,8 +27,11 @@ def get_notification_details():
                     val[0]: val[1],
                 })
             details.append(temp)
+    except pymysql.MySQLError as err:
+        return []
     finally:
-        connection.close()
+        cur.close()
+        return details
 
 
 def set_notification_sent(EventId, CalendarId):
@@ -36,5 +43,5 @@ def set_notification_sent(EventId, CalendarId):
     except pymysql.MySQLError as err:
         return False
     finally:
-        connection.close()
-
+        cur.close()
+        return True
