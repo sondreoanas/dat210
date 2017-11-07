@@ -15,7 +15,7 @@ def get_notification_details():
     cur = connection.cursor()
     details = []
     try:
-        sql = """select e.Name, e.EventId, ec.CalendarId, c.Name Calendarname, usc.UserId, us.Email, e.Start
+        sql = """select e.Name Eventname, e.EventId, ec.CalendarId, c.Name Calendarname, usc.UserId, us.Email, e.Start
                     from eventn e, eventcalendar ec, calendar c, usercalendars usc, user us
                     where e.EventId = ec.EventId and ec.CalendarId = c.CalendarId and ec.CalendarId = usc.CalendarId and usc.UserId = us.UserId and usc.Notifications = 1 and e.Start >= NOW()
                     and ec.Notificationsent=0 and usc.deleted=0 and us.deleted=0 and c.deleted=0 and ec.deleted=0 and e.deleted=0 and usc.Userdeleted=0;"""
