@@ -202,10 +202,11 @@ def edit_user(request):
 
 def loggout(params):
     try:
+        username = session['username']
         user = {
             "success": back_user.logout(),
             "data": {
-                'username':session['username']
+                'username':username
             }
         }
         return user
