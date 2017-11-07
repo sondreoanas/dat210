@@ -47,6 +47,7 @@ def edit_event(user_id, old_calendar_id, new_calendar_id, event_id, event_name, 
     denne funksjonen er redudant og kan funksjonen edit_event_db kan kalle direkte
     edit_event_db returnerer True eller False
     """
+
     return {"success": db.edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)}
 
 def add_new_task(user_id, name, description, start_date, timestamp, calendar_id):
