@@ -90,26 +90,13 @@ def calendar_edit(id):
 
 @app.route("/event/new_form", methods=["POST"])
 def event_new_form():
-    params = {
-        "calendar_id": request.form.get('form_event_calendar', 0),
-        "name": request.form.get('form_event_name', 0),
-        "start": request.form.get('form_event_start', 0),
-        "end": request.form.get('form_event_end', 0)
-    }
-    return json.dumps(io.getData("event_new", params))
+    return json.dumps(io.getData("event_new", request.form))
 
 
 @app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
 def event_edit_form(calendar_id):
-    params = {
-        "id": request.form.get('form_event_id', 0),
-        "old_calendar_id": calendar_id,
-        "calendar_id": request.form.get('form_event_calendar', 0),
-        "name": request.form.get('form_event_name', 0),
-        "start": request.form.get('form_event_start', 0),
-        "end": request.form.get('form_event_end', 0)
-    }
-    return json.dumps(io.getData("event_edit_form", params))
+    old_calendar = calendar_id
+    return json.dumps(io.getData("event_edit_form", request.form))
 
 
 @app.route("/event/list/<int:calendar_id>")

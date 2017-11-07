@@ -311,53 +311,84 @@ def event_calendar_list(params):
     return returner
 
 def event_list(request):
-    cal_db = db.get_all_calendars_db(session['id'])
-    resultat = []
-    for cal_id, cal_name, cal_rights, cal_public in cal_db:
-        events_db = db.get_all_calendar_events_db(cal_id)
-        for event_id,cal_id in events_db:
-            id,name,des,start,end = db.get_event_db(event_id)
+    try:
+        cal_db = db.get_all_calendars_db(session['id'])
+        resultat = []
+        for cal_id, cal_name, cal_rights, cal_public in cal_db:
+            events_db = db.get_all_calendar_events_db(cal_id)
+            for event_id,cal_id in events_db:
+                id,name,des,start,end = db.get_event_db(event_id)
+                event = {
+                    'id': event_id,
+                    'name': name,
+                    'start':str(start),
+                    'end':str(end)
+                }
+                resultat.append(event)
+        return resultat
+    except IOError as err:
+        print(err)
+        #notifications
+        return [{}]
+
+def event_new(request):
+    try:
+        id = request.get('form_event_calendar',0)
+        if isinstance(id,int) and id > 0:
+            start = datetime.datetime.strptime(request.get('form_event_start', 0),"%Y-%m-%dT%H:%M:%S.%fZ")
+            end = datetime.datetime.strptime('form_event_end', 0,"%Y-%m-%dT%H:%M:%S.%fZ")
+            result = back_event.add_new_event(id,request.get('form_event_name', 0),start.isoformat(),end.isoformat())
+
             event = {
-                'id': event_id,
-                'name': name,
-                'start':str(start),
-                'end':str(end)
+                "success": result['success'],
+                "data": {
+                    "id" : result['event_id'],
+                    "calendar_id": id,
+                    "name": request.get('form_event_name', 0),
+                    "start": time.mktime(start.timetuple()) * 1000,
+                    "end": time.mktime(end.timetuple()) * 1000
+                }
             }
-            resultat.append(event)
-    return resultat
-
-def event_new(params):
-    print(params['start'])
-    start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
-    end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
-    result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
-
-    event = {
-        "success": result['success'],
-        "data": {
-            "id" : result['event_id'],
-            "calendar_id": params["calendar_id"],
-            "name": params["name"],
-            "start": time.mktime(start.timetuple()) * 1000,
-            "end": time.mktime(end.timetuple()) * 1000
+            return event
+        else:
+            raise IOError('')
+    except IOError as err:
+        print(err)
+        return {
+            "success":False,
+            "data":{
+                "id":id,
+                "name":request.get('form_event_name', 0),
+                "start":request.get('form_event_start', 0),
+                "end":request.get('form_event_end',0)
+            }
         }
-    }
-    return event
+        #notification
 
-def event_edit_form(params):
-    event_form = {
-        "success": db.edit_event_db(params['id'], params['name'], None, params['start'], params['end'], None, None),
-        #event description mangler + intervall + terminate_date
-        "data": {
-            "id" : params["id"],
-            "calendar_id": params["cal_id"],
-            "calendars" : getData("calendar_list"),
-            "name": params['name'],
-            "start": params['start'],
-            "end":  params['end']
+def event_edit_form(request):
+    try:
+        id = request.get('form_event_id', 0)
+        calendar_id = request.form.get('form_event_calendar', 0)
+        name = request.form.get('form_event_name', 0)
+        start = request.form.get('form_event_start', 0)
+        end = request.form.get('form_event_end', 0)
+
+        event_form = {
+            "success": db.edit_event_db(id, name, None, start, end, None, None),
+            #event description mangler + intervall + terminate_date
+            "data": {
+                "id" : id,
+                "calendar_id": calendar_id,
+                "calendars" : getData("calendar_list"),
+                "name": name,
+                "start": start,
+                "end":  end
+            }
         }
-    }
-    return event_form
+        return event_form
+    except IOError as err:
+        print(err)
+        return {"success":False}
 
 def event_edit(params):
     result = db.get_event_db(params['id'])
