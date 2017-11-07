@@ -391,9 +391,9 @@ def event_edit_form(request):
         return {"success":False}
 
 def event_edit(params):
-    result = db.get_event_db(params['id'])
-    print(result)
+    result = db.get_event_db(params["args"].get("event_id", 0))
     event = {
+        "notifications":n.notifications(),
         "success": True,
         "data": {
             "id" : params["id"],
@@ -415,11 +415,14 @@ def task_new(params):
     name = params.get('form_task_name', 0)
     start = params.get('form_task_start', 0)
     todos = params.getlist('todos')
+    user_id = session['id']
 
+    result = back_event.add_new_task(user_id, name, None, start, None, calendar_id)
+    
     returner = {
-        "success": True,
+        "success": result["task_id"],
         "data": {
-            "id" : 1,
+            "id" : result["task_id"],
             "calendar_id": calendar_id,
             "name": name,
             "start": start,
