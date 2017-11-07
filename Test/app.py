@@ -59,43 +59,27 @@ def login():
 def forgotpass():
     return json.dumps(io.getData("forgotpass", request.form))
 
-@app.route("/edituser_form", method=["POST"])
+@app.route("/edituser_form", methods=["POST"])
 def edituser():
     return json.dumps(io.getData("edituser",request.form))
 
 @app.route("/newuser_form", methods=["POST"])
 def newuser():
-    params = {
-        "email": request.form.get('form_new_email', 0),
-        "nickname": request.form.get('form_new_nick', 0),
-        "password": request.form.get('form_new_pass', 0),
-        "password_repeat": request.form.get('form_new_pass_repeat', 0)
-    }
-    return json.dumps(io.getData("newuser", params))
+    return json.dumps(io.getData("newuser", request.form))
 
 @app.route("/loggout")
 def loggout():
-    return json.dumps(io.getData('loggout'))
+    return json.dumps(io.getData('loggout'),None)
 
 """ CALENDAR """ #------------------------------------------------------------
 
 @app.route("/calendar/new_form", methods=["POST"])
 def calendar_new_form():
-    params = {
-        "name": request.form.get('form_calendar_name', 0),
-        "public": request.form.get('form_calendar_public', 0)
-    }
-    print(params)
-    return json.dumps(io.getData("calendar_new", params))
+    return json.dumps(io.getData("calendar_new", request.form))
 
 @app.route("/calendar/edit/edit_form", methods=["POST"])
 def calendar_edit_form():
-    params = {
-        "id": request.form.get('form_calendar_id', 0),
-        "name": request.form.get('form_calendar_name', 0),
-        "public": request.form.get('form_calendar_public', 0)
-    }
-    return json.dumps(io.getData("calendar_edit_form", params))
+    return json.dumps(io.getData("calendar_edit_form", request.form))
 
 @app.route("/calendar/edit/<int:id>")
 def calendar_edit(id):

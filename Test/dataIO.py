@@ -58,8 +58,8 @@ def load_view(request):
             for cal_id, cal_name, cal_rights, cal_public in db.get_all_calendars_db(user_id):
                 cal_db.append(cal_id)
         events = {'events':[]}
-        start = datetime.datetime.fromtimestamp(request.get_json().get('start', 0) / 1000.0).isoformat()
-        end = datetime.datetime.fromtimestamp(request.get_json().get('end', 0) / 1000.0).isoformat()
+        start = datetime.datetime.fromtimestamp(request.get('start', 0) / 1000.0).isoformat()
+        end = datetime.datetime.fromtimestamp(request.get('end', 0) / 1000.0).isoformat()
         for cal_id in cal_db:
             events_db = back_event.search_events_usercalendar(user_id,cal_id,start,end)
             if events_db:
@@ -143,30 +143,30 @@ def login(request):
         }
     return result
 
-def newuser(params):
-    db_new_user = back_user.register_user(params['email'], params['password'], params['nickname'])
-    user = {}
-    if security.check_equal(params['password'],params['password_repeat']):
+def newuser(request):
+    email = request.get('form_new_email',0)
+    nickname = request.get('form_new_nick', 0)
+    password = request.get('form_new_pass', 0),
+    repeat_password = request.get('form_new_pass_repeat',0)
 
+    if security.check_equal(password,repeat_password):
+        db_new_user = back_user.register_user(email, password, nickname)
         if db_new_user['success']:
             n.notif.append(n.notification(1))
             user = {
                 "success": db_new_user['success'],
                 "notifications": n.notif,
                 "data": {
-                    "email": params["email"],
-                    "nickname": params["nickname"]
+                    "email": email,
+                    "nickname": nickname
                 }
             }
         else:
             # notification
-            user = {
-                "success": db_new_user['success'],
-                "data": {
-                    "email": params["email"],
-                    "nickname": params["nickname"]
-                }
-            }
+            user = {"success":False,"data":{"email":email,"nickname":nickname}}
+    else:
+        # notification
+        user = {"success": False,"data":{"email":email,"nickname":nickname}}
     return user
 
 def forgotpass(request):
@@ -216,7 +216,7 @@ def loggout(params):
 
 """ CALENDAR """    #----------------------------------------------
 
-def calendar_list(params):
+def calendar_list(request):
     try:
         cal_db = db.get_all_calendars_db(session['id'])
         calendars = []
@@ -234,19 +234,20 @@ def calendar_list(params):
         return [[]]
 
 
-def calendar_new(params):
+def calendar_new(request):
     try:
-        if params['public'] == 'public':
-            params['public'] = True
+        name = request.get('form_calendar_name',0)
+        if request.get('form_calendar_public',0) == 'public':
+            public = True
         else:
-            params['public'] = False
-        result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
+            public = False
+        db_calendar = back_event.add_new_calendar(session['id'], name,public)
         calendar = {
-            "success": result[0],
+            "success": db_calendar['success'],
             "data": {
-                "id" : result[1],
-                "name" : params["name"],
-                "public" : params["public"]
+                "id" : db_calendar['calendar_id'],
+                "name" : name,
+                "public" : public
             }
         }
     except IOError as err:
@@ -267,17 +268,19 @@ def calendar_edit(params):
     return calendar
 
 
-def calendar_edit_form(params):
-    if params['public'] == 'public':
-        params['public'] = True
+def calendar_edit_form(request):
+    id = request.get('form_calendar_id',0)
+    name = request.get('form_calendar_name',0)
+    if request('form_calendar_public',0) == 'public':
+        public = True
     else:
-        params['public'] = False
+        public = False
     calendar = {
-            "success": db.edit_calendar_db(params['id'],params['name'],params['public']),
+            "success": db.edit_calendar_db(id, name, public),
             "data": {
-                "id" : params["id"],
-                "name" : params['name'],
-                "public" : params['public']
+                "id" : id,
+                "name" : name,
+                "public" : public
             }
     }
     return calendar
@@ -306,7 +309,7 @@ def event_calendar_list(params):
         returner.append(event)
     return returner
 
-def event_list(params):
+def event_list(request):
     cal_db = db.get_all_calendars_db(session['id'])
     resultat = []
     for cal_id, cal_name, cal_rights, cal_public in cal_db:

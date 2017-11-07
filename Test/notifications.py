@@ -13,13 +13,14 @@ action = {
 global notif
 
 def notif_append(id):
+    pass
 
 
 
-def notif():
-    temp = notif.copy()
-    notif=[]
-    return temp
+#def notif():
+#    temp = notif.copy()
+#    notif=[]
+#    return temp
 
 def notification(id):
 
