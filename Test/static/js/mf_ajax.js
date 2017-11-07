@@ -58,7 +58,11 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				if(!callback){
 					Tool.printError("No function with name: \"" + button.dataset.callback + "\" is found.");
 				}
-				callback(JSON.parse(responseText));
+				response = JSON.parse(responseText);
+				callback(response);
+				if(response.notifications){
+					notifications.retrieve(response.notifications);
+				}
 			}.bind(this));
 		}.bind(this));
 	}else if(button.dataset.target){ // fill/replace
@@ -370,6 +374,9 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 		var response = JSON.parse(responseText); // response = {template: someTemplate, data: somedata}
 		if(data){
 			response.data = data;
+		}
+		if(response.notifications){
+			notifications.retrieve(response.notifications);
 		}
 		response.template = templater(response.template, response.data);
 		//notification(response.notification);
