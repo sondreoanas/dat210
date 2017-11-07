@@ -35,7 +35,7 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             if db.add_new_eventcalendar_db(event_id, calendar_id):
                 return {"success": True, "event_id": event_id}
             else:
-                db.edit_event_db(event_id)
+                db.delete_event_db(event_id)
         except ValueError:
             db.delete_event_db(event_id)
     return {"success": False}
