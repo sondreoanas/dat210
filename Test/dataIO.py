@@ -321,9 +321,9 @@ def event_edit_form(params):
     return event_form
 
 def event_edit(params):
-    result = db.get_event_db(params['id'])
-    print(result)
+    result = db.get_event_db(params["args"].get("event_id", 0))
     event = {
+        "notifications":n.notifications(),
         "success": True,
         "data": {
             "id" : params["id"],
