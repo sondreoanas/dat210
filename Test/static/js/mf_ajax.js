@@ -145,10 +145,10 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 				var pos = parseFloat(element.dataset.position);
 				var zoom = parseFloat(element.dataset.zoom);
 				if(!pos){
-					Tool.printError("Element with id \"" + element.id + "\" is missing/wrong format data-position=\"someNumber\" attribute.");
+					Tool.printError("Element with id \"" + element.id + "\" is missing or has wrongly formatted data-position=\"someNumber\" attribute.");
 				}
 				if(!zoom){
-					Tool.printError("Element with id \"" + element.id + "\" is missing/wrong format data-zoom=\"someNumber\" attribute.");
+					Tool.printError("Element with id \"" + element.id + "\" is missing or has wrongly formatted data-zoom=\"someNumber\" attribute.");
 				}
 				mf_timeline.timelines[index].position = pos;
 				mf_timeline.timelines[index].targetPosition = pos;

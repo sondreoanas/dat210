@@ -7,6 +7,9 @@ import notifications as n
 import datetime
 from flask import session
 
+# getData
+#
+
 def getData(data, params=None,):
     functions = {
         'loadview': load_view,
@@ -25,6 +28,8 @@ def getData(data, params=None,):
         'calendar_edit_form':calendar_edit_form,
 
         'event_list':event_list,
+        'event_calendar': event_calendar,
+        'event_calendar_list':event_calendar_list,
         'event_new':event_new,
         'event_edit':event_edit,
         'event_edit_form':event_edit_form
@@ -35,13 +40,21 @@ def getData(data, params=None,):
 
 """ HOME """    #----------------------------------------------
 
+# LoadView
+# Used to get Data for the home view
+
 def load_view(params):
-    user_id = session['id']
-    cal_db = db.get_all_calendars_db(user_id)
+    cal_db = []
+    if params['calendars'] is not None:
+        cal_db = params['calendars']
+    else:
+        user_id = session['id']
+        for cal_id, cal_name, cal_rights, cal_public in db.get_all_calendars_db(user_id):
+            cal_db.append(cal_id)
     events = {'events':[]}
     start = datetime.datetime.fromtimestamp(params['load_start']/1000.0).isoformat()
     end = datetime.datetime.fromtimestamp(params['load_end']/1000.0).isoformat()
-    for cal_id, cal_name, cal_rights, cal_public in cal_db:
+    for cal_id in cal_db:
         events_db = back_event.search_events_usercalendar(user_id,cal_id,start,end)
         if events_db:
             for event in events_db['search_results']:
@@ -56,6 +69,9 @@ def load_view(params):
         else:
             continue
     return events
+
+# Nav
+# Used to get the format of the navigation bar when a user IS logged in
 
 def nav(params):
         return {
@@ -76,6 +92,10 @@ def nav(params):
                     "Loggout" : [0,"/loggedout"]
                 }
             }
+
+# Front Menu
+# Used to get the format of the navigation bar when a user IS NOT logged in
+
 def frontmenu(params):
         return {
                 "items": {
@@ -87,10 +107,14 @@ def frontmenu(params):
 
 """ USER """    #----------------------------------------------
 
+# Login
+#
+
 def login(params):
     result = back_user.login(params['username'],params['password'])
     if result['success']:
         session['id'] = result['user_id']
+        session['username'] = params['username']
         session['login'] = True
         resultat = {
             "success": result['success'],
@@ -194,6 +218,7 @@ def calendar_new(params):
     }
     return calendar
 
+
 def calendar_edit(params):
     result = db.get_calendar_db(session['id'],params['id'])
     calendar = {
@@ -222,21 +247,7 @@ def calendar_edit_form(params):
     }
     return calendar
 
-def calendar_new(params):
-    if params['public'] == 'public':
-        params['public'] = True
-    else:
-        params['public'] = False
-    result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
-    calendar = {
-        "success": result['success'],
-        "data": {
-            "id" : result['calendar_id'],
-            "name" : params["name"],
-            "public" : params["public"]
-        }
-    }
-    return calendar
+
 
 """ EVENT """    #----------------------------------------------
 
@@ -295,7 +306,6 @@ def event_new(params):
     return event
 
 def event_edit_form(params):
-    print(params['start'])
     event_form = {
         "success": db.edit_event_db(params['id'], params['name'], None, params['start'], params['end'], None, None),
         #event description mangler + intervall + terminate_date
@@ -312,6 +322,7 @@ def event_edit_form(params):
 
 def event_edit(params):
     result = db.get_event_db(params['id'])
+    print(result)
     event = {
         "success": True,
         "data": {
@@ -325,16 +336,23 @@ def event_edit(params):
     }
     return event
 
+
+
+""" TASKS """    #----------------------------------------------
+
 def task_new(params):
     calendar_id = params.get('form_task_calendar', 0)
     name = params.get('form_task_name', 0)
     start = params.get('form_task_start', 0)
     todos = params.getlist('todos')
+    user_id = session['id']
 
+    result = back_event.add_new_task(user_id, name, None, start, None, calendar_id)
+    
     returner = {
-        "success": True,
+        "success": result["task_id"],
         "data": {
-            "id" : 1,
+            "id" : result["task_id"],
             "calendar_id": calendar_id,
             "name": name,
             "start": start,

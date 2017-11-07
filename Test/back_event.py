@@ -35,7 +35,7 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             if db.add_new_eventcalendar_db(event_id, calendar_id):
                 return {"success": True, "event_id": event_id}
             else:
-                db.edit_event_db(event_id)
+                db.delete_event_db(event_id)
         except ValueError:
             db.delete_event_db(event_id)
     return {"success": False}
@@ -49,14 +49,14 @@ def edit_event(user_id, old_calendar_id, new_calendar_id, event_id, event_name, 
     """
     return {"success": db.edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)}
 
-def add_new_task(interval):
+def add_new_task(user_id, name, description, start_date, timestamp, calendar_id):
     """returns the dict:
     \"success\": bool,
     \"task_id\": task_id
     """
-    task_id = db.add_new_task_db(interval)
+    task_id = db.add_new_task_db(name, description, start_date, timestamp, calendar_id)
     if task_id:
-        if db.add_new_usertask_db(task_id, c.the_user.get_userid()):
+        if db.add_new_usertask_db(task_id, user_id):
             return {"success": True, "task_id": task_id}
     return {"success": False}
 

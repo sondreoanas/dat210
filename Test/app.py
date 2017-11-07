@@ -10,9 +10,9 @@ from flask import Flask, request, redirect, url_for, render_template, flash, ses
 import threading
 import time
 import send_notification_on_event as snoe
+from mf_tasks import mf_page
 
 app = Flask(__name__)
-#app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
@@ -22,8 +22,11 @@ def loadViewEvents():
     if not session['login']: return render_template('index.html')
     params = {
         "load_start": request.get_json().get('start', 0),
-        "load_end": request.get_json().get('end', 0)
+        "load_end": request.get_json().get('end', 0),
+        "calendars":None
     }
+    if request.get_json().get('calendars',0):
+        params['calendars'] = request.get_json().get('calendars',0)
     return json.dumps(io.getData("loadview",params))
 
 @app.route("/getHTML")
@@ -61,15 +64,6 @@ def login():
         "username": request.form.get('username', 0),
         "password": request.form.get('password', 0)
     }
-    data = io.getData("login", params)
-    if data['success']:
-        #session['id'] = data['success']
-        session['username'] = params['username']
-        session['login'] = True
-    else:
-        print('failed to log in')
-    return json.dumps(data)
-
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
     params = {
@@ -144,8 +138,7 @@ def event_edit_form(calendar_id):
 
 @app.route("/event/list/<int:calendar_id>")
 def event_calendar(calendar_id):
-
-    return render_template('index.html')
+    return json.dumps('event_list',calendar_id)
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")
 def event_edit(calendar_id, event_id):
