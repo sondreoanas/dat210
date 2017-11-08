@@ -337,10 +337,10 @@ def event_list(request):
 
 def event_new(request):
     try:
-        id = request.get('form_event_calendar',0)
-        if isinstance(id,int) and id > 0:
+        id = int(request.get('form_event_calendar',0))
+        if id > 0:
             start = datetime.datetime.strptime(request.get('form_event_start', 0),"%Y-%m-%dT%H:%M:%S.%fZ")
-            end = datetime.datetime.strptime('form_event_end', 0,"%Y-%m-%dT%H:%M:%S.%fZ")
+            end = datetime.datetime.strptime(request.get('form_event_end', 0),"%Y-%m-%dT%H:%M:%S.%fZ")
             result = back_event.add_new_event(id,request.get('form_event_name', 0),start.isoformat(),end.isoformat())
 
             event = {
