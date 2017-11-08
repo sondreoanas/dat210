@@ -3,6 +3,7 @@
     this file is the core of the Calendar
     Sist oppdatert: Nils 30.10.2017
 """
+#from mf_tasks import mf_page
 import dataIO as io
 import json
 from flask import Flask, request, redirect, url_for, render_template, flash, session
@@ -10,9 +11,9 @@ import threading
 import time
 import send_notification_on_event as snoe
 from mf_tasks import mf_page
+import notifications as n
 
 app = Flask(__name__)
-app.register_blueprint(mf_page)
 app.secret_key = "any random string"
 
 """ HOME """ #------------------------------------------------------------
@@ -36,7 +37,8 @@ def getHTML():
         template = f.read()
     data = {
         "template" : template,
-        "data" : {}
+        "data" : {},
+        "notifications": n.flush()
     }
     return json.dumps(data)
 
@@ -52,7 +54,8 @@ def getTMPL():
         template = f.read()
     jstring = {
         "template" : template,
-        "data": io.getData(data, params)
+        "data": io.getData(data, params),
+        "notifications": n.flush()
     }
     return json.dumps(jstring)
 
@@ -64,14 +67,7 @@ def login():
         "username": request.form.get('username', 0),
         "password": request.form.get('password', 0)
     }
-    data = io.getData("login", params)
-    if data['success']:
-        #session['id'] = data['success']
-        session['username'] = params['username']
-        session['login'] = True
-    else:
-        print('failed to log in')
-    return json.dumps(data)
+    return json.dumps(io.getData("login", params))
 
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
@@ -172,6 +168,7 @@ def task_new_form():
 @app.route("/calendar/list")
 @app.route("/event/new")
 @app.route("/event/list")
+@app.route("/task/new")
 def index():
     return render_template('index.html')
 

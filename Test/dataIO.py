@@ -7,6 +7,9 @@ import notifications as n
 import datetime
 from flask import session
 
+# getData
+#
+
 def getData(data, params=None,):
     functions = {
         'loadview': load_view,
@@ -25,15 +28,22 @@ def getData(data, params=None,):
         'calendar_edit_form':calendar_edit_form,
 
         'event_list':event_list,
+        'event_calendar': event_calendar,
+        'event_calendar_list':event_calendar_list,
         'event_new':event_new,
         'event_edit':event_edit,
-        'event_edit_form':event_edit_form
+        'event_edit_form':event_edit_form,
+
+        'task_new':task_new
     }
 
     if data in functions:
         return functions[data](params)
 
 """ HOME """    #----------------------------------------------
+
+# LoadView
+# Used to get Data for the home view
 
 def load_view(params):
     cal_db = []
@@ -62,6 +72,9 @@ def load_view(params):
             continue
     return events
 
+# Nav
+# Used to get the format of the navigation bar when a user IS logged in
+
 def nav(params):
         return {
                 "items": {
@@ -81,6 +94,10 @@ def nav(params):
                     "Loggout" : [0,"/loggedout"]
                 }
             }
+
+# Front Menu
+# Used to get the format of the navigation bar when a user IS NOT logged in
+
 def frontmenu(params):
         return {
                 "items": {
@@ -92,10 +109,14 @@ def frontmenu(params):
 
 """ USER """    #----------------------------------------------
 
+# Login
+#
+
 def login(params):
     result = back_user.login(params['username'],params['password'])
     if result['success']:
         session['id'] = result['user_id']
+        session['username'] = params['username']
         session['login'] = True
         resultat = {
             "success": result['success'],
@@ -104,8 +125,9 @@ def login(params):
             }
         }
     else:
+        n.append(n.notification(1))
         resultat = {
-                "notifications": [n.notification(1)],
+                "notifications": n.flush(),
                 "success": result['success'],
                 "data": {
                     "username" : params["username"]
@@ -114,25 +136,20 @@ def login(params):
     return resultat
 
 def newuser(params):
-    result = back_user.register_user(params['email'], params['password'], params['nickname'])
     user = {}
+    user["data"] = {
+        "email": params["email"],
+        "nickname": params["nickname"]
+    }
     if security.check_equal(params['password'],params['password_repeat']):
-        if result:
-            user = {
-                "success": result,
-                "data": {
-                    "email": params["email"],
-                    "nickname": params["nickname"]
-                }
-            }
-        else:
-            user = {
-                "success": result,
-                "data": {
-                    "email": params["email"],
-                    "nickname": params["nickname"]
-                }
-            }
+        result = back_user.register_user(params['email'], params['password'], params['nickname'])
+        user["success"] = result
+        if not result:
+            n.append(n.notification(3))
+    else:
+        n.append(n.notification(2))
+        user["success"] = False
+    user["notifications"] = n.flush()
     return user
 
 def forgotpass(params):
@@ -181,6 +198,8 @@ def calendar_list(params):
             "public": cal_public
         }
         calendars.append(calendar)
+    if len(calendars) == 0:
+        n.append(n.notification(4))
     return calendars
 
 def calendar_new(params):
@@ -189,15 +208,21 @@ def calendar_new(params):
     else:
         params['public'] = False
     result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
-    calendar = {
-        "success": result[0],
-        "data": {
+
+    calendar={}
+    calendar["success"] = result[0]
+    if result[0]:
+        calendar["data"] = {
             "id" : result[1],
             "name" : params["name"],
             "public" : params["public"]
         }
-    }
+    else:
+        n.append(n.notification(5))
+    calendar["notifications"] = n.flush()
+
     return calendar
+
 
 def calendar_edit(params):
     result = db.get_calendar_db(session['id'],params['id'])
@@ -217,31 +242,21 @@ def calendar_edit_form(params):
         params['public'] = True
     else:
         params['public'] = False
-    calendar = {
-            "success": db.edit_calendar_db(params['id'],params['name'],params['public']),
-            "data": {
-                "id" : params["id"],
-                "name" : params['name'],
-                "public" : params['public']
-            }
-    }
-    return calendar
 
-def calendar_new(params):
-    if params['public'] == 'public':
-        params['public'] = True
-    else:
-        params['public'] = False
-    result = back_event.add_new_calendar(session['id'], params['name'],params['public'])
     calendar = {
-        "success": result['success'],
+        "success": db.edit_calendar_db(session['id'],params['id'],params['name'],params['public']),
         "data": {
-            "id" : result['calendar_id'],
-            "name" : params["name"],
-            "public" : params["public"]
+            "id" : params["id"],
+            "name" : params['name'],
+            "public" : params['public']
         }
     }
+    if not calendar["success"]:
+        n.append(n.notification(6))
+    calendar["notifications"] = n.flush()
     return calendar
+
+
 
 """ EVENT """    #----------------------------------------------
 
@@ -263,6 +278,8 @@ def event_calendar_list(params):
             "end": str(event[4])
         }
         returner.append(event)
+    if len(returner) == 0:
+        n.append(n.notification(7))
     return returner
 
 def event_list(params):
@@ -279,12 +296,15 @@ def event_list(params):
                 'end':str(end)
             }
             resultat.append(event)
+    if len(resultat) == 0:
+        n.append(n.notification(7))
     return resultat
 
 def event_new(params):
-    print(params['start'])
+
     start = datetime.datetime.strptime(params['start'],"%Y-%m-%dT%H:%M:%S.%fZ")
     end = datetime.datetime.strptime(params['end'],"%Y-%m-%dT%H:%M:%S.%fZ")
+
     result = back_event.add_new_event(params['calendar_id'],params['name'],start.isoformat(),end.isoformat())
 
     event = {
@@ -297,10 +317,13 @@ def event_new(params):
             "end": time.mktime(end.timetuple()) * 1000
         }
     }
+
+    if not result['success']:
+        n.append(n.notification(8))
+    event["notifications"] = n.flush()
     return event
 
 def event_edit_form(params):
-    print(params['start'])
     event_form = {
         "success": db.edit_event_db(params['id'], params['name'], None, params['start'], params['end'], None, None),
         #event description mangler + intervall + terminate_date
@@ -313,11 +336,15 @@ def event_edit_form(params):
             "end":  params['end']
         }
     }
+    if not event_form['success']:
+        n.append(n.notification(9, {"id": params["id"]}))
+    event_form["notifications"] = n.flush()
     return event_form
 
 def event_edit(params):
-    result = db.get_event_db(params['id'])
+    result = db.get_event_db(params["args"].get("event_id", 0))
     event = {
+        "notifications":n.flush(),
         "success": True,
         "data": {
             "id" : params["id"],
@@ -330,19 +357,56 @@ def event_edit(params):
     }
     return event
 
+
+
+""" TASKS """    #----------------------------------------------
+
 def task_new(params):
+
     calendar_id = params.get('form_task_calendar', 0)
     name = params.get('form_task_name', 0)
-    start = params.get('form_task_start', 0)
-    todos = params.getlist('todos')
 
+    interval = {}
+    temp = {}
+
+    temp["interval_type"] = params.get('form_task_interval_type', 0)
+
+    temp["interval_type_year"] = params.get('form_task_interval_type_year', 0)
+    temp["interval_type_month"] = params.get('form_task_interval_type_month', 0)
+    temp["interval_type_week"] = params.get('form_task_interval_type_week', 0)
+    temp["interval_type_month_year"] = params.get('form_task_interval_type_month_year', 0)
+    temp["interval_type_week_year"] = params.get('form_task_interval_type_week_year', 0)
+    temp["interval_type_week_month"] = params.get('form_task_interval_type_week_month', 0)
+
+    temp["interval_year"] = params.get('form_task_interval_year', 0)
+    temp["interval_month"] = params.get('form_task_interval_month', 0)
+    temp["interval_week"] = params.get('form_task_interval_week', 0)
+    temp["interval_day"] = params.get('form_task_interval_day', 0)
+    temp["interval_month_year"] = params.get('form_task_interval_month_year', 0)
+    temp["interval_week_year"] = params.get('form_task_interval_week_year', 0)
+    temp["interval_day_year"] = params.get('form_task_interval_day_year', 0)
+    temp["interval_week_month"] = params.get('form_task_interval_week_month', 0)
+    temp["interval_day_month"] = params.get('form_task_interval_day_month', 0)
+    temp["interval_day_week"] = params.get('form_task_interval_day_week', 0)
+
+    for element in temp:
+        if temp[element] != 0 and temp[element] != "0":
+            interval[element] = temp[element]
+
+    todos = params.getlist('todos')
+    user_id = session['id']
+
+    result = back_event.add_new_task(user_id, name, None, None, None, calendar_id)
+    
     returner = {
-        "success": True,
+        "success": result["task_id"],
         "data": {
-            "id" : 1,
+            "id" : result["task_id"],
             "calendar_id": calendar_id,
             "name": name,
-            "start": start,
-            "todos": todos
+            "todos": todos,
+            "interval": interval
         }
     }
+
+    return returner
