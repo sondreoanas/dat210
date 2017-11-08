@@ -146,7 +146,7 @@ def login(request):
 def newuser(request):
     email = request.get('form_new_email',0)
     nickname = request.get('form_new_nick', 0)
-    password = request.get('form_new_pass', 0),
+    password = request.get('form_new_pass', 0)
     repeat_password = request.get('form_new_pass_repeat',0)
 
     if security.check_equal(password,repeat_password):
@@ -162,11 +162,9 @@ def newuser(request):
                 }
             }
         else:
-            # notification
-            user = {"success":False,"data":{"email":email,"nickname":nickname}}
+            user = {"notifications": [n.notification(2)],"success":False,"data":{"email":email,"nickname":nickname}}
     else:
-        # notification
-        user = {"success": False,"data":{"email":email,"nickname":nickname}}
+        user = {"notifications": [n.notification(2)],"success": False,"data":{"email":email,"nickname":nickname}}
     return user
 
 def forgotpass(request):
@@ -333,10 +331,10 @@ def event_list(request):
 
 def event_new(request):
     try:
-        id = request.get('form_event_calendar',0)
-        if isinstance(id,int) and id > 0:
+        id = int(request.get('form_event_calendar',0))
+        if id > 0:
             start = datetime.datetime.strptime(request.get('form_event_start', 0),"%Y-%m-%dT%H:%M:%S.%fZ")
-            end = datetime.datetime.strptime('form_event_end', 0,"%Y-%m-%dT%H:%M:%S.%fZ")
+            end = datetime.datetime.strptime(request.get('form_event_end', 0),"%Y-%m-%dT%H:%M:%S.%fZ")
             result = back_event.add_new_event(id,request.get('form_event_name', 0),start.isoformat(),end.isoformat())
 
             event = {

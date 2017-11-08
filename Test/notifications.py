@@ -32,6 +32,13 @@ def notification(id):
             "body": "Something went wrong with your login! Please make sure you typed correct credentials.",
             "actions": [action["close"], action["confirm"]]
 
+        },
+        2 : {
+            "id": "notif_" + str(int(round(time.time() * 1000))),
+            "type": "form",
+            "title": "Something went wrong!",
+            "body": "Please make sure you typed correct credentials.",
+            "actions": [action["close"], action["confirm"]]
         }
     }
 
