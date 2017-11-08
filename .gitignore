@@ -3,3 +3,5 @@ Test/.cache/v/cache/lastfailed
 *.iml
 *.xml
 *.idea
+
+*.xml

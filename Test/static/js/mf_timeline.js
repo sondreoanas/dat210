@@ -1,6 +1,6 @@
 /*
 	mf_timeline.js
-	version			: 0.4.1
+	version			: 0.4.0
 	last updated	: 08.11.2017
 	name			: Markus Fjellheim
 	description		:
@@ -323,7 +323,7 @@ Timeline.prototype.initializeButtons = function(){
 					
 					this.loadTasks();
 					this.loadEvents();
-					//this.setTaskView(); // preference, it's nicer to immediately see the changes made
+					this.setTaskView();
 				}.bind(this));
 			}.bind(this));
 		}
