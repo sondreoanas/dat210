@@ -57,7 +57,6 @@ def getDate(m, y, start=1):
             return random.randrange(start,32,1)
         return random.randrange(start,31,1)
 
-
 def getRandomPeriod(minYear, maxYear):
     period = []
     if minYear > maxYear:
@@ -88,37 +87,6 @@ def getRandomPeriod(minYear, maxYear):
     period.append(t1)
     period.append(t2)
     return period
-
-
-def taskpattern(y,m,w,d,daily):
-    """"
-    Supports tasks yearly, weekly or daily.
-    0 or 1 for true/false if the task is yearly, weekly og daily
-    1-12 for the month in year
-    1-7 for day in week
-    1 for every day
-    """
-    if (y and w) == 1:
-        return "Can't be yearly and weekly"
-    if (y and daily) == 1:
-        return "Can't be yearly and daily"
-    if (w and daily) == 1:
-        return "Can't be weekly and daily"
-    pattern = ""
-    if y == 1:
-        pattern = pattern + "1" + str(m)
-    else:
-        pattern = pattern + "00"
-    if w == 1:
-        pattern = pattern + "1" + str(d)
-    else:
-        pattern = pattern + "00"
-    if daily == 1:
-        pattern = pattern + "1"
-    else:
-        pattern = pattern + "0"
-    return str(pattern)
-
 
 def generate_calenders(n):
     for x in range(n):
@@ -257,72 +225,32 @@ def generate_eventcalendars():
 
 
 def generate_tasks(n):
+    calenders = []
+    cur = connection.cursor()
+    try:
+        sql = "SELECT CalendarId from Calendar"
+        cur.execute(sql)
+        for(CalendarId) in cur:
+            calenders.append(CalendarId)
+        connection.commit()
+    finally:
+        cur.close()
+
     for x in range(n):
         cur = connection.cursor()
         try:
             taskaname = "task #" + str(x)
             startdate = datetime.datetime.now()
-            pattern = ""
-            ch = [0,2,3]
-            chosen = random.choice(ch)
-            if chosen == 0:
-                month = randint(1, 12)
-                pattern = taskpattern(1,month,0,0,0)
-            elif chosen == 2:
-                day = randint(1, 7)
-                pattern = taskpattern(0,0,1,day,0)
-            elif chosen == 3:
-                pattern = taskpattern(0,0,0,0,1)
-            else:
-                pattern = taskpattern(0,0,0,0,0)
-            sql = "INSERT INTO task (Name, Startdate, Intervall) VALUES (%s, %s, %s)"
-            cur.execute(sql, (taskaname, startdate, pattern))
+            calendarId = random.choice(calenders).get("CalendarId")
+            interval = " "
+
+            sql = "INSERT INTO task (Name, Startdate, `Interval`, CalendarId) VALUES (%s, %s, %s, %s)"
+            cur.execute(sql, (taskaname, startdate, interval, calendarId))
             connection.commit()
         finally:
             cur.close()
     print("Added " + str(n) + " tasks to db")
 
-
-def generate_taskchildren():
-    taskparrent = []
-    taskchldren = []
-    cur = connection.cursor()
-    try:
-        sql = "SELECT TaskId from Task"
-        cur.execute(sql)
-        for(TaskId) in cur:
-            taskparrent.append(TaskId)
-            taskchldren.append(TaskId)
-        connection.commit()
-    finally:
-        cur.close()
-
-    for i in range(int(len(taskparrent)/5)):
-        cur = connection.cursor()
-        try:
-            taskparrentId = random.choice(taskparrent).get("TaskId")
-            taskchldrenId = random.choice(taskchldren).get("TaskId")
-
-            if taskparrentId != taskchldrenId:  # Can't have it's parent as a child
-                eventcal = []
-                sql = "SELECT ParenttaskId, ChildtaskId FROM Taskchildren WHERE ParenttaskId=%s and ChildtaskId=%s"
-                cur.execute(sql, (taskparrentId, taskchldrenId))
-                for(ParenttaskId, ChildtaskId) in cur:
-                    eventcal.append({
-                    "ParenttaskId": ParenttaskId,
-                    "ChildtaskId": ChildtaskId
-                })
-                if not eventcal:
-                    sql = "INSERT INTO Taskchildren (ParenttaskId, ChildtaskId) VALUES (%s, %s)"
-                    cur.execute(sql, (taskparrentId, taskchldrenId))
-                    connection.commit()
-                else:
-                    continue
-            else:
-                continue
-        finally:
-            cur.close()
-    print("Attached task to tasks")
 
 
 def generate_eventtask():
@@ -367,48 +295,6 @@ def generate_eventtask():
             cur.close()
     print("Attached some tasks to event")
 
-
-def generate_eventtask():
-    tasks = []
-    users = []
-    cur = connection.cursor()
-    try:
-        sql = "SELECT TaskId from Task"
-        cur.execute(sql)
-        for(TaskId) in cur:
-            tasks.append(TaskId)
-        connection.commit()
-        sql = "SELECT UserId from User"
-        cur.execute(sql)
-        for(TaskId) in cur:
-            users.append(TaskId)
-        connection.commit()
-    finally:
-        cur.close()
-
-    for i in range(len(tasks)):
-        cur = connection.cursor()
-        try:
-            taskid = tasks[i].get("TaskId")
-            usersId = random.choice(users).get("UserId")
-
-            eventtask = []
-            sql = "SELECT TaskId, UserId FROM Usertask WHERE Taskid=%s and UserId=%s"
-            cur.execute(sql, (taskid, usersId))
-            for(userId, calendarId) in cur:
-                eventtask.append({
-                "taskid": taskid,
-                "usersId": usersId
-            })
-            if not eventtask:
-                sql = "INSERT INTO Usertask (TaskId, UserId) VALUES (%s, %s)"
-                cur.execute(sql, (taskid, usersId))
-                connection.commit()
-            else:
-                continue
-        finally:
-            cur.close()
-    print("Attached tasks to a user")
 
 
 def generate_files(n):
@@ -477,14 +363,13 @@ def fill_db(nc, nu, ne, te, nf):  # nc = #calenders, nu = #users, ne = #events, 
     generate_events(ne)
     generate_eventcalendars()
     generate_tasks(te)
-    generate_taskchildren()
     generate_eventtask()
     generate_files(nf)
     generate_eventfiles()
 
 
 def main():
-    fill_db(10,1,120,18,5)
+    fill_db(1,1,10,4,1)
     connection.close()
 
 
