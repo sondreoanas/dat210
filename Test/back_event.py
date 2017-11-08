@@ -17,6 +17,7 @@ def add_new_calendar(user_id,calendar_name, public_bool):
 def edit_calendar(user_id, calendar_id, calendar_name, public_bool):
     """returns the dict:
     \"success\": bool
+
     denne funksjonen kan redudant og edit_calendar_db kan kalles
     direkte og vil enten returnere True eller false
     """
@@ -34,7 +35,7 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
             if db.add_new_eventcalendar_db(event_id, calendar_id):
                 return {"success": True, "event_id": event_id}
             else:
-                db.delete_event_db(event_id)
+                db.edit_event_db(event_id)
         except ValueError:
             db.delete_event_db(event_id)
     return {"success": False}
@@ -42,19 +43,20 @@ def add_new_event(calendar_id, event_name, start_time, end_time):
 def edit_event(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate):
     """returns the dict:
     \"success\": bool
+
     denne funksjonen er redudant og kan funksjonen edit_event_db kan kalle direkte
     edit_event_db returnerer True eller False
     """
     return {"success": db.edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)}
 
-def add_new_task(user_id, name, description, start_date, timestamp, calendar_id):
+def add_new_task(interval):
     """returns the dict:
     \"success\": bool,
     \"task_id\": task_id
     """
-    task_id = db.add_new_task_db(name, description, start_date, timestamp, calendar_id)
+    task_id = db.add_new_task_db(interval)
     if task_id:
-        if db.add_new_usertask_db(task_id, user_id):
+        if db.add_new_usertask_db(task_id, c.the_user.get_userid()):
             return {"success": True, "task_id": task_id}
     return {"success": False}
 
