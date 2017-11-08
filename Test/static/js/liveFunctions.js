@@ -37,26 +37,3 @@ function main_event_new_init_flatpicker(){
     });
 
 };
-
-
-function main_task_new_init_flatpicker(){
-    
-    var form_task_start = flatpickr("#form_task_start", {
-        enableTime: true,
-        time_24hr: true, 
-        minDate: "today",
-        dateFormat: "Z",
-        altInput: true,
-        altFormat: "F j, Y H:i"
-
-    });
-
-    form_task_start.element.addEventListener("change", function(){
-    
-        //form_event_end.set("minDate", form_event_start.element.value);    
-        //console.log(form_event_start.selectedDates);   
-        //console.log(new Date(form_event_start.selectedDates[0]).getTime());
-    
-    
-    });
-};
