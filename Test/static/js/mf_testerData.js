@@ -1,5 +1,5 @@
 var dataList = [
-	type, "username", [], "test@test.no",
+	type, "username", [], "test@test.com",
 	type, "password", [], "test",
 	click, "forms_login", [1], "",
 	click, "mainmenu", [0,2,2,1,0,0], "",

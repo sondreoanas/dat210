@@ -36,6 +36,13 @@ router
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_home");        
     },
 
+// HOME WITH FOCUS
+    'home/:start/:zoom': function (params) {
+        loadmenu();
+        data = {"start": params.start,"zoom":params.zoom};
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_home", data=data);        
+    },
+
 //CALENDAR
     'calendar/new': function () {
         loadmenu();
@@ -68,7 +75,7 @@ router
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_event_edit&data=event_edit&calendar_id="+params.calendar_id+"&event_id="+params.event_id);
     },
 
-// EVENT
+// TASK
     'task/new': function () {
         loadmenu();
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_task_new");

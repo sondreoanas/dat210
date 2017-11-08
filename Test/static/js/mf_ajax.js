@@ -58,7 +58,11 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 				if(!callback){
 					Tool.printError("No function with name: \"" + button.dataset.callback + "\" is found.");
 				}
-				callback(JSON.parse(responseText));
+				response = JSON.parse(responseText);
+				callback(response);
+				if(response.notifications){
+					notifications.retrieve(response.notifications);
+				}
 			}.bind(this));
 		}.bind(this));
 	}else if(button.dataset.target){ // fill/replace
@@ -145,10 +149,10 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 				var pos = parseFloat(element.dataset.position);
 				var zoom = parseFloat(element.dataset.zoom);
 				if(!pos){
-					Tool.printError("Element with id \"" + element.id + "\" is missing/wrong format data-position=\"someNumber\" attribute.");
+					Tool.printError("Element with id \"" + element.id + "\" is missing or has wrongly formatted data-position=\"someNumber\" attribute.");
 				}
 				if(!zoom){
-					Tool.printError("Element with id \"" + element.id + "\" is missing/wrong format data-zoom=\"someNumber\" attribute.");
+					Tool.printError("Element with id \"" + element.id + "\" is missing or has wrongly formatted data-zoom=\"someNumber\" attribute.");
 				}
 				mf_timeline.timelines[index].position = pos;
 				mf_timeline.timelines[index].targetPosition = pos;
@@ -370,6 +374,9 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 		var response = JSON.parse(responseText); // response = {template: someTemplate, data: somedata}
 		if(data){
 			response.data = data;
+		}
+		if(response.notifications){
+			notifications.retrieve(response.notifications);
 		}
 		response.template = templater(response.template, response.data);
 		//notification(response.notification);
