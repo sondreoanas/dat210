@@ -64,6 +64,7 @@ def login():
         "username": request.form.get('username', 0),
         "password": request.form.get('password', 0)
     }
+    
 @app.route("/forgotpass_form", methods=["POST"])
 def forgotpass():
     params = {

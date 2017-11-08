@@ -133,9 +133,10 @@ def login(params):
     return resultat
 
 def newuser(params):
-    result = back_user.register_user(params['email'], params['password'], params['nickname'])
+    
     user = {}
     if security.check_equal(params['password'],params['password_repeat']):
+        result = back_user.register_user(params['email'], params['password'], params['nickname'])
         if result:
             user = {
                 "success": result,

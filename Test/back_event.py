@@ -60,7 +60,6 @@ def add_new_task(user_id, name, description, start_date, timestamp, calendar_id)
             return {"success": True, "task_id": task_id}
     return {"success": False}
 
-
 def search_events_usercalendar(user_id, calendar_id, interval_start, interval_end):
     """returns the dict:
     \"success\": bool,

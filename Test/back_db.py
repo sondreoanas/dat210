@@ -1,11 +1,11 @@
-"""
+'''
 Python backend
 For communication with DB and python frontend
 Only send valid data to the DB, validate data from frontend
 Retrieve required data from DB when needed and send to frontend
 
-Sist oppdatert: 19.09.17 13:22 av Markus
-"""
+Sist oppdatert: 07.11.17 av Markus2
+'''
 import mf_passwordTester
 from flask import g, abort, session
 import mysql.connector
