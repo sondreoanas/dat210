@@ -1,0 +1,36 @@
+<label for="form_task_interval_<%this.id%>">Pick interval:</label>
+
+<%if(this.value == "input") {%>
+
+    <input type="number" id="form_task_interval_<%this.id%>" name="form_task_interval_<%this.id%>" placeholder="interval_">
+
+<%} else {%>
+
+    <select id="form_task_interval_<%this.id%>" name="form_task_interval_<%this.id%>">
+
+        <%for(var i in this.value) {%>
+            <option value="<%this.value[i]%>"><%this.value[i]%></option>
+        <%}%>
+
+    </select>
+
+<%}%>
+
+
+
+<%if(this.options) {%>
+
+    <label for="form_task_interval_type_<%this.id%>">Further specify interval:</label>
+
+    <select id="form_task_interval_type_<%this.id%>" name="form_task_interval_type_<%this.id%>" onchange="main_task_new_pick_interval(this)">
+
+        <option value="0" selected>_pick interval</option>
+
+        <%for(var i in this.options) {%>
+            <option value="<%this.options[i]%>"><%this.labels[i]%></option>
+        <%}%>
+
+    </select>
+
+<%}%>
+
