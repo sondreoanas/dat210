@@ -30,7 +30,7 @@ CREATE TABLE `calendar` (
   `Public` tinyint(1) NOT NULL DEFAULT '0',
   `Deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`CalendarId`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `calendar` (
 
 LOCK TABLES `calendar` WRITE;
 /*!40000 ALTER TABLE `calendar` DISABLE KEYS */;
-INSERT INTO `calendar` VALUES (1,'Calendar #0',1,0),(2,'Calendar #1',1,0),(3,'Calendar #2',1,0),(4,'Calendar #3',0,0),(5,'Calendar #4',1,0),(6,'Calendar #5',1,0),(7,'Calendar #6',0,0),(8,'Calendar #7',1,0),(9,'Calendar #8',0,0),(10,'Calendar #9',1,0);
+INSERT INTO `calendar` VALUES (1,'Calendar #0',1,0);
 /*!40000 ALTER TABLE `calendar` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -117,7 +117,7 @@ CREATE TABLE `eventcalendar` (
 
 LOCK TABLES `eventcalendar` WRITE;
 /*!40000 ALTER TABLE `eventcalendar` DISABLE KEYS */;
-INSERT INTO `eventcalendar` VALUES (1,3,0,1,0),(2,5,0,1,0),(2,10,0,1,0),(4,3,0,1,0),(6,4,0,1,0),(7,8,0,1,0),(8,1,0,1,0),(9,5,0,1,0),(10,2,0,1,0),(11,1,0,1,0),(12,2,0,1,0),(12,9,0,1,0),(13,3,0,1,0),(13,6,0,1,0),(13,7,0,1,0),(14,3,0,1,0),(14,5,0,1,0),(16,4,0,1,0),(17,1,0,1,0),(17,5,0,1,0),(18,3,0,1,0),(19,1,0,1,0),(19,2,0,1,0),(19,6,0,1,0),(20,2,0,1,0),(21,1,0,1,0),(21,2,0,1,0),(21,9,0,1,0),(22,6,0,1,0),(23,2,0,1,0),(24,1,0,1,0),(25,5,0,1,0),(25,7,0,1,0),(26,9,0,1,0),(27,10,0,1,0),(29,10,0,1,0),(30,3,0,1,0);
+INSERT INTO `eventcalendar` VALUES (2,1,0,1,0),(3,1,0,1,0),(6,1,0,1,0),(7,1,0,1,0),(9,1,0,1,0),(10,1,0,1,0);
 /*!40000 ALTER TABLE `eventcalendar` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -164,7 +164,7 @@ CREATE TABLE `eventfiles` (
 
 LOCK TABLES `eventfiles` WRITE;
 /*!40000 ALTER TABLE `eventfiles` DISABLE KEYS */;
-INSERT INTO `eventfiles` VALUES (6,4,0),(10,2,0),(25,2,0),(25,5,0),(29,2,0);
+INSERT INTO `eventfiles` VALUES (7,1,0);
 /*!40000 ALTER TABLE `eventfiles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -203,7 +203,7 @@ CREATE TABLE `eventn` (
   `Interval` char(1) DEFAULT NULL,
   `Deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`EventId`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +212,7 @@ CREATE TABLE `eventn` (
 
 LOCK TABLES `eventn` WRITE;
 /*!40000 ALTER TABLE `eventn` DISABLE KEYS */;
-INSERT INTO `eventn` VALUES (1,'event #0',NULL,'2019-05-05 00:00:00','2019-11-10 00:00:00',NULL,0),(2,'event #1',NULL,'2019-11-08 00:00:00','2019-11-26 00:00:00',NULL,0),(3,'event #2',NULL,'2017-07-11 00:00:00','2017-09-17 00:00:00',NULL,0),(4,'event #3',NULL,'2019-07-15 00:00:00','2019-11-20 00:00:00',NULL,0),(5,'event #4',NULL,'2018-02-05 00:00:00','2018-02-25 00:00:00',NULL,0),(6,'event #5',NULL,'2018-02-21 00:00:00','2018-11-17 00:00:00',NULL,0),(7,'event #6',NULL,'2017-05-26 00:00:00','2017-06-27 00:00:00',NULL,0),(8,'event #7',NULL,'2019-02-21 00:00:00','2019-07-19 00:00:00',NULL,0),(9,'event #8',NULL,'2017-02-02 00:00:00','2017-06-15 00:00:00',NULL,0),(10,'event #9',NULL,'2018-04-21 00:00:00','2018-08-18 00:00:00',NULL,0),(11,'event #10',NULL,'2017-05-03 00:00:00','2017-08-14 00:00:00',NULL,0),(12,'event #11',NULL,'2019-01-23 00:00:00','2019-11-25 00:00:00',NULL,0),(13,'event #12',NULL,'2018-06-07 00:00:00','2018-06-19 00:00:00',NULL,0),(14,'event #13',NULL,'2017-11-27 00:00:00','2017-11-28 00:00:00',NULL,0),(15,'event #14',NULL,'2019-07-09 00:00:00','2019-07-22 00:00:00',NULL,0),(16,'event #15',NULL,'2017-03-26 00:00:00','2017-11-02 00:00:00',NULL,0),(17,'event #16',NULL,'2017-07-01 00:00:00','2017-07-27 00:00:00',NULL,0),(18,'event #17',NULL,'2018-11-05 00:00:00','2018-11-12 00:00:00',NULL,0),(19,'event #18',NULL,'2017-02-22 00:00:00','2017-06-25 00:00:00',NULL,0),(20,'event #19',NULL,'2017-05-18 00:00:00','2017-08-13 00:00:00',NULL,0),(21,'event #20',NULL,'2019-06-15 00:00:00','2019-09-11 00:00:00',NULL,0),(22,'event #21',NULL,'2017-11-17 00:00:00','2017-11-21 00:00:00',NULL,0),(23,'event #22',NULL,'2018-02-25 00:00:00','2018-10-02 00:00:00',NULL,0),(24,'event #23',NULL,'2019-03-11 00:00:00','2019-11-20 00:00:00',NULL,0),(25,'event #24',NULL,'2017-01-03 00:00:00','2017-08-12 00:00:00',NULL,0),(26,'event #25',NULL,'2019-09-06 00:00:00','2019-11-29 00:00:00',NULL,0),(27,'event #26',NULL,'2017-01-13 00:00:00','2017-04-16 00:00:00',NULL,0),(28,'event #27',NULL,'2017-04-23 00:00:00','2017-04-27 00:00:00',NULL,0),(29,'event #28',NULL,'2018-11-12 00:00:00','2018-11-15 00:00:00',NULL,0),(30,'event #29',NULL,'2017-01-05 00:00:00','2017-11-25 00:00:00',NULL,0);
+INSERT INTO `eventn` VALUES (1,'event #0',NULL,'2017-11-09 16:00:00','2017-11-09 20:00:00',NULL,0),(2,'event #1',NULL,'2017-11-10 09:30:00','2017-11-10 15:15:00',NULL,0),(3,'event #2',NULL,'2017-11-11 08:00:00','2017-11-11 20:00:00',NULL,0),(4,'event #3',NULL,'2017-11-12 10:00:00','2017-11-12 18:00:00',NULL,0),(5,'event #4',NULL,'2017-11-13 16:00:00','2017-11-13 20:00:00',NULL,0),(6,'event #5',NULL,'2017-11-15 13:00:00','2017-11-16 00:00:00',NULL,0),(7,'event #6',NULL,'2017-11-23 12:00:00','2017-11-24 00:00:00',NULL,0),(8,'event #7',NULL,'2017-11-25 03:00:00','2017-11-25 06:00:00',NULL,0),(9,'event #8',NULL,'2017-11-27 08:00:00','2017-11-27 18:00:00',NULL,0),(10,'event #9',NULL,'2017-11-28 06:00:00','2017-11-28 20:00:00',NULL,0);
 /*!40000 ALTER TABLE `eventn` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -334,7 +334,7 @@ CREATE TABLE `eventtask` (
 
 LOCK TABLES `eventtask` WRITE;
 /*!40000 ALTER TABLE `eventtask` DISABLE KEYS */;
-INSERT INTO `eventtask` VALUES (5,9,0),(5,11,0),(6,10,0),(8,14,0),(8,17,0),(12,10,0),(16,5,0),(19,12,0),(20,6,0),(21,12,0),(22,10,0),(23,12,0),(30,8,0);
+INSERT INTO `eventtask` VALUES (5,3,0),(7,1,0),(7,3,0),(8,4,0),(10,2,0);
 /*!40000 ALTER TABLE `eventtask` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -370,7 +370,7 @@ CREATE TABLE `files` (
   `Path` varchar(100) NOT NULL,
   `Deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`FileId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -379,7 +379,7 @@ CREATE TABLE `files` (
 
 LOCK TABLES `files` WRITE;
 /*!40000 ALTER TABLE `files` DISABLE KEYS */;
-INSERT INTO `files` VALUES (1,'tmph1uecxcr','\\data',0),(2,'tmplbcs7smr','\\data',0),(3,'tmpwuv60v9s','\\data',0),(4,'tmpqnlfjgtc','\\data',0),(5,'tmpb_txpxpt','\\data',0);
+INSERT INTO `files` VALUES (1,'tmple013j4m','\\data',0);
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -439,7 +439,7 @@ CREATE TABLE `task` (
   `TaskId` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(45) NOT NULL,
   `Description` text,
-  `Startdate` datetime NOT NULL,
+  `Startdate` datetime DEFAULT NULL,
   `Interval` varchar(512) NOT NULL,
   `Timestamp` bigint(20) DEFAULT NULL,
   `CalendarId` int(11) DEFAULT NULL,
@@ -451,7 +451,7 @@ CREATE TABLE `task` (
   KEY `ParentId` (`ParentId`),
   CONSTRAINT `task_ibfk_1` FOREIGN KEY (`CalendarId`) REFERENCES `calendar` (`CalendarId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `task_ibfk_2` FOREIGN KEY (`ParentId`) REFERENCES `task` (`TaskId`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -460,7 +460,7 @@ CREATE TABLE `task` (
 
 LOCK TABLES `task` WRITE;
 /*!40000 ALTER TABLE `task` DISABLE KEYS */;
-INSERT INTO `task` VALUES (1,'task #0',NULL,'2017-11-01 12:53:25',' ',NULL,8,NULL,0,0),(2,'task #1',NULL,'2017-11-01 12:53:25',' ',NULL,3,NULL,0,0),(3,'task #2',NULL,'2017-11-01 12:53:25',' ',NULL,3,NULL,0,0),(4,'task #3',NULL,'2017-11-01 12:53:25',' ',NULL,7,NULL,0,0),(5,'task #4',NULL,'2017-11-01 12:53:25',' ',NULL,5,NULL,0,0),(6,'task #5',NULL,'2017-11-01 12:53:25',' ',NULL,9,NULL,0,0),(7,'task #6',NULL,'2017-11-01 12:53:25',' ',NULL,7,NULL,0,0),(8,'task #7',NULL,'2017-11-01 12:53:25',' ',NULL,6,NULL,0,0),(9,'task #8',NULL,'2017-11-01 12:53:25',' ',NULL,3,NULL,0,0),(10,'task #9',NULL,'2017-11-01 12:53:25',' ',NULL,5,NULL,0,0),(11,'task #10',NULL,'2017-11-01 12:53:25',' ',NULL,9,NULL,0,0),(12,'task #11',NULL,'2017-11-01 12:53:25',' ',NULL,3,NULL,0,0),(13,'task #12',NULL,'2017-11-01 12:53:25',' ',NULL,10,NULL,0,0),(14,'task #13',NULL,'2017-11-01 12:53:25',' ',NULL,7,NULL,0,0),(15,'task #14',NULL,'2017-11-01 12:53:25',' ',NULL,10,NULL,0,0),(16,'task #15',NULL,'2017-11-01 12:53:25',' ',NULL,1,NULL,0,0),(17,'task #16',NULL,'2017-11-01 12:53:25',' ',NULL,4,NULL,0,0),(18,'task #17',NULL,'2017-11-01 12:53:25',' ',NULL,7,NULL,0,0);
+INSERT INTO `task` VALUES (1,'task #0',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0),(2,'task #1',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0),(3,'task #2',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0),(4,'task #3',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0);
 /*!40000 ALTER TABLE `task` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -535,7 +535,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'ola@nordmann.no','pbkdf2:sha1:1000$e5nA2giH$dce81ea22fdcd5937f5642ca2daf3ad5b17b1ade','salt','Ola Nordmann','2017-11-01',0);
+INSERT INTO `user` VALUES (1,'ola@nordmann.no','pbkdf2:sha1:1000$iyOwn4gm$874e825936cc02eee0e30b8619979691f6112034','salt','Ola Nordmann','2017-11-08',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -656,7 +656,7 @@ CREATE TABLE `usercalendars` (
 
 LOCK TABLES `usercalendars` WRITE;
 /*!40000 ALTER TABLE `usercalendars` DISABLE KEYS */;
-INSERT INTO `usercalendars` VALUES (1,1,3,0,60,0,0),(1,2,3,0,60,0,0),(1,3,3,1,60,0,0),(1,4,0,0,60,0,0),(1,5,3,0,60,0,0),(1,6,1,0,60,0,0),(1,7,2,1,60,0,0),(1,8,1,0,60,0,0),(1,9,2,1,60,0,0),(1,10,0,0,60,0,0);
+INSERT INTO `usercalendars` VALUES (1,1,1,1,60,0,0);
 /*!40000 ALTER TABLE `usercalendars` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -741,4 +741,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-01 12:53:38
+-- Dump completed on 2017-11-08  9:35:24
