@@ -3,7 +3,6 @@ Python backend
 For communication with DB and python frontend
 Only send valid data to the DB, validate data from frontend
 Retrieve required data from DB when needed and send to frontend
-
 Sist oppdatert: 19.09.17 13:22 av Markus
 """
 import mf_passwordTester
@@ -153,7 +152,7 @@ def edit_user_db(user_id, username_old, username_new, password_hash, salt, name)
         cur.close()
 
 def get_all_calendars_db(user_id):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
         sql = "SELECT U.CalendarId, C.Name, U.Adminlevel, C.Public " \
@@ -168,7 +167,7 @@ def get_all_calendars_db(user_id):
         cur.close()
 
 def get_calendar_db(user_id, calendar_id):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
         sql = "SELECT CalendarId, Name, Public " \
@@ -186,7 +185,7 @@ def get_calendar_db(user_id, calendar_id):
         cur.close()
 
 def get_all_calendar_events_db(calendar_id):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
         sql = "SELECT EventId, CalendarId " \
@@ -201,7 +200,7 @@ def get_all_calendar_events_db(calendar_id):
         cur.close()
 
 def get_event_db(event_id):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
         sql = "SELECT EventId, Name, Description, Start, End " \
@@ -334,14 +333,14 @@ def add_new_eventcalendar_db(event_id, calendar_id):
     finally:
         cur.close()
 
-def add_new_task_db(interval):
+def add_new_task_db(name, description, start_date, timestamp, calendar_id):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "INSERT INTO task " \
-               "(Intervall) " \
-               "VALUES (%s) "
-        cur.execute(sql, (interval,))
+               "(Name, Description, Startdate, Timestamp, CalendarId) " \
+               "VALUES (%s, %s, %s, %s, %s) "
+        cur.execute(sql, (name, description, start_date, timestamp, calendar_id))
         task_id = cur.lastrowid
         db.commit()
         return task_id
@@ -383,14 +382,14 @@ def add_new_eventtask_db(task_id, event_id):
     finally:
         cur.close()
 
-def add_new_child_task_db(this_task_id, parent_task_id):
+def add_new_child_task_db(name, description, start_date, timestamp, calendar_id, parent_id):
     db = get_db()
     cur = db.cursor()
     try:
-        sql = "INSERT INTO taskchildren " \
-               "(ParenttaskId, ChildtaskId) " \
-               "VALUES (%s, %s) "
-        cur.execute(sql, (parent_task_id, this_task_id))
+        sql = "INSERT INTO task " \
+               "(Name, Description, Startdate, Timestamp, CalendarId, ParentId) " \
+               "VALUES (%s, %s, %s, %s, %s, %s) "
+        cur.execute(sql, (name, description, start_date, timestamp, calendar_id, parent_id))
         db.commit()
         return True
     except mysql.connector.Error as err:
@@ -414,10 +413,10 @@ def add_new_task_calendar_db(task_id, calendar_id):
         cur.close()
 
 def get_all_usertasks_db(user_id):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
-        sql = "SELECT TaskId " \
+        sql = "SELECT TaskId, Name, task.Interval, Deleted, IsDone, ParentId, CalendarId, Timestamp " \
             "FROM usertask " \
             "WHERE UserId = %s AND Deleted = 0 "
         cur.execute(sql, (user_id,))
@@ -427,8 +426,8 @@ def get_all_usertasks_db(user_id):
     finally:
         cur.close()
 
-def get_task(task_id):
-    db = get_db() 
+def get_task_db(task_id):
+    db = get_db()
     cur = db.cursor()
     try:
         sql = "SELECT Name, Description, Startdate, Interval " \
@@ -442,11 +441,11 @@ def get_task(task_id):
         cur.close()
 
 def get_all_calendartask_db(calendar_id):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
-        sql = "SELECT TaskId " \
-            "FROM calendartask " \
+        sql = "SELECT TaskId, Name, task.Interval, Deleted, IsDone, ParentId, CalendarId, Timestamp " \
+            "FROM task " \
             "WHERE CalendarId = %s AND Deleted = 0 "
         cur.execute(sql, (calendar_id,))
         return cur.fetchall()
@@ -455,9 +454,22 @@ def get_all_calendartask_db(calendar_id):
     finally:
         cur.close()
 
+def get_child_task_db(task_id):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "SELECT TaskId, Name, task.Interval, Deleted, IsDone, ParentId, CalendarId, Timestamp " \
+            "FROM task " \
+            "WHERE ParentId = %s AND Deleted = 0 "
+        cur.execute(sql, (calendar_id,))
+        return cur.fecthone()
+    except mysql.connector.Error as err:
+        return False
+    finally:
+        cur.close()
 
 def get_events_usercalendar_interval(user_id, calendar_id, interval_start, interval_end):
-    db = get_db() 
+    db = get_db()
     cur = db.cursor()
     try:
         sql = "SELECT E.Name, E.EventId, E.Start, E.End " \
