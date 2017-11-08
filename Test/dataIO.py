@@ -129,7 +129,7 @@ def login(request):
         session['id'] = login_db['user_id']
         session['username'] = username
         session['login'] = True
-        result = {
+        resultat = {
             "success": login_db['success'],
             "data": {
                 "username" : username
@@ -139,7 +139,7 @@ def login(request):
         n.append(n.notification(1))
         resultat = {
                 "notifications": n.flush(),
-                "success": result['success'],
+                "success": login_db['success'],
                 "data": {
                     "username" : username
                 }
