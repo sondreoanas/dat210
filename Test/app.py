@@ -11,6 +11,7 @@ import threading
 import time
 import send_notification_on_event as snoe
 from mf_tasks import mf_page
+import notifications as n
 
 app = Flask(__name__)
 app.secret_key = "any random string"
@@ -29,7 +30,8 @@ def getHTML():
         template = f.read()
     data = {
         "template" : template,
-        "data" : {}
+        "data" : {},
+        "notifications": n.flush()
     }
     return json.dumps(data)
 
@@ -45,7 +47,8 @@ def getTMPL():
         template = f.read()
     jstring = {
         "template" : template,
-        "data": io.getData(data, params)
+        "data": io.getData(data, params),
+        "notifications": n.flush()
     }
     return json.dumps(jstring)
 
@@ -126,6 +129,7 @@ def task_new_form():
 @app.route("/calendar/list")
 @app.route("/event/new")
 @app.route("/event/list")
+@app.route("/task/new")
 def index():
     return render_template('index.html')
 
