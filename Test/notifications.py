@@ -16,6 +16,17 @@ action = {
         "action": "calendar/new"
     }
 }
+global notif
+
+def notif_append(id):
+    pass
+
+
+
+#def notif():
+#    temp = notif.copy()
+#    notif=[]
+#    return temp
 
 notifList = []
 
