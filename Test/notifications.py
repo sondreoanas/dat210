@@ -76,13 +76,6 @@ def n_1(params):
             "body": "Something went wrong with your login! Please make sure you typed correct credentials.",
             "actions": [action["close"]]
 
-        },
-        2 : {
-            "id": "notif_" + str(int(round(time.time() * 1000))),
-            "type": "form",
-            "title": "Something went wrong!",
-            "body": "Please make sure you typed correct credentials.",
-            "actions": [action["close"], action["confirm"]]
         }
 def n_2(params):
     return {
