@@ -448,8 +448,40 @@ def task_new(params):
 
     todos = params.getlist('todos')
     user_id = session['id']
-
-    result = back_event.add_new_task(user_id, name, None, None, None, calendar_id)
+    
+    #{'interval_type': 'year', 'interval_type_year': 'week_year', 'interval_week_year': '45', 'interval_year': '1',
+    # 'interval_type_week_year': 'day_week', 'interval_day_week': 'Wednesday'}
+    #name, description, interval, timestamp, calendarId, parentId
+	
+    #result = back_event.add_new_task(user_id, name, None, None, None, calendar_id)
+    
+    '''
+    interval = {
+		yearInterval: {start: new Date("2018"), modulus = 2},
+		monthInterval: null,
+		monthNrInYear: null,
+		weekInterval: {start: new Date("this week"), modulus: 2},
+		weekNrInMonth: null,
+		weekNrInYear: null,
+		dayInterval: {start: new Date("today"), modulus: 2},
+		dayNrInWeek: null,
+		dayNrInMonth: 5,
+		dayNrInYear: null
+	}
+    '''
+    
+    #formattedInterval = "{weekInterval: {start: new Date(\"08 nov 2017\"), modulus: 2},dayNrInWeek: 2}"
+    
+    formattedInterval = "{"
+    
+    interval = "{}: {start: new Date({}), modulus: {}},"
+    if interval["interval_year"]:
+        formattedInterval += interval.forma
+    
+    result = back_event.add_new_task(name, "Some placeholder description", formattedInterval, 0, calendar_id, None)
+    
+    for todo in todos:
+        back_event.add_new_task(todo, "Some placeholder description", formattedInterval, None, None, result["task_id"])
     
     returner = {
         "success": result["task_id"],
