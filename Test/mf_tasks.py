@@ -10,7 +10,7 @@
 			...
 '''
 
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 import back_db
 import back_event
 import json
@@ -22,19 +22,30 @@ mf_page = Blueprint('mf_page', __name__, template_folder='templates')
 @mf_page.route("/getTasks", methods=["POST"])
 def getTasks():
 	json.dumps({"tasks": []})
-	calId = request.get_json().get("calId", -1)
-	if calId == -1:
+	#calId = request.get_json().get("calId", -1)
+	userId = session["id"]
+	
+	if userId == -1:
 		return json.dumps({}) # TODO: make error handeling
+	
 	db = back_db.get_db()
 	cur = db.cursor()
-	# SOME LOGIN TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+	# get calendar ids
+	sql = "select calendar.CalendarId from usercalendars join calendar " \
+		  "on UserId = {} and usercalendars.CalendarId = calendar.CalendarId;"
+	sql = sql.format(userId)
+	cur.execute(sql)
+	ids = [idTuple[0] for idTuple in cur.fetchall()]
 	
 	# load root tasks
 	attributes = "TaskId, Name, task.Interval, Deleted, IsDone, ParentId, CalendarId, Timestamp"
-	sql = "select {} from task where calendarId = %s;"
-	sql = sql.format(attributes)
-	cur.execute(sql, (calId,))
-	result = cur.fetchall()
+	result = []
+	for calendarId in ids:
+		sql = "select {} from task where calendarId = %s;"
+		sql = sql.format(attributes)
+		cur.execute(sql, (calendarId,))
+		result += cur.fetchall()
 	newList = []
 	for r in result:
 		newList.append({"id": r[0], "name": r[1], "interval": r[2], "deleted": r[3],\

@@ -323,7 +323,7 @@ Timeline.prototype.initializeButtons = function(){
 					
 					this.loadTasks();
 					this.loadEvents();
-					this.setTaskView();
+					//this.setTaskView();
 				}.bind(this));
 			}.bind(this));
 		}
@@ -362,7 +362,7 @@ Timeline.prototype.reSizeToContainer = function(){
 	}
 }
 Timeline.prototype.loadTasks = function(){
-	mf_AjaxHandler.ajaxPost({calId:13}, "/getTasks", function(r){
+	mf_AjaxHandler.ajaxPost({}, "/getTasks", function(r){
 		var response = JSON.parse(r);
 		//{
 		//	tasks: [
@@ -395,7 +395,7 @@ Timeline.prototype.loadTasks = function(){
 			}catch(err){
 				interval = null;
 			}
-			if(!interval){
+			if(!interval == null && inT.parentId == null){ // only root tasks should hava an interval
 				Tool.printError("Wrong interval format.");
 				continue;
 			}
