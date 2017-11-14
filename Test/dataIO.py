@@ -57,14 +57,16 @@ def load_view(request):
             cal_db = request.get('calendars',0)
         else:
             user_id = session['id']
-            for cal_id, cal_name, cal_rights, cal_public in db.get_all_calendars_db(user_id):
+            cals = db.get_all_calendars_db(user_id)
+            for cal_id, cal_name, cal_rights, cal_public in cals:
                 cal_db.append(cal_id)
         events = {'events':[]}
         start = datetime.datetime.fromtimestamp(request.get('start', 0) / 1000.0).isoformat()
         end = datetime.datetime.fromtimestamp(request.get('end', 0) / 1000.0).isoformat()
         for cal_id in cal_db:
             events_db = back_event.search_events_usercalendar(user_id,cal_id,start,end)
-            if events_db:
+            if events_db['success']:
+                print("SUCCESS")
                 for event in events_db['search_results']:
                     start_event = time.mktime(event['start'].timetuple()) * 1000
                     end_event = time.mktime(event['end'].timetuple()) * 1000
@@ -75,6 +77,7 @@ def load_view(request):
                     }
                     events['events'].append(event)
             else:
+                print("FAILED")
                 continue
         return events
     except IOError as err:
