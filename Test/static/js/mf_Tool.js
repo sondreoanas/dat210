@@ -1,8 +1,8 @@
 /*
 	mf_Tool.js
 	
-	version			: 0.1.0
-	last updated	: 08.11.2017
+	version			: 0.2.0
+	last updated	: 14.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -52,6 +52,9 @@ Tool.softRange = function(value, range, slope){
 }
 Tool.unixMillisecondsToDays = function(utc){
 	return utc / 1000 / 60 / 60 / 24;
+}
+Tool.getFontHeight = function(font){
+	return parseInt(font);
 }
 Tool.widthOfString = function(string, font){
 	var canvas = document.createElement("canvas");
@@ -309,11 +312,15 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 			var restDay = Tool.modulus(Tool.daysSinceEpoch(interval.dayInterval.start) - Tool.daysSinceEpoch(fromTime), interval.dayInterval.modulus);
 			correctDay = Tool.getIncrementDateOf(startOfDay, Tool.day, restDay);
 		}else if(interval.dayNrInWeek != null){
-			correctDay = Tool.getIncrementDateOf(correctWeek, Tool.day, interval.dayNrInWeek);
-			if(interval.weekNrInMonth != null && correctDay.getMonth() != correctMonth.getMonth()){
-				correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, 1);
-				correctDay = Tool.getIncrementDateOf(correctWeek, Tool.day, interval.dayNrInWeek);
+			if(interval.weekNrInMonth != null){
+				// does this weekday exist in this month the first week of this month? If not, increment week by 1
+				var firstWeekOfMonth = Tool.getResetDateOf(correctMonth, Tool.week);
+				var thisWeekDayInFirstWeek = Tool.getIncrementDateOf(firstWeekOfMonth, Tool.day, interval.dayNrInWeek);
+				if(thisWeekDayInFirstWeek.getMonth() != correctMonth.getMonth()){
+					correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, 1);
+				}
 			}
+			correctDay = Tool.getIncrementDateOf(correctWeek, Tool.day, interval.dayNrInWeek);
 		}else if(interval.dayNrInMonth != null){
 			correctDay = Tool.getIncrementDateOf(correctMonth, Tool.day, interval.dayNrInMonth);
 		}else if(interval.dayNrInYear != null){

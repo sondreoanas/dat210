@@ -1,6 +1,6 @@
 """Calendar and events"""
 import back_db as db
-
+from flask import session
 
 def add_new_calendar(user_id,calendar_name, public_bool):
     """returns the dict:
@@ -50,12 +50,15 @@ def edit_event(user_id, old_calendar_id, new_calendar_id, event_id, event_name, 
 
     return {"success": db.edit_event_db(user_id, old_calendar_id, new_calendar_id, event_id, event_name, event_description, event_start, event_end, event_interval, event_terminatedate)}
 
-def add_new_task(user_id, name, description, start_date, timestamp, calendar_id):
+def add_new_task(name, description, interval, timestamp, calendarId, parentId):
     """returns the dict:
     \"success\": bool,
     \"task_id\": task_id
     """
-    task_id = db.add_new_task_db(name, description, start_date, timestamp, calendar_id)
+    user_id = session["id"]
+    if not user_id:
+        return {"success": False, "task_id": None}
+    task_id = db.add_new_task_db(name, description, interval, timestamp, calendarId, parentId)
     if task_id:
         if db.add_new_usertask_db(task_id, user_id):
             return {"success": True, "task_id": task_id}
