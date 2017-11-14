@@ -236,7 +236,6 @@ def calendar_list(request):
         #notification
         return [[]]
 
-
 def calendar_new(request):
     try:
         name = request.get('form_calendar_name',0)
@@ -270,7 +269,6 @@ def calendar_edit(params):
     }
     return calendar
 
-
 def calendar_edit_form(request):
     id = request.get('form_calendar_id',0)
     name = request.get('form_calendar_name',0)
@@ -279,7 +277,7 @@ def calendar_edit_form(request):
     else:
         public = False
     calendar = {
-      "success": db.edit_calendar_db(id, name, public),
+      "success": db.edit_calendar_db(session['id'], id, name, public),
       "data": {
           "id" : id,
           "name" : name,
@@ -298,13 +296,12 @@ def calendar_edit_form(request):
 def event_calendar(params):
     return {"calendar_id": params["args"].get("calendar_id", 0)}
 
-
 def event_calendar_list(params):
     calendar_id = params["args"].get("calendar_id", 0)
-    calendar_events = db.get_all_calendar_events_db(calendar_id)
+    calendar_events = db.get_all_calendar_events_db(session['id'], calendar_id)
     returner = []
     for event_id, _ in calendar_events:
-        event = db.get_event_db(event_id)
+        event = db.get_event_db(session['id'], event_id)
         event = {
             "id": event_id,
             "calendar_id": calendar_id,
@@ -324,7 +321,7 @@ def event_list(request):
         for cal_id, cal_name, cal_rights, cal_public in cal_db:
             events_db = db.get_all_calendar_events_db(cal_id)
             for event_id,cal_id in events_db:
-                id,name,des,start,end = db.get_event_db(event_id)
+                id,name,des,start,end = db.get_event_db(session['id'], event_id)
                 event = {
                     'id': event_id,
                     'name': name,
@@ -381,7 +378,7 @@ def event_edit_form(request):
         end = request.form.get('form_event_end', 0)
 
         event_form = {
-            "success": db.edit_event_db(id, name, None, start, end, None, None),
+            "success": db.edit_event_db(session['id'], calendar_id, calendar_id, id, name, None, start, end, None),
             #event description mangler + intervall + terminate_date
             "data": {
                 "id" : id,
@@ -398,7 +395,7 @@ def event_edit_form(request):
         return {"success":False}
 
 def event_edit(params):
-    result = db.get_event_db(params["args"].get("event_id", 0))
+    result = db.get_event_db(session['id'], params["args"].get("event_id", 0))
     event = {
         "notifications":n.flush(),
         "success": True,
