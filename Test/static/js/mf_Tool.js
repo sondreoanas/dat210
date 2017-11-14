@@ -1,8 +1,8 @@
 /*
 	mf_Tool.js
 	
-	version			: 0.0.0
-	last updated	: 31.10.2017
+	version			: 0.1.0
+	last updated	: 08.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -199,7 +199,7 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 	// input check
 	// // multiple intervals
 	if((interval.yearInterval != null) + (interval.monthInterval != null) + (interval.weekInterval != null) + (interval.dayInterval != null) != 1){
-		Tool.printError("There be exactly one interval as input.", 1);
+		Tool.printError("There must be exactly one interval as input.", 1);
 		return -1;
 	}
 	// // redundant information
@@ -374,6 +374,13 @@ Tool.getStackTrace = function(level = 0){
 	var error = Error().stack.split("\n");
 	error.splice(1, level + 1);
 	return error.join("\n");
+}
+Tool.copyArray = function(array){
+	var newArray = [];
+	for(var i=0; i<array.length; i++){
+		newArray.push(array[i]);
+	}
+	return newArray;
 }
 
 
