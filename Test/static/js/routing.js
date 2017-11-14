@@ -20,7 +20,7 @@ router
     },
     'reset_pass/:id': function (params) {
         loadmenu();
-        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_reset_pass"); 
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_reset_pass", data=params.id); 
     },
     'newuser': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_newuser");        
