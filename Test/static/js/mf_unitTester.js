@@ -1,3 +1,17 @@
+/*
+	mf_unitTester.js
+	
+	version			: 0.0.1
+	last updated	: 14.11.2017
+	name			: Markus Fjellheim
+	description		:
+		What does this do?
+			This tests if mf_Tool is working correctly
+		How to use it?
+			TODO: ...
+		What is new?
+			...
+*/
 
 function mf_tool_getNextInterval_test(){
 	var testNr = 0;
@@ -41,14 +55,14 @@ function mf_tool_getNextInterval_test(){
 			dayNrInYear: null
 		}
 	);
-	if(new Date(range.start).getTime() != new Date("Mon Dec 04 2017").getTime() &&
-			new Date(range.end).getTime() != new Date("Tue Dec 05 2017").getTime()){
+	if(new Date(range.start).getTime() != new Date("Mon Oct 09 2017").getTime() &&
+			new Date(range.end).getTime() != new Date("Tue Oct 10 2017").getTime()){
 		Tool.printError("Failed on test nr: " + testNr + ".");
 		return false;
 	}
 	testNr++;
 	
-	//
+	// skip to second week if day doesn't exist in first week test
 	range = Tool.getNextInterval(new Date("Mon oct 06 2017 00:00"), false,
 		interval = {
 			yearInterval: null,
@@ -70,7 +84,7 @@ function mf_tool_getNextInterval_test(){
 	}
 	testNr++;
 	
-	//
+	// day in first day of month test
 	range = Tool.getNextInterval(new Date("dec 02 2017 00:00"), false,
 		interval = {
 			yearInterval: null,

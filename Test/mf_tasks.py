@@ -1,7 +1,7 @@
 '''
 	mf_tasks.js
-	version			: 0.1.0
-	last updated	: 08.11.2017
+	version			: 0.1.1
+	last updated	: 14.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -21,8 +21,8 @@ mf_page = Blueprint('mf_page', __name__, template_folder='templates')
 
 @mf_page.route("/getTasks", methods=["POST"])
 def getTasks():
-	json.dumps({"tasks": []})
-	#calId = request.get_json().get("calId", -1)
+	if not "id" in session:
+		return json.dumps({}) # TODO: make error handeling
 	userId = session["id"]
 	
 	if userId == -1:
@@ -31,7 +31,7 @@ def getTasks():
 	db = back_db.get_db()
 	cur = db.cursor()
 	
-	# get calendar ids
+	# get calendar ids TODO: abstact this
 	sql = "select calendar.CalendarId from usercalendars join calendar " \
 		  "on UserId = {} and usercalendars.CalendarId = calendar.CalendarId;"
 	sql = sql.format(userId)

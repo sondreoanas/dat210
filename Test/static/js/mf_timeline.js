@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.4.0
-	last updated	: 08.11.2017
+	version			: 0.5.0
+	last updated	: 14.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -59,6 +59,8 @@ function mf_Task(id, parentId, calendarId, name, interval, timestamp, width, hei
 	
 	this.children = [];
 	this.level = 0;
+	this.visibility = true;
+	this.isHoveredOver = false;
 }
 mf_Task.prototype.copy = function(other){
 	this.copyExceptPosition(other);
@@ -77,8 +79,8 @@ mf_Task.prototype.copyExceptPosition = function(other){
 	this.width = other.width;
 	this.isDone = other.isDone;
 }
-mf_Task.prototype.getRange = function(){
-	return Tool.getNextInterval(new Date(Timeline.getTimeNow()), true, this.interval); // {start: startTime, end: endTime}
+mf_Task.prototype.getRange = function(time = Timeline.getTimeNow()){
+	return Tool.getNextInterval(new Date(time), true, this.interval); // {start: startTime, end: endTime}
 }
 // Event
 function mf_Event(start, end, name, color, repeatFunctions){
@@ -220,6 +222,7 @@ function Timeline(container){
 	this.events = []; // visual events
 	//this.loadDummyEvents();
 	this.tasks = [];
+	this.setTaskView();
 	this.taskHeight = this.canvas.height * 0.1;
 	
 	// status
@@ -227,6 +230,7 @@ function Timeline(container){
 	this.startTime = 0;
 	this.endTime = 0;
 	this.taskToBePlaced;
+	this.placementRange = {start:0, end:0};
 	// // timeline/task mode
 	this.mode;
 	this.setTimelineView();
@@ -235,6 +239,9 @@ function Timeline(container){
 	this.unitNameWidth = 100;
 	this.unitNameHeight = 30;
 	this.verticalRulerHeight = this.unitNameHeight * 6;
+	
+	// cursor info
+	this.cursorInfo = "";
 	
 	// resolution functions
 	this.resetTimeFuntion;
@@ -283,7 +290,7 @@ Timeline.prototype.initializeButtons = function(){
 	this.buttons.push(this.changeViewButton);
 	
 	// confirm placacement of events
-	this.confirmEventPlacementButton = new Button(new Vec(this.canvas.width * 0.5, this.canvas.height * 0.95),
+	/*this.confirmEventPlacementButton = new Button(new Vec(this.canvas.width * 0.5, this.canvas.height * 0.95),
 		"Confirm start time of your event", new Color(200,50,50));
 	this.confirmEventPlacementButton.shape = Button.square;
 	this.confirmEventPlacementButton.width = this.canvas.width * 1;
@@ -329,7 +336,7 @@ Timeline.prototype.initializeButtons = function(){
 		}
 	}.bind(this, this.confirmEventPlacementButton);
 	this.confirmEventPlacementButton.visibility = false;
-	this.buttons.push(this.confirmEventPlacementButton);
+	this.buttons.push(this.confirmEventPlacementButton);*/
 }
 Timeline.prototype.setTimelineView = function(){
 	if(this.mode == Timeline.timelineView){
@@ -400,7 +407,7 @@ Timeline.prototype.loadTasks = function(){
 				continue;
 			}
 			var newTask = new mf_Task(inT.id, inT.parentId, inT.calendarId, inT.name, interval, inT.timestamp,
-				this.canvas.width * 0.5, this.taskHeight, inT.isDone);
+				this.canvas.width * 0.45, this.taskHeight, inT.isDone);
 			newTasks.push(newTask);
 		}
 		
@@ -416,14 +423,13 @@ Timeline.prototype.loadTasks = function(){
 			}
 		}
 		
-		// // remove root tasks outside of interval
+		// // make root tasks outside of interval invisible
 		for(var i=0; i<this.tasks.length; i++){
 			var t = this.tasks[i];
 			var range = t.getRange();
 			var timeNow = Timeline.getTimeNow();
 			if(range.start > timeNow || range.end <= timeNow){
-				this.tasks.splice(i, 1);
-				i--;
+				t.visibility = false;
 			}
 		}
 		
@@ -467,6 +473,23 @@ Timeline.prototype.loadTasks = function(){
 					}
 				}.bind(this, t));
 			}
+		}
+		
+		// calculate isDone for tasks
+		calculateIsDone(this.tasks);
+		function calculateIsDone(tasks){
+			var isAllDone = true;
+			for(var i=0; i<tasks.length; i++){
+				var t = tasks[i];
+				if(t.children.length > 0){
+					var childrenIsAllDone = calculateIsDone(t.children);
+					if(childrenIsAllDone){
+						t.isDone = true;
+					}
+				}
+				isAllDone = isAllDone && t.isDone;
+			}
+			return isAllDone;
 		}
 		
 		// adjust height of tasks
@@ -716,7 +739,8 @@ Timeline.prototype.handleStatus = function(){
 	}else if(this.status == Timeline.addEventSetStart || this.status == Timeline.addEventSetEnd){
 		this.setTimelineView();
 		// detect click
-		if(this.mouseClicked() && !this.cancelActivationChange){
+		if(!this.cancelActivationChange){
+			// calculate position
 			var time = this.canvasCoordsToTime(this.mouseData.pos.x);
 			
 			var date = new Date(time);
@@ -731,6 +755,52 @@ Timeline.prototype.handleStatus = function(){
 				this.endTime = Math.abs(t0 - time) < Math.abs(t1 - time)? t0: t1;
 			}else{
 				Tool.printError("\"this.status\" is not recognized.");
+			}
+			// detect click
+			if(this.mouseClicked()){
+				if(this.status == Timeline.addEventSetStart){
+					this.status = Timeline.addEventSetEnd;
+					//this.cancelActivationChange = true;
+					this.cursorInfo = "Click to place end time.";
+				}else if(this.status == Timeline.addEventSetEnd){
+					if(this.startTime >= this.endTime){
+						this.cursorInfo = "End needs to be after start, place end again";
+					}else{
+						this.cursorInfo = "";
+						this.status = Timeline.standard;
+						this.cancelActivationChange = true;
+						this.changeViewButton.visibility = true;
+						
+						var range = this.taskToBePlaced.getRange();
+						mf_AjaxHandler.ajaxPost({
+							calendarId: this.taskToBePlaced.calendarId,
+							eventName: this.taskToBePlaced.name,
+							start: this.startTime,
+							end: this.endTime
+						}, "/addNewEvent", function(r){
+							var isSuccess = JSON.parse(r).isSuccess;
+							if(isSuccess == null){
+								Tool.printError("Wrong format in response from url: \"/addNewTask\".\n" +
+									"Expected {isSuccess: true/false}, but recieved " + JSON.parse(r) + ".");
+								return -1;
+							}
+							if(!isSuccess){
+								Tool.printError("New task could not be placed.");
+								return -1;
+							}
+							
+							mf_AjaxHandler.ajaxPost({taskId: this.taskToBePlaced.id}, "/setTaskDone", function(r){
+								this.taskToBePlaced.isDone = true;
+								
+								this.loadTasks();
+								this.loadEvents();
+								//this.setTaskView();
+							}.bind(this));
+						}.bind(this));
+					}
+				}else{
+					Tool.printError("\"this.status\" is not recognized.");
+				}
 			}
 		}
 	}
@@ -798,7 +868,7 @@ Timeline.prototype.addEventConfirmEnd = function(){
 	this.calcuateEventCollisions();
 	//mf_AjaxHandler.ajaxPostForm({start: newEvent.start, end: newEvent.end, name: newEvent.name}, "/addEvent", function(response){alert(response);});
 }
-Timeline.prototype.renderAndControlTheMode = function(){
+Timeline.prototype.renderAndControlTheMode = function(){ // TODO: abstract better
 	// // clear
 	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
@@ -818,15 +888,78 @@ Timeline.prototype.renderAndControlTheMode = function(){
 	
 	// render overlay
 	if(this.status == Timeline.addEventSetStart || this.status == Timeline.addEventSetEnd){
-		// // draw selection rulers
-		var position = this.timeToCanvasCoords(this.startTime);
-		this.drawLine(position, 0, position, this.canvas.height, "red", width = 3);
+		// // grey out area outside placementRange;
+		// // // left side
+		var rangeStart = this.timeToCanvasCoords(this.placementRange.start);
+		var rangeEnd = this.timeToCanvasCoords(this.placementRange.end);
+		var color = new Color(0,0,0,0.1).toString();
+		if(rangeStart > 0){
+			this.drawBox(0, 0, Math.min(this.canvas.width, rangeStart), this.canvas.height, color, true);
+		}
+		if(rangeEnd < this.canvas.width){
+			this.drawBox(Math.max(0, rangeEnd), 0, this.canvas.width, this.canvas.height, color, true);
+		}
 		
+		// // draw selection rulers
+		var startPosition = this.timeToCanvasCoords(this.startTime);
 		if(this.status == Timeline.addEventSetEnd){
-			position = this.timeToCanvasCoords(this.endTime);
-			this.drawLine(position, 0, position, this.canvas.height, "green", width = 3);
+			var endPosition = this.timeToCanvasCoords(this.endTime);
+		}
+		var height = this.canvas.height * 0.3;
+		// // // start
+		var left = startPosition;
+		var right = startPosition + this.canvas.width * 0.1;
+		var color = "grey";
+		if(this.status == Timeline.addEventSetEnd && right > endPosition){
+			right = endPosition;
+			if(this.startTime >= this.endTime){
+				color = "red";
+			}
+		}
+		if(right < left){
+			right = left;
+		}
+		this.drawPolygon([
+				right, this.canvas.height * 0.4 + height,
+				left, this.canvas.height * 0.4 + height,
+				left, 0 + height,
+				right, 0 + height
+			], color, false, 5);
+		// // // end
+		if(this.status == Timeline.addEventSetEnd){
+			var right = endPosition;
+			var left = endPosition - this.canvas.width * 0.1;
+			if(left < startPosition){
+				left = startPosition;
+			}
+			if(left > right){
+				left = right;
+			}
+			this.drawPolygon([
+					left, this.canvas.height * 0.4 + height,
+					right, this.canvas.height * 0.4 + height,
+					right, this.canvas.height * 0 + height,
+					left, this.canvas.height * 0 + height
+				], color, false, 5);
 		}
 	}
+	// cursor text
+	var font = "24px Arial";
+	var width = Tool.widthOfString(this.cursorInfo, font);
+	var height = Tool.getFontHeight(font);
+	var x = this.mouseData.pos.x;
+	var y = this.mouseData.pos.y;
+	if(x < width * 0.5){
+		x = width * 0.5;
+	}else if(x > this.canvas.width - width * 0.5){
+		x = this.canvas.width - width * 0.5
+	}
+	if(y < height * 0.5){
+		y = height * 0.5;
+	}else if(y > this.canvas.height - height * 0.5){
+		y = this.canvas.height - height * 0.5;
+	}
+	this.drawText(this.cursorInfo, x, y - height * 0.3, "black", font);
 	
 	// // draw filter
 	if(!this.isActive){
@@ -837,14 +970,19 @@ Timeline.prototype.renderTaskView = function(){
 	// calculate target positions
 	calcPosition(this.canvas, null, this.tasks);
 	function calcPosition(canvas, parent, tasks){
+		var offset = -1;
 		for(var i=0; i<tasks.length; i++){
 			var t = tasks[i];
+			if(!t.visibility){
+				continue;
+			}
+			offset++;
 			
 			if(parent != null){
-				t.targetPosition1 = new Vec(canvas.width * 0.1 + parent.width + t.width * 0.5,
-					parent.targetPosition1.y + parent.height * 0.5 - t.height * 0.5 - t.height * i);
+				t.targetPosition1 = new Vec(parent.targetPosition1.x + parent.width * 0.5 + t.width * 0.5,
+					parent.targetPosition1.y + parent.height * 0.5 - t.height * 0.5 - t.height * offset);
 			}else{
-				t.targetPosition1 = new Vec(canvas.width * 0.1 + t.width * 0.5, (canvas.height - t.height * 1.5) - t.height * i);
+				t.targetPosition1 = new Vec(canvas.width * 0.05 + t.width * 0.5, (canvas.height - t.height * 1.5) - t.height * offset);
 			}
 			calcPosition(canvas, t, t.children);
 		}
@@ -856,7 +994,7 @@ Timeline.prototype.renderTaskView = function(){
 			var t = tasks[i];
 			calcMovement(t.children);
 			
-			var movementSpeed = 0.1 * Math.pow(1.2, 1); // TODO: fix 1 to faster the more left
+			var movementSpeed = 0.1
 			t.targetPosition0 = Vec.lerp(t.targetPosition0, t.targetPosition1, movementSpeed);
 			t.position = Vec.lerp(t.position, t.targetPosition0, movementSpeed);
 		}
@@ -864,15 +1002,16 @@ Timeline.prototype.renderTaskView = function(){
 	// render
 	renderTask(this, this.tasks);
 	function renderTask(that, tasks){
-		var allIsDone = true;
 		for(var i=0; i<tasks.length; i++){
 			var t = tasks[i];
-			var isDone = renderTask(that, t.children) && (t.isDone || t.children.length > 0);
-			allIsDone = allIsDone && isDone;
+			if(!t.visibility){
+				continue;
+			}
+			renderTask(that, t.children)
 			
 			// background
 			var color1;
-			if(isDone){
+			if(t.isDone){
 				color1 = new Color(200,200,200);
 			}else{
 				color1 = new Color(100,255,100);
@@ -884,7 +1023,29 @@ Timeline.prototype.renderTaskView = function(){
 			// name
 			that.drawText(t.name, t.position.x, t.position.y, new Color(255,255,255));
 		}
-		return allIsDone;
+	};
+	
+	// render outline
+	renderTaskOutline(this, this.tasks);
+	function renderTaskOutline(that, tasks){
+		for(var i=0; i<tasks.length; i++){
+			var t = tasks[i];
+			if(!t.visibility){
+				continue;
+			}
+			renderTaskOutline(that, t.children)
+			
+			// marker
+			if(t.children.length != 0 || !t.isHoveredOver || t.isDone){
+				continue;
+			}
+			var borderWidth = 12 + Math.sin(that.tick * 0.25) * 4;
+			var borderDistance = 10;
+			
+			that.drawBox(t.position.x - t.width * 0.5 - borderDistance, t.position.y - t.height * 0.5 - borderDistance,
+				t.position.x + t.width * 0.5 + borderDistance, t.position.y + t.height * 0.5 + borderDistance, color = "yellow", false, borderWidth);
+			
+		}
 	};
 }
 Timeline.prototype.renderTimeline = function(){
@@ -897,10 +1058,60 @@ Timeline.prototype.renderTimeline = function(){
 	}
 	
 	// render events
-	this.renderEvents(this.canvas.height, this.verticalRulerHeight);
+	this.renderEvents(this.verticalRulerHeight + (this.canvas.height - this.verticalRulerHeight) * 0.5, this.verticalRulerHeight);
 	
 	// render date structure
 	this.renderDateStructure();
+	
+	// render tasks in timeline
+	this.renderTasksInTimeline();
+}
+Timeline.prototype.renderTasksInTimeline = function(){
+	var boxHeight = this.canvas.height * 0.05;
+	var offset = 0;
+	for(var i=0; i < this.tasks.length; i++){
+		var atLeastOneIsInView = false;
+		var t = this.tasks[i];
+		var time = this.canvasCoordsToTime(0);
+		while(true){
+			var range = t.getRange(time);
+			if(this.timeToCanvasCoords(range.start) > this.canvas.width){
+				break;
+			}
+			atLeastOneIsInView = true;
+			var left = this.timeToCanvasCoords(range.start);
+			var right = this.timeToCanvasCoords(range.end);
+			var top = this.canvas.height * 0.90 - offset * 1.1 * boxHeight;
+			var bottom = this.canvas.height * 0.90 - (offset * 1.1 + 1) * boxHeight;
+			
+			// render
+			// // render box
+			this.drawBox(left, bottom,
+				right, top, "#005050", true, 0);
+			var font = "24px Arial";
+			var nameHeight = Tool.getFontHeight(font);
+			var nameWidth = Tool.widthOfString(t.name, font);
+			// render name
+			var visibleLeft = left;
+			if(left < 0){
+				visibleLeft = 0;
+			}
+			var visibleRight = right;
+			if(right > this.canvas.width){
+				visibleRight = this.canvas.width;
+			}
+			var opacity = 1;
+			if(visibleRight - visibleLeft < nameWidth){
+				opacity = - 4 + 5 * (visibleRight - visibleLeft) / nameWidth;
+			}
+			this.drawText(t.name, (visibleLeft + visibleRight) * 0.5, (top + bottom) * 0.5 - 0.5 * nameHeight, new Color(255, 255, 255, opacity));
+			//
+			time = range.end + 1;
+		}
+		if(atLeastOneIsInView){
+			offset++;
+		}
+	}
 }
 Timeline.prototype.renderButtons = function(){
 	for(var i=0; i<this.buttons.length; i++){
@@ -1014,7 +1225,7 @@ Timeline.prototype.renderEvents = function(eventSpaceTop, eventSpaceBottom){
 		}
 		// draw box
 		var boxHeight = this.canvas.height * 0.3;
-		var verticalPosition = e.verticalOffset * (eventSpaceTop - eventSpaceBottom) * 0.05 +
+		var verticalPosition = e.verticalOffset * (eventSpaceTop - eventSpaceBottom) * 0.1 +
 			(eventSpaceTop + eventSpaceBottom) * 0.5;
 		var bottom = verticalPosition - boxHeight * 0.5;
 		var top = verticalPosition + boxHeight * 0.5;
@@ -1026,7 +1237,7 @@ Timeline.prototype.renderEvents = function(eventSpaceTop, eventSpaceBottom){
 		// calcuate name placement
 		var xPos, yPos, orientation, opacity;
 		var font = "24px Arial";
-		var nameHeight = parseInt(font);
+		var nameHeight = Tool.getFontHeight(font);
 		var nameWidth = Tool.widthOfString(e.name, font);
 		
 		var visibleLeft = Math.max(left, 0);
@@ -1093,7 +1304,7 @@ Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, vertical
 	}
 	
 	// draw intervals
-	var opacityMargin = 2;
+	var opacityMargin = 6;
 	if(opacity > -opacityMargin){
 		this.drawIntervall(
 			function(right, left, date){
@@ -1104,10 +1315,11 @@ Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, vertical
 				var margin = this.ctx.measureText(unitValueName).width;
 				var xPos = Tool.clamp(this.canvas.width * 0.5, right - margin, left + margin);
 				// draw unit name
-				this.drawText(unitValueName, xPos, verticalOffset + 0.3 * parseInt(font), Tool.rgba(0,0,0,opacity), font, "center", 0);
+				this.drawText(unitValueName, xPos, verticalOffset + 0.3 * Tool.getFontHeight(font), Tool.rgba(0,0,0,opacity), font, "center", 0);
 				// draw horizontal ruler to seperate the units
-				this.drawLine(right, this.verticalRulerHeight, right, this.canvas.height, Tool.rgba(0,0,0,opacity + opacityMargin), 1);
-				this.drawLine(right, verticalOffset, right, verticalOffset + height, Tool.rgba(0,0,0,opacity + opacityMargin), 1);
+				var textOpacity = (opacity + opacityMargin) * 0.1;
+				this.drawLine(right, this.verticalRulerHeight, right, this.canvas.height, Tool.rgba(0,0,0, textOpacity), 2);
+				this.drawLine(right, verticalOffset, right, verticalOffset + height, Tool.rgba(0,0,0, textOpacity), 2);
 			}.bind(this),
 			resetTimeFuntion,
 			incrementTimeFunction
@@ -1126,7 +1338,7 @@ Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, vertical
 	//this.drawPolygon(positions); // draw outline
 	this.drawPolygon(positions, "#74984A", true); // draw fill
 	// unit name
-	this.drawText(unitName, this.canvas.width - unitNameWidth * 0.5, verticalOffset + 0.3 * parseInt(font), "black", font, "center", 0);
+	this.drawText(unitName, this.canvas.width - unitNameWidth * 0.5, verticalOffset + 0.3 * Tool.getFontHeight(font), "black", font, "center", 0);
 	// draw vertical ruler
 	//this.drawLine(this.canvas.width - width - horizontalOffset, this.canvas.height, this.canvas.width - width - horizontalOffset, 0, "black", 1);
 	this.drawLine(this.canvas.width, verticalOffset + height, 0, verticalOffset + height, "black", 1);
@@ -1171,28 +1383,6 @@ Timeline.prototype.drawIntervall = function(drawFunction, resetTimeFuntion, incr
 			this.timeToCanvasCoords(t0),
 			new Date(t0));
 	}
-	
-	/*
-	//var xPos = center - date.getTime();
-	//xPos *= 1 / this.zoom * this.canvas.width * debugMakeScreenSmallerFactor;
-	var xPos = this.timeToCanvasCoords(date.getTime());
-	
-	var xPos0;
-	var time0 = date.getTime();
-	//for(var i=0; xPos >= this.canvas.width * (1 - debugMakeScreenSmallerFactor); i++){
-	for(var i=0; xPos <= this.canvas.width * (1 - debugMakeScreenSmallerFactor); i++){
-		xPos0 = xPos;
-		//xPos -= (date.getTime() - time0) / this.zoom * this.canvas.width * debugMakeScreenSmallerFactor;
-		xPos += (date.getTime() - time0) / this.zoom * this.canvas.width * debugMakeScreenSmallerFactor;
-		
-		if(i != 0){
-			//drawFunction(xPos0, xPos, new Date(time0));
-			drawFunction(xPos, xPos0, new Date(time0));
-		}
-		
-		time0 = date.getTime();
-		incrementTimeFunction(date);
-	}*/
 }
 Timeline.prototype.canvasCoordsToTime = function(coords){ // TODO: rename to 'pixels to time'
 	return this.zoom * (coords / this.canvas.width - 0.5) + this.position;
@@ -1332,7 +1522,7 @@ Timeline.prototype.globalControls = function(){
 }
 Timeline.prototype.taskControls = function(){
 	// check for clicks
-	if(this.isActive && this.mouseClicked()){
+	if(this.isActive){
 		detectClick(this, this.tasks);
 		function detectClick(that, tasks){
 			for(var i=0; i<tasks.length; i++){
@@ -1342,26 +1532,27 @@ Timeline.prototype.taskControls = function(){
 				if(!t.isDone && t.children.length == 0 &&
 						Math.abs(that.mouseData.pos.x - t.position.x) < t.width * 0.5 &&
 						Math.abs(that.mouseData.pos.y - t.position.y) < t.height * 0.5){
-					that.cancelActivationChange = true;
-					that.taskToBePlaced = t;
-					that.status = Timeline.addEventSetStart;
-					that.changeViewButton.visibility = false;
-					that.confirmEventPlacementButton.visibility = true;
+					t.isHoveredOver = true;
+					if(that.mouseClicked()){
+						that.cancelActivationChange = true;
+						that.taskToBePlaced = t;
+						that.status = Timeline.addEventSetStart;
+						
+						var range = t.getRange();
+						that.position = that.targetPosition = (range.start + range.end) * 0.5;
+						that.zoom = range.end - range.start;
+						that.placementRange.start = range.start;
+						that.placementRange.end = range.end;
+						
+						that.cursorInfo = "Click to place start time";
+						
+						that.changeViewButton.visibility = false;
+					}
+				}else{
+					t.isHoveredOver = false;
 				}
 			}
 		};
-		
-		/*for(var i=0; i<this.tasks.length; i++){
-			var t = this.tasks[i];
-			if(Math.abs(this.mouseData.pos.x - t.position.x) < t.width * 0.5 &&
-					Math.abs(this.mouseData.pos.y - t.position.y) < t.height * 0.5){
-				this.cancelActivationChange = true;
-				this.taskToBePlaced = t;
-				this.status = Timeline.addEventSetStart;
-				this.changeViewButton.visibility = false;
-				this.confirmEventPlacementButton.visibility = true;
-			}
-		}*/
 	}
 	
 	calcMovement(this.tasks);
