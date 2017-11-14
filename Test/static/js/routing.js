@@ -15,6 +15,13 @@ router
     'forgotpass': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_forgotpass");        
     },
+    'forgotpass_sent': function () {
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_forgotpass_sent");        
+    },
+    'reset_pass/:id': function (params) {
+        loadmenu();
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_reset_pass"); 
+    },
     'newuser': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_newuser");        
     },
