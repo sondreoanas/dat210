@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.5.0
-	last updated	: 14.11.2017
+	version			: 0.5.1
+	last updated	: 18.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -19,7 +19,7 @@ var mf_timeline;
 
 function mf_init(){
 	mf_timeline = new mf_TimelineHandler();
-	mf_timeline.loops = {};
+	//mf_timeline.loops = {}; // TODO: remove
 	mf_timeline.fps = 30;
 	mf_timeline.timelines = [];
 }
@@ -508,7 +508,7 @@ Timeline.prototype.loadTasks = function(){
 	}.bind(this));
 }
 Timeline.prototype.loadEvents = function(){
-	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 360 * 1000}, "/loadViewEvents", function(responseText){
+	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 365 * 1000}, "/loadViewEvents", function(responseText){
 		// {events:[{start, end, name, repeatData},{start,...},...]}
 		
 		//repeatdata = \{
@@ -686,6 +686,13 @@ Timeline.prototype.calcuateEventCollisions = function(event){
 }
 Timeline.prototype.loop = function(){
 	this.tick++;
+	
+	// check if canvas still exists
+	if(this.tick % mf_timeline.fps == 0 && !document.body.contains(this.canvas)){ // check every second
+		clearInterval(this.loop);
+		delete mf_timeline;
+		return;
+	}
 	
 	//
 	this.checkButtons();
