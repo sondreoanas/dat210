@@ -1,8 +1,8 @@
 /*
 	mf_tester.js
 	
-	version			: 0.1.2
-	last updated	: 24.10.2017
+	version			: 0.1.3
+	last updated	: 18.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -25,10 +25,12 @@ function mf_Cursor(){
 	
 	this.img = document.createElement("img");
 	this.hide();
-	this.img.src = "https://images.vexels.com/media/users/3/131771/isolated/preview/052dd0c023d9db3d5244875791c71c54-pixilated-arrow-cursor-by-vexels.png";
+	//this.img.src = "https://images.vexels.com/media/users/3/131771/isolated/preview/052dd0c023d9db3d5244875791c71c54-pixilated-arrow-cursor-by-vexels.png";
+	//this.img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAASCAYAAABvqT8MAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAAAb0lEQVQ4T5WLAQ7AIAjE/P+nmXVCkCmyJrfM49o6Qjp8rhkCVCUToCItAtykjwCZtBXgJB0F2EmpAFG6CuClkgAqlQVgmwpzELMK/j3/+VgWQQe7TmNHf9AOfP8+exHLeaAb+LsNYn4LhKEfi0h7AGpTdKhdEGymAAAAAElFTkSuQmCC";
+	this.img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAABMCAYAAAAr4jQ9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAACi0lEQVRoQ+2PQW7DQAwD+/9Pp+YlMMeEFop3bbfIAJPDWqKYn43X3g39/BnF9w/cqfhff4By4WmKQ+m9XHia4lB6LxeepjiU3suFpylY2AjfLeBuBQsa4bsF3K1gQSN8t4C7FSxohO8WcLeCBUvCvAVerWChkjBvgVcrWKgkzFvg1QoWKgnzFni1goVahH07sFrBAi3Cvh1YrWCBFmHfDqxWsECLsG8HVitY4BQhzw7OVvDgKUKeHZyt4MFThDw7OFvBg6cIeXZwtoIHpxLyrcBZBQ9MJeRbgbMKHphKyLcCZxU8MJWQbwXOKnhgKeGeFeoqGLiUcM8KdRUMXEq4Z4W6CgYuJdyzQl0FAy8l3LeCIwUDLiXct4IjBQMuJdy3giMFAy4l3LeCIwUDbiX0scJUcOFWQh8rTAUXbiX0scJUcOFWQh8rTAUXHkXo9/0DlxL6ff/ArbDvpj88Hfbd9Ienw76b/vB02HfTH1bDexP0h9Xw3gT9YTW8N0F/WA3vTdAfunT3w7x+PlYwsEV3P8y/y3yiYGCL7n6Yf5f5RMHAFt39MP8u84mCgSVhnoH8XhLmLW+kYEBJmGcgv5eEecsbKRhQEuYZyO8lYd7yRgoGlIR5BvJ7SZi3vJGCAUb4bgE0zJeEecsbKRhghO8WQMN8SZi3vJGCAUb4bgE0zJeEecsbKRhghO8WQMN8SZi3vJHiELKXC11DXkmYtzwqDkt7udA15JWEecuj4rC0lwtdQ15JmLc8Kg5Le7nQNeSVhHnLo/FxpqFQSZi3PBofZxoKlYR5y6PxcaahUEmYtzwaH2caCpWEecuj8XGlLEg5PzI+rpSFKedHxseVsjDl/Mj4uFIWppyvff38AkkwaNigN9HtAAAAAElFTkSuQmCC";
 	
-	this.width = 47;
-	this.height = 47;
+	this.width = 48 * 0.5;
+	this.height = 76 * 0.5;
 	this.img.style.width = this.width + "px";
 	this.img.style.height = this.height + "px";
 	this.img.style.position = "fixed";
@@ -48,8 +50,8 @@ mf_Cursor.prototype.setGraphicPos = function(pos){
 }
 mf_Cursor.prototype.setGraphicCoords = function(x, y){
 	this.pos.setCoords(x, y);
-	this.img.style.left = (-this.width * 5/22 + x) + "px";
-	this.img.style.top = (-this.height * 1/22 + y) + "px";
+	this.img.style.left = x + "px";
+	this.img.style.top = y + "px";
 }
 
 function mf_TestHandeler(){
@@ -79,6 +81,7 @@ function mf_TestHandeler(){
 	this.timelineScroll;
 	this.timelineZoom;
 	this.timelineIsActive;
+	this.dropDown;
 }
 mf_TestHandeler.prototype.init = function(){
 	this.tick = -1;
@@ -141,6 +144,7 @@ mf_TestHandeler.prototype.init = function(){
 	this.timelineScroll = 2;
 	this.timelineZoom = 3;
 	this.timelineIsActive = 4;
+	this.dropDown = 5;
 	
 	// load data
 	this.getData();
@@ -241,11 +245,39 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 	}else if(this.currentCommand.action == this.type){
 		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
 			if(this.currentCommand.data == targetElement.value){ // the text is the same. Is done
+				if(!targetElement.classList.contains("flatpickr-input")){
+					if ("createEvent" in document) {
+						var event = document.createEvent("HTMLEvents");
+						event.initEvent("change", false, true);
+						targetElement.dispatchEvent(event);
+					}
+					else{
+						targetElement.fireEvent("onchange");
+					}
+				}
 				this.currentCommandIndex++;
 			}else if(this.currentCommand.data.substr(0, targetElement.value.length) != targetElement.value){ // the element text is wrong. Erase
 				targetElement.value = targetElement.value.substr(0, targetElement.value.length - 1);
 			}else{ // the text is unfinished. Append next character
 				targetElement.value += this.currentCommand.data[targetElement.value.length];
+			}
+		}else{
+			this.inactivity = 0;
+		}
+	}else if(this.currentCommand.action == this.dropDown){
+		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
+			if(this.currentCommand.data == targetElement.value){
+				if ("createEvent" in document) {
+					var event = document.createEvent("HTMLEvents");
+					event.initEvent("change", false, true);
+					targetElement.dispatchEvent(event);
+				}
+				else{
+					targetElement.fireEvent("onchange");
+				}
+				this.currentCommandIndex++;
+			}else{
+				targetElement.value = this.currentCommand.data;
 			}
 		}else{
 			this.inactivity = 0;
@@ -338,6 +370,7 @@ mf_TestHandeler.prototype.getData = function(){
 		var timelineScroll = this.timelineScroll;
 		var timelineZoom = this.timelineZoom;
 		var timelineIsActive = this.timelineIsActive;
+		var dropDown = this.dropDown;
 		var dataList;
 		eval(responseText); // define dataList
 		if(dataList.length % 4 != 0){
@@ -374,6 +407,15 @@ mf_TestHandeler.prototype.addTestListener = function(element){
 				return -1;
 			}
 			thisHandeler.recordedCommands += "\ttype, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
+		});
+	}else if(element.tagName == "SELECT" || element.tagName == "INPUT"){
+		element.addEventListener("change", function(){
+			thisHandeler.checkTimelineChange();
+			var data = thisHandeler.getIdPath(this);
+			if(data == -1){
+				return -1;
+			}
+			thisHandeler.recordedCommands += "\tdropDown, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
 		});
 	}else if(element.dataset.timeline == ""){
 		element.addEventListener("mousedown", function(){

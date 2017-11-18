@@ -1,8 +1,8 @@
 /*
 	mf_Tool.js
 	
-	version			: 0.2.0
-	last updated	: 14.11.2017
+	version			: 0.2.1
+	last updated	: 18.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -200,6 +200,11 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 	*/
 	
 	// input check
+	// missing arguments
+	if(arguments.length != 3){
+		Tool.printError("Wrong number of arguments. Expected 3, got " + arguments.length + ".");
+		return -1;
+	}
 	// // multiple intervals
 	if((interval.yearInterval != null) + (interval.monthInterval != null) + (interval.weekInterval != null) + (interval.dayInterval != null) != 1){
 		Tool.printError("There must be exactly one interval as input.", 1);
@@ -299,12 +304,16 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 			correctWeek = Tool.getResetDateOf(correctMonth, Tool.week);
 			correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, interval.weekNrInMonth);
 		}else if(interval.weekNrInYear != null){
-			correctWeek = Tool.getResetDateOf(correctYear, Tool.week);
-			correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, interval.weekNrInYear);
+			var firstWeekEndingInCorrectYear = Tool.getResetDateOf(correctYear, Tool.week);
+			if(firstWeekEndingInCorrectYear.getFullYear() != correctYear.getFullYear()){
+				correctWeek = Tool.getIncrementDateOf(firstWeekEndingInCorrectYear, Tool.week, interval.weekNrInYear + 1);
+			}else{
+				correctWeek = Tool.getIncrementDateOf(firstWeekEndingInCorrectYear, Tool.week, interval.weekNrInYear);
+			}
 		}
-		if(interval.weekNrInYear != null && correctWeek.getFullYear() != correctYear.getFullYear()){
+		/*if(interval.weekNrInYear != null && correctWeek.getFullYear() != correctYear.getFullYear()){
 			correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, 1);
-		}
+		}*/
 		// make the day correct
 		var correctDay;
 		if(interval.dayInterval != null){

@@ -6,12 +6,12 @@
             <%for(var i in this.items) {%>
                 <%if(this.items[i][0]) {%>
                     <li>
-                        <button onclick="javascript:void();" class="button_nav"><%i%></button>
+                        <button id="<%i%>" onclick="javascript:void();" class="button_nav"><%i%></button>
                         <ul>
 
                             <%for(var k in this.items[i][1]) {%>
                                 <li>
-                                    <button onclick="javascript:router.navigate('<%this.items[i][1][k][1]%>');" class="button_nav"><%k%></button>
+                                    <button id="<%k%>" onclick="javascript:router.navigate('<%this.items[i][1][k][1]%>');" class="button_nav"><%k%></button>
                                 </li>
                             <%}%>
 
@@ -19,7 +19,7 @@
                     </li>
                 <%} else {%>
                     <li>
-                        <button onclick="javascript:router.navigate('<%this.items[i][1]%>');" class="button_nav"><%i%></button>
+                        <button id="<%i%>" onclick="javascript:router.navigate('<%this.items[i][1]%>');" class="button_nav"><%i%></button>
                     </li>
                 <%}%>
             <%}%>
