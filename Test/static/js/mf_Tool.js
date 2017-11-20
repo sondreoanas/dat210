@@ -1,8 +1,8 @@
 /*
 	mf_Tool.js
 	
-	version			: 0.0.0
-	last updated	: 31.10.2017
+	version			: 0.2.1
+	last updated	: 18.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -52,6 +52,9 @@ Tool.softRange = function(value, range, slope){
 }
 Tool.unixMillisecondsToDays = function(utc){
 	return utc / 1000 / 60 / 60 / 24;
+}
+Tool.getFontHeight = function(font){
+	return parseInt(font);
 }
 Tool.widthOfString = function(string, font){
 	var canvas = document.createElement("canvas");
@@ -197,9 +200,14 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 	*/
 	
 	// input check
+	// missing arguments
+	if(arguments.length != 3){
+		Tool.printError("Wrong number of arguments. Expected 3, got " + arguments.length + ".");
+		return -1;
+	}
 	// // multiple intervals
 	if((interval.yearInterval != null) + (interval.monthInterval != null) + (interval.weekInterval != null) + (interval.dayInterval != null) != 1){
-		Tool.printError("There be exactly one interval as input.", 1);
+		Tool.printError("There must be exactly one interval as input.", 1);
 		return -1;
 	}
 	// // redundant information
@@ -296,12 +304,16 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 			correctWeek = Tool.getResetDateOf(correctMonth, Tool.week);
 			correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, interval.weekNrInMonth);
 		}else if(interval.weekNrInYear != null){
-			correctWeek = Tool.getResetDateOf(correctYear, Tool.week);
-			correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, interval.weekNrInYear);
+			var firstWeekEndingInCorrectYear = Tool.getResetDateOf(correctYear, Tool.week);
+			if(firstWeekEndingInCorrectYear.getFullYear() != correctYear.getFullYear()){
+				correctWeek = Tool.getIncrementDateOf(firstWeekEndingInCorrectYear, Tool.week, interval.weekNrInYear + 1);
+			}else{
+				correctWeek = Tool.getIncrementDateOf(firstWeekEndingInCorrectYear, Tool.week, interval.weekNrInYear);
+			}
 		}
-		if(interval.weekNrInYear != null && correctWeek.getFullYear() != correctYear.getFullYear()){
+		/*if(interval.weekNrInYear != null && correctWeek.getFullYear() != correctYear.getFullYear()){
 			correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, 1);
-		}
+		}*/
 		// make the day correct
 		var correctDay;
 		if(interval.dayInterval != null){
@@ -309,11 +321,15 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 			var restDay = Tool.modulus(Tool.daysSinceEpoch(interval.dayInterval.start) - Tool.daysSinceEpoch(fromTime), interval.dayInterval.modulus);
 			correctDay = Tool.getIncrementDateOf(startOfDay, Tool.day, restDay);
 		}else if(interval.dayNrInWeek != null){
-			correctDay = Tool.getIncrementDateOf(correctWeek, Tool.day, interval.dayNrInWeek);
-			if(interval.weekNrInMonth != null && correctDay.getMonth() != correctMonth.getMonth()){
-				correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, 1);
-				correctDay = Tool.getIncrementDateOf(correctWeek, Tool.day, interval.dayNrInWeek);
+			if(interval.weekNrInMonth != null){
+				// does this weekday exist in this month the first week of this month? If not, increment week by 1
+				var firstWeekOfMonth = Tool.getResetDateOf(correctMonth, Tool.week);
+				var thisWeekDayInFirstWeek = Tool.getIncrementDateOf(firstWeekOfMonth, Tool.day, interval.dayNrInWeek);
+				if(thisWeekDayInFirstWeek.getMonth() != correctMonth.getMonth()){
+					correctWeek = Tool.getIncrementDateOf(correctWeek, Tool.week, 1);
+				}
 			}
+			correctDay = Tool.getIncrementDateOf(correctWeek, Tool.day, interval.dayNrInWeek);
 		}else if(interval.dayNrInMonth != null){
 			correctDay = Tool.getIncrementDateOf(correctMonth, Tool.day, interval.dayNrInMonth);
 		}else if(interval.dayNrInYear != null){
@@ -374,6 +390,13 @@ Tool.getStackTrace = function(level = 0){
 	var error = Error().stack.split("\n");
 	error.splice(1, level + 1);
 	return error.join("\n");
+}
+Tool.copyArray = function(array){
+	var newArray = [];
+	for(var i=0; i<array.length; i++){
+		newArray.push(array[i]);
+	}
+	return newArray;
 }
 
 

@@ -185,7 +185,7 @@ def get_calendar_db(user_id, calendar_id):
     finally:
         cur.close()
 
-def get_all_calendar_events_db(calendar_id):
+def get_all_calendar_events_db(user_id, calendar_id):
     db = get_db() 
     cur = db.cursor()
     try:
@@ -200,7 +200,7 @@ def get_all_calendar_events_db(calendar_id):
     finally:
         cur.close()
 
-def get_event_db(event_id):
+def get_event_db(user_id, event_id):
     db = get_db() 
     cur = db.cursor()
     try:
@@ -334,14 +334,14 @@ def add_new_eventcalendar_db(event_id, calendar_id):
     finally:
         cur.close()
 
-def add_new_task_db(name, description, start_date, timestamp, calendar_id):
+def add_new_task_db(name, description, interval, timestamp, calendarId, parentId):
     db = get_db()
     cur = db.cursor()
     try:
         sql = "INSERT INTO task " \
-               "(Name, Description, Startdate, Timestamp, CalendarId) " \
-               "VALUES (%s, %s, %s, %s, %s) "
-        cur.execute(sql, (name, description, start_date, timestamp, calendar_id))
+               "(Name, Description, `Interval`, Timestamp, CalendarId, ParentId) " \
+               "VALUES (%s, %s, %s, %s, %s, %s);"
+        cur.execute(sql, (name, description, interval, timestamp, calendarId, parentId))
         task_id = cur.lastrowid
         db.commit()
         return task_id

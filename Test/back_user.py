@@ -48,13 +48,6 @@ def valid_password(password):
     \"success\": bool,
     \"error\": error message
     """
-    #if re.search(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
-    #match = re.search('(?=[A-Z]+)(?=[0-9]+)(?=[\s!#@£$%]+){8,}.*$', password)
-    #match = re.match('(?=[a-z])', password)
-    #if match is None:
-    #    return False
-
-    return {"success": True}
 
     if len(password) < 8:
         return {"success": False,

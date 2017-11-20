@@ -322,7 +322,6 @@ def calendar_list(request):
         #notification
         return [[]]
 
-
 def calendar_new(request):
     try:
         name = request.get('form_calendar_name',0)
@@ -356,7 +355,6 @@ def calendar_edit(params):
     }
     return calendar
 
-
 def calendar_edit_form(request):
     id = request.get('form_calendar_id',0)
     name = request.get('form_calendar_name',0)
@@ -365,7 +363,7 @@ def calendar_edit_form(request):
     else:
         public = False
     calendar = {
-      "success": db.edit_calendar_db(id, name, public),
+      "success": db.edit_calendar_db(session['id'], id, name, public),
       "data": {
           "id" : id,
           "name" : name,
@@ -384,13 +382,12 @@ def calendar_edit_form(request):
 def event_calendar(params):
     return {"calendar_id": params["args"].get("calendar_id", 0)}
 
-
 def event_calendar_list(params):
     calendar_id = params["args"].get("calendar_id", 0)
-    calendar_events = db.get_all_calendar_events_db(calendar_id)
+    calendar_events = db.get_all_calendar_events_db(session['id'], calendar_id)
     returner = []
     for event_id, _ in calendar_events:
-        event = db.get_event_db(event_id)
+        event = db.get_event_db(session['id'], event_id)
         event = {
             "id": event_id,
             "calendar_id": calendar_id,
@@ -410,7 +407,7 @@ def event_list(request):
         for cal_id, cal_name, cal_rights, cal_public in cal_db:
             events_db = db.get_all_calendar_events_db(cal_id)
             for event_id,cal_id in events_db:
-                id,name,des,start,end = db.get_event_db(event_id)
+                id,name,des,start,end = db.get_event_db(session['id'], event_id)
                 event = {
                     'id': event_id,
                     'name': name,
@@ -467,7 +464,7 @@ def event_edit_form(request):
         end = request.form.get('form_event_end', 0)
 
         event_form = {
-            "success": db.edit_event_db(id, name, None, start, end, None, None),
+            "success": db.edit_event_db(session['id'], calendar_id, calendar_id, id, name, None, start, end, None),
             #event description mangler + intervall + terminate_date
             "data": {
                 "id" : id,
@@ -484,7 +481,7 @@ def event_edit_form(request):
         return {"success":False}
 
 def event_edit(params):
-    result = db.get_event_db(params["args"].get("event_id", 0))
+    result = db.get_event_db(session['id'], params["args"].get("event_id", 0))
     event = {
         "notifications":n.flush(),
         "success": True,
@@ -537,11 +534,115 @@ def task_new(params):
 
     todos = params.getlist('todos')
     user_id = session['id']
-
-    result = back_event.add_new_task(user_id, name, None, None, None, calendar_id)
+    
+    #{'interval_type': 'year', 'interval_type_year': 'week_year', 'interval_week_year': '45', 'interval_year': '1',
+    # 'interval_type_week_year': 'day_week', 'interval_day_week': 'Wednesday'}
+    #name, description, interval, timestamp, calendarId, parentId
+	
+    #result = back_event.add_new_task(user_id, name, None, None, None, calendar_id)
+    
+    '''
+    interval = {
+		yearInterval: {start: new Date("2018"), modulus = 2},
+		monthInterval: null,
+		monthNrInYear: null,
+		weekInterval: {start: new Date("this week"), modulus: 2},
+		weekNrInMonth: null,
+		weekNrInYear: null,
+		dayInterval: {start: new Date("today"), modulus: 2},
+		dayNrInWeek: null,
+		dayNrInMonth: 5,
+		dayNrInYear: null
+	}
+    '''
+    
+    #formattedInterval = "{weekInterval: {start: new Date(\"08 nov 2017\"), modulus: 2},dayNrInWeek: 2}"
+    
+    formattedInterval = "{"
+    
+    # interval
+    intervalFormat = "{}: {{start: new Date(\"{}\"), modulus: {}}},"
+    if "interval_year" in interval:
+        formattedInterval += intervalFormat.format("yearInterval", datetime.datetime.now().isoformat(), interval["interval_year"])
+    elif "interval_month" in interval:
+        formattedInterval += intervalFormat.format("monthInterval", datetime.datetime.now().isoformat(), interval["interval_month"])
+    elif "interval_week" in interval:
+        formattedInterval += intervalFormat.format("weekInterval", datetime.datetime.now().isoformat(), interval["interval_week"])
+    elif "interval_day" in interval:
+        formattedInterval += intervalFormat.format("dayInterval", datetime.datetime.now().isoformat(), interval["interval_day"])
+    else:
+        return {"success": False}
+    
+    # month
+    if "interval_month_year" in interval:
+        if interval["interval_month_year"] == "January":
+            m = 0
+        elif interval["interval_month_year"] == "February":
+            m = 1
+        elif interval["interval_month_year"] == "March":
+            m = 2
+        elif interval["interval_month_year"] == "April":
+            m = 3
+        elif interval["interval_month_year"] == "May":
+            m = 4
+        elif interval["interval_month_year"] == "June":
+            m = 5
+        elif interval["interval_month_year"] == "July":
+            m = 6
+        elif interval["interval_month_year"] == "August":
+            m = 7
+        elif interval["interval_month_year"] == "September":
+            m = 8
+        elif interval["interval_month_year"] == "October":
+            m = 9
+        elif interval["interval_month_year"] == "November":
+            m = 10
+        elif interval["interval_month_year"] == "December":
+            m = 11
+        else:
+            return {"success": False}
+        formattedInterval += "monthNrInYear: " + str(m) + ","
+    # week
+    if "interval_week_year" in interval:
+        formattedInterval += "weekNrInYear: " + str(int(interval["interval_week_year"]) - 1) + ","
+    elif "interval_week_month" in interval:
+        formattedInterval += "weekNrInMonth: " + str(int(interval["interval_week_month"]) - 1) + ","
+    # day
+    if "interval_day_year" in interval:
+        formattedInterval += "dayNrInYear: " + str(int(interval["interval_day_year"]) - 1) + ","
+    elif "interval_day_month" in interval:
+        formattedInterval += "dayNrInMonth: " + str(int(interval["interval_day_month"]) - 1) + ","
+    elif "interval_day_week" in interval:
+        if interval["interval_day_week"] == "Monday":
+            d = 0
+        elif interval["interval_day_week"] == "Tuesday":
+            d = 1
+        elif interval["interval_day_week"] == "Wednesday":
+            d = 2
+        elif interval["interval_day_week"] == "Thursday":
+            d = 3
+        elif interval["interval_day_week"] == "Friday":
+            d = 4
+        elif interval["interval_day_week"] == "Saturday":
+            d = 5
+        elif interval["interval_day_week"] == "Sunday":
+            d = 6
+        else:
+            return {"success": False}
+        formattedInterval += "dayNrInWeek: " + str(d) + ","
+    
+    formattedInterval = formattedInterval[:-1] + "}" # remove last comma and add end curly bracket
+    
+    result = back_event.add_new_task(name, "Some placeholder description", formattedInterval, 0, calendar_id, None)
+    
+    if result["success"] == False:
+        return {"success": False}
+    
+    for todo in todos:
+        back_event.add_new_task(todo, "Some placeholder description", formattedInterval, None, None, result["task_id"])
     
     returner = {
-        "success": result["task_id"],
+        "success": result["success"],
         "data": {
             "id" : result["task_id"],
             "calendar_id": calendar_id,
