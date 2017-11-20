@@ -365,6 +365,7 @@ mf_AjaxHandler.prototype.fillElementArgElement = function(element, url, data = n
 		// check children
 		this.searchChildren(element);
 	}.bind(this), data);
+	
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data = null){
 	//

@@ -17,7 +17,7 @@
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
 header {
-    background: red;
+    background-color: #daeaef;
     height: 120px;
 }
 
@@ -26,7 +26,10 @@ header {
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
 nav {
-    background: #aaa;
+    background: #9dbdc6;
+    -webkit-box-shadow: 0px 2px 2px 0px rgba(102, 50, 50, 0.2);
+    -moz-box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -36,61 +39,50 @@ nav {
 main {
     padding: 20px 10px;
 }
-
-
-/*	LOGIN
----------------------------------------------------------------------------------------------------*/
-
-#login {
+main > section{
     padding: 20px 0;
 }
-
-#login .ghost {
+main > section > .ghost {
     margin: 0 auto;
-    width: 25%;
+    max-width: 60%;
+    min-width: 480px;
+}
+@media(max-width:480px) {
+    main > section > .ghost {
+        min-width: 100%;
+        max-width: 100%;
+    }  
+}
+
+main[data-location="login"] > section > .ghost,
+main[data-location="newuser"] > section > .ghost,
+main[data-location="forgotpass"] > section > .ghost{
+    max-width: 25%;
 }
 
 
-/*	NEWUSER
+
+/*	HOME
 ---------------------------------------------------------------------------------------------------*/
-
-#newuser {
-    padding: 20px 0;
-}
-
-#newuser .ghost {
-    margin: 0 auto;
-    width: 25%;
-}
-
-
-/*	FORGOTPASS
----------------------------------------------------------------------------------------------------*/
-
-#forgotpass {
-    padding: 20px 0;
-}
-
-#forgotpass .ghost {
-    margin: 0 auto;
-    width: 25%;
-}
-
-
-/*	FORGOTPASS
----------------------------------------------------------------------------------------------------*/
-
 #home_view {}
+#home_view > .ghost {
+    max-width: 100%;
+    min-width: 0;
+}
 #home_view .timeline {
     height:600px;
+    border-radius: 10px;
+    overflow: hidden;
 }
+
+
 
 
 /*	FOOTER
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
 footer {
-    background: orange;
+    background-color:#272f32;
     position: absolute;
     bottom: 0px;
     left: 0px;
@@ -101,24 +93,11 @@ footer {
 }
 
 
-/*	CONTACT
+/*	SUPPORT
 ---------------------------------------------------------------------------------------------------*/
 
-#contact {
+#support {
     float: left;
     padding: 10px 20px;
 }
 
-#contact p {
-    padding: 0;
-}
-
-
-/*	SOCIAL
----------------------------------------------------------------------------------------------------*/
-
-#social {
-    float: left;
-    padding: 10px 20px;
-    border-left: 1px solid #aaa;
-}

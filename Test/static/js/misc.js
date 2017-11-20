@@ -21,8 +21,47 @@ function main_task_new_remove_todo(pos){
     //ul.dataset.pos--;
     
 };
+
+function main_task_new_pick_interval(that){
+
+    var value = that.value;
+
+    switch (value){
+        case "year":
+            mf_ajaxHandler.fillElement(elementid="int_type-spec", url = "/getHTML?html=int_type-year-spec");
+            break;
+        case "month":
+            mf_ajaxHandler.fillElement(elementid="int_type-spec", url = "/getHTML?html=int_type-month-spec");
+            break;
+        case "week":
+            mf_ajaxHandler.fillElement(elementid="int_type-spec", url = "/getHTML?html=int_type-week-spec");
+            break;
+        case "day":
+            mf_ajaxHandler.fillElement(elementid="int_type-spec", url = "/getHTML?html=int_type-day-spec");
+            break;
+        case "int_type-year-spec-date":
+            mf_ajaxHandler.fillElement(elementid="int_type-further-spec", url = "/getHTML?html=int_type-year-spec-date");
+            break;
+        case "int_type-year-spec-every":
+            mf_ajaxHandler.fillElement(elementid="int_type-further-spec", url = "/getHTML?html=int_type-year-spec-every");
+            break;
+        case "int_type-month-spec-day":
+            mf_ajaxHandler.fillElement(elementid="int_type-further-spec", url = "/getHTML?html=int_type-month-spec-day");
+            break;
+        case "int_type-month-spec-the":
+            mf_ajaxHandler.fillElement(elementid="int_type-further-spec", url = "/getHTML?html=int_type-month-spec-the");
+            break;
+
+    }
+
     
 
+
+};
+
+
+    
+/*
 function main_task_new_pick_interval(that){
 
     var monthsinyear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -152,4 +191,7 @@ function main_task_new_pick_interval(that){
     
 
 };
+
+*/
+
 
