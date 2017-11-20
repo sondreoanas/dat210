@@ -85,36 +85,125 @@ def load_view(request):
 # Used to get the format of the navigation bar when a user IS logged in
 
 def nav(params):
-    return {
-        "items": {
-            "Home" : [0,"/home"],
-            "Calendar" : [1,{
-                "New Calendar" : [0,"calendar/new"],
-                "My Calendars" : [0,"calendar/list"],
-            }],
-            "Event" : [1,{
-                "New Event" : [0,"event/new"],
-                "My Events" : [0,"event/list"]
-            }],
-            "Tasks" : [1,{
-                "New Task" : [0,"task/new"],
-                "My Tasks" : [0,"task/list"]
-            }],
-            "Loggout" : [0,"/loggedout"]
+
+    if 'login' in session:
+        if session['login']:
+            return  {
+                        "items":
+                        [
+                            {
+                                "title": "Home",
+                                "isparent": 0,
+                                "link": "home",
+                                "children": []
+                            },{
+                                "title": "Calendar",
+                                "isparent": 1,
+                                "link": "calendar",
+                                "children": [
+                                    {
+                                        "title": "New Calendar",
+                                        "isparent": 0,
+                                        "link": "calendar/new",
+                                        "children": []
+                                    },{
+                                        "title": "My Calendars",
+                                        "isparent": 0,
+                                        "link": "calendar/list",
+                                        "children": []
+                                    }
+                                ]
+                            },{
+                                "title": "Event",
+                                "isparent": 1,
+                                "link": "/event",
+                                "children": [
+                                    {
+                                        "title": "New Event",
+                                        "isparent": 0,
+                                        "link": "event/new",
+                                        "children": []
+                                    },{
+                                        "title": "My Events",
+                                        "isparent": 0,
+                                        "link": "event/list",
+                                        "children": []
+                                    }
+                                ]
+                            },{
+                                "title": "Tasks",
+                                "isparent": 1,
+                                "link": "/task",
+                                "children": [
+                                    {
+                                        "title": "New Task",
+                                        "isparent": 0,
+                                        "link": "task/new",
+                                        "children": []
+                                    },{
+                                        "title": "My Tasks",
+                                        "isparent": 0,
+                                        "link": "task/list",
+                                        "children": []
+                                    }
+                                ]
+                            },{
+                                "title": "Loggout",
+                                "isparent": 0,
+                                "link": "/loggedout",
+                                "children": []
+                            }
+                        ]
+                }
+    else:
+        return  {
+            "items":
+                        [
+                            {
+                                "title": "Login",
+                                "isparent": 0,
+                                "link": "login",
+                                "children": []
+                            },{
+                                "title": "New user",
+                                "isparent": 0,
+                                "link": "newuser",
+                                "children": []
+                            },{
+                                "title": "Forgot password?",
+                                "isparent": 0,
+                                "link": "forgotpass",
+                                "children": []
+                            }
+                        ]
         }
-    }
+
 
 # Front Menu
 # Used to get the format of the navigation bar when a user IS NOT logged in
 
 def frontmenu(params):
-    return {
-        "items": {
-            "Login" : [0,"/login"],
-            "New user" : [0,"/newuser"],
-            "Forgot password?" : [0,"/forgotpass"]
-        }
-    }
+    return  {
+                "items":
+                            [
+                                {
+                                    "title": "Login",
+                                    "isparent": 0,
+                                    "link": "login",
+                                    "children": []
+                                },{
+                                    "title": "New user",
+                                    "isparent": 0,
+                                    "link": "newuser",
+                                    "children": []
+                                },{
+                                    "title": "Forgot password?",
+                                    "isparent": 0,
+                                    "link": "forgotpass",
+                                    "children": []
+                                }
+                            ]
+            }
 
 """ USER """    #----------------------------------------------
 
