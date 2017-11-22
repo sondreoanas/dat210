@@ -51,7 +51,7 @@ def checkEmailInUse(email):
 	finally:
 		cursor.close()
 
-def getUserIdPassword(email): # TODO: make more general?
+def getUserIdPassword(email):
 	# If the user exists, (userId, hashedPasswordFromDatabase) is returned,
 	# if the username does not exist, False is returned,
 	# if an error occurs, -1 is returned
@@ -298,7 +298,7 @@ def getAllEventsOfUser(userId, start, end):
 	finally:
 		cursor.close()
 
-def addNewTaskToDatabase(userId, name, description, interval, timestamp, calendarId, parentId): # TODO: rename, add -> create and remove ToDatabase
+def createNewTask(userId, name, description, interval, timestamp, calendarId, parentId):
 	database = getDatabase()
 	cursor = getCursor()
 	try:
@@ -315,7 +315,7 @@ def addNewTaskToDatabase(userId, name, description, interval, timestamp, calenda
 	finally:
 		cursor.close()
 
-def addNewEventToDatabase(name, startTime, endTime, calendarId): #TODO: remove ToDatabase from name, also add->create
+def createNewEvent(name, startTime, endTime, calendarId): #TODO: remove ToDatabase from name, also add->create
 	# TODO: security, does this user have access to this calendar?
 	# startTime and endTime is given in iso format
 	database = getDatabase()
@@ -355,7 +355,7 @@ def addNewEventToDatabase(name, startTime, endTime, calendarId): #TODO: remove T
 		cursor.close()
 	return True
 
-def addNewCalendarToDatabase(userId, calendarName, isPublic):
+def createNewCalendar(userId, calendarName, isPublic):
 	database = getDatabase()
 	cursor = getCursor()
 	try:

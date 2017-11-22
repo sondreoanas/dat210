@@ -122,7 +122,7 @@ def calendar_edit_form():
 	return formatJsonWithNotifications(returnData)
 
 @app.route("/calendar/new_form", methods=["POST"])
-def calendar_new_form(): # TODO: rename
+def createNewCalendar():
 	returnData = {
 		"success": False,
 		"data": {
@@ -148,7 +148,7 @@ def calendar_new_form(): # TODO: rename
 	
 	isPublic = True if publicStatus == "public" else False
 	
-	calendarId = mf_database.addNewCalendarToDatabase(userId, calendarName, isPublic)
+	calendarId = mf_database.createNewCalendar(userId, calendarName, isPublic)
 	
 	if calendarId == -1:
 		return formatJsonWithNotifications(returnData)
@@ -183,7 +183,7 @@ def createNewEventFromForm():
 	start = datetime.datetime.strptime(startPicker,"%Y-%m-%dT%H:%M:%S.%fZ")
 	end = datetime.datetime.strptime(endPicker,"%Y-%m-%dT%H:%M:%S.%fZ")
 	
-	eventId = mf_database.addNewEventToDatabase(eventName, start.isoformat(), end.isoformat(), calendarId)
+	eventId = mf_database.createNewEvent(eventName, start.isoformat(), end.isoformat(), calendarId)
 	
 	if eventId == -1:
 		return formatJsonWithNotifications(returnData)
@@ -316,13 +316,13 @@ def createNewTask():
 	
 	formattedInterval = formattedInterval[:-1] + "}" # remove last comma and add end curly bracket
 	
-	taskId = mf_database.addNewTaskToDatabase(userId, taskName, "Some placeholder description", formattedInterval, 0, calendarId, None)
+	taskId = mf_database.createNewTask(userId, taskName, "Some placeholder description", formattedInterval, 0, calendarId, None)
 	
 	if taskId == -1:
 		return formatJsonWithNotifications(returnData)
 	
-	for todo in todos: # TODO: dont commit() before all done
-		mf_database.addNewTaskToDatabase(userId, todo, "Some placeholder description", formattedInterval, None, None, taskId)
+	for todo in todos: # TODO: don't commit() before all done
+		mf_database.createNewTask(userId, todo, "Some placeholder description", formattedInterval, None, None, taskId)
 	
 	returnData["success"] = True
 	returnData["data"]["id"] = taskId
@@ -395,7 +395,7 @@ def createNewEventFromTask():
 	start = datetime.datetime.fromtimestamp(int(startMills / 1000)).strftime('%Y-%m-%d %H:%M:%S')
 	end = datetime.datetime.fromtimestamp(int(endMills / 1000)).strftime('%Y-%m-%d %H:%M:%S')
 	
-	wasSuccessful = mf_database.addNewEventToDatabase(eventName, start, end, calendarId)
+	wasSuccessful = mf_database.createNewEvent(eventName, start, end, calendarId)
 	if wasSuccessful == -1: # -1 is not successful
 		return formatJsonWithNotifications(returnData)
 	
@@ -438,8 +438,17 @@ def loadViewEvents():
 	
 	userId = session["id"]
 	
-	start = datetime.datetime.fromtimestamp(request.get_json().get('start', 0) / 1000.0).isoformat() # TODO: handle error and abstract
-	end = datetime.datetime.fromtimestamp(request.get_json().get('end', 0) / 1000.0).isoformat()
+	startTimeStamp = request.get_json().get('start', None)
+	endTimeStamp = request.get_json().get('end', None)
+	
+	if startTimeStamp is None or endTimeStamp is None:
+		return formatJsonWithNotifications(returnData)
+	
+	try:
+		start = datetime.datetime.fromtimestamp(startTimeStamp / 1000.0).isoformat()
+		end = datetime.datetime.fromtimestamp(endTimeStamp / 1000.0).isoformat()
+	except:
+		return formatJsonWithNotifications(returnData)
 	
 	result = mf_database.getAllEventsOfUser(userId, start, end)
 	
@@ -543,7 +552,7 @@ def createNewUser():
 	# create standard calendar
 	calendarName = nickname + "\'s calendar"
 	# # add in calendar
-	result = mf_database.addNewCalendarToDatabase(userId, calendarName, False)
+	result = mf_database.createNewCalendar(userId, calendarName, False)
 	
 	if result == -1:
 		return formatJsonWithNotifications(returnData)
