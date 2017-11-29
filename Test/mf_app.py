@@ -230,100 +230,24 @@ def createNewTask():
 	if calendarId is None or taskName is None:
 		return formatJsonWithNotifications(returnData)
 	
+	# get and format interval
 	intervalData = {name:value for name, value in request.form.items()} # convert from multiDict to dict
+	formattedInterval = intervalFormToString(intervalData)
+	if formattedInterval == -1:
+		formatJsonWithNotifications(returnData)
 	
-	todos = request.form.getlist("todos")
-	
-	'''
-		Example of interval:
-	formattedInterval = "{weekInterval: {start: new Date(\"08 nov 2017\"), modulus: 2},dayNrInWeek: 2}"
-	
-		More general example of interval:
-	formattedInterval = {
-		yearInterval: {start: new Date("2018"), modulus = 2},
-		monthInterval: null,
-		monthNrInYear: null,
-		weekInterval: {start: new Date("this week"), modulus: 2},
-		weekNrInMonth: null,
-		weekNrInYear: null,
-		dayInterval: {start: new Date("today"), modulus: 2},
-		dayNrInWeek: null,
-		dayNrInMonth: 5,
-		dayNrInYear: null
-	}
-	'''
-	
-	formattedInterval = "{"
-	
-	# interval
-	intervalFormat = "{}: {{start: new Date(\"{}\"), modulus: {}}},"
-	if "form_task_interval_year" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"yearInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_year"]
-		)
-	elif "form_task_interval_month" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"monthInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_month"]
-		)
-	elif "form_task_interval_week" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"weekInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_week"]
-		)
-	elif "form_task_interval_day" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"dayInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_day"]
-		)
-	else:
-		return formatJsonWithNotifications(returnData)
-	
-	# month
-	if "form_task_interval_month_year" in intervalData:
-		months = ["January", "February", "March", "April", "May", "June",
-				  "July", "August", "September", "October", "November", "December"]
-		if intervalData["form_task_interval_month_year"] not in months:
-			printError("ERROR: Did not recognize month.")
-			return formatJsonWithNotifications(returnData)
-		m = months.index(intervalData["form_task_interval_month_year"])
-		
-		formattedInterval += "monthNrInYear: " + str(m) + ","
-	
-	# week
-	if "form_task_interval_week_year" in intervalData:
-		formattedInterval += "weekNrInYear: " + str(int(intervalData["form_task_interval_week_year"]) - 1) + ","
-	elif "form_task_interval_week_month" in intervalData:
-		formattedInterval += "weekNrInMonth: " + str(int(intervalData["form_task_interval_week_month"]) - 1) + ","
-	
-	# day
-	if "form_task_interval_day_year" in intervalData:
-		formattedInterval += "dayNrInYear: " + str(int(intervalData["form_task_interval_day_year"]) - 1) + ","
-	elif "form_task_interval_day_month" in intervalData:
-		formattedInterval += "dayNrInMonth: " + str(int(intervalData["form_task_interval_day_month"]) - 1) + ","
-	elif "form_task_interval_day_week" in intervalData:
-		days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-		if not intervalData["form_task_interval_day_week"] in days:
-			return formatJsonWithNotifications(returnData)
-		d = days.index(intervalData["form_task_interval_day_week"])
-		
-		formattedInterval += "dayNrInWeek: " + str(d) + ","
-	
-	formattedInterval = formattedInterval[:-1] + "}" # remove last comma and add end curly bracket
-	
-	taskId = mf_database.createNewTask(userId, taskName, "Some placeholder description", formattedInterval, 0, calendarId, None)
-	
+	# create parent task
+	taskId = mf_database.createNewTask(userId, taskName, "Some placeholder description", formattedInterval, 0,
+		calendarId, None)
 	if taskId == -1:
 		return formatJsonWithNotifications(returnData)
 	
+	# add todos
+	todos = request.form.getlist("todos")
 	for todo in todos: # TODO: don't commit() before all done
 		mf_database.createNewTask(userId, todo, "Some placeholder description", formattedInterval, None, None, taskId)
 	
+	#
 	returnData["success"] = True
 	returnData["data"]["id"] = taskId
 	returnData["data"]["calendar_id"] = calendarId
@@ -333,7 +257,50 @@ def createNewTask():
 	
 	return formatJsonWithNotifications(returnData)
 
+@app.route("/editTasks", methods=["POST"])
+@app.route("/editTask", methods=["POST"])
+def editTask():
+	returnData = {
+		"success": False,
+		"notifications": None
+	}
+	
+	if not isLoggedIn():
+		return formatJsonWithNotifications(returnData)
+	userId = session["id"]
+	
+	newTaskName = request.form.get('form_task_name', None)
+	newCalendarId = request.form.get('form_task_calendar', None)
+	taskId = request.form.get('form_task_id', None) # This is new!
+	
+	if newTaskName is None or newCalendarId is None or taskId is None:
+		return formatJsonWithNotifications(returnData)
+	
+	intervalData = {name:value for name, value in request.form.items()} # converting from multiDict to dict
+	formattedNewInterval = intervalFormToString(intervalData)
+	if formattedNewInterval == -1:
+		formatJsonWithNotifications(returnData)
+	
+	# delete old task
+	mf_database.deleteTask(userId, taskId)
+	
+	# create new Task
+	# # create parent task
+	taskId = mf_database.createNewTask(userId, newTaskName, "Some placeholder description", formattedNewInterval, 0,
+		newCalendarId, None)
+	if taskId == -1:
+		return formatJsonWithNotifications(returnData)
+	
+	# # add todos
+	todos = request.form.getlist("todos")
+	for todo in todos: # TODO: don't commit() before all done
+		mf_database.createNewTask(userId, todo, "Some placeholder description", formattedNewInterval, None, None, taskId)
+	
+	returnData["success"] = True
+	return formatJsonWithNotifications(returnData)
+
 @app.route("/getTasks", methods=["POST"])
+@app.route("/getTask", methods=["POST"])
 def getTasks():
 	returnData = {
 		"success": False,
@@ -630,7 +597,7 @@ def getTMPL():
 	
 	return formatJsonWithNotifications(returnData)
 
-""" Functions """  # ------------------------------------------------------------
+""" Helper functions """  # ------------------------------------------------------------
 def printError(message):
 	print("\033[91m" + str(message))
 
@@ -643,6 +610,101 @@ def isLoggedIn():
 		return True
 	else:
 		return False
+
+def intervalFormToString(intervalData):
+	'''
+	This function takes in a dictionary following attributes:
+		"form_task_interval_year", "form_task_interval_month",
+		"form_task_interval_week", "form_task_interval_day",
+		"form_task_interval_month_year", "form_task_interval_week_year",
+		"form_task_interval_week_month", "form_task_interval_day_year"
+		form_task_interval_day_month", "form_task_interval_day_week"
+	Some of the attributes may be missing depending on the type of interval
+	
+	The data returned could look like this
+		Example of interval:
+			formattedInterval = "{weekInterval: {start: new Date(\"08 nov 2017\"), modulus: 2},dayNrInWeek: 2}"
+		
+		More general example of interval:
+			formattedInterval = {
+				yearInterval: {start: new Date("2018"), modulus = 2},
+				monthInterval: null,
+				monthNrInYear: null,
+				weekInterval: {start: new Date("this week"), modulus: 2},
+				weekNrInMonth: null,
+				weekNrInYear: null,
+				dayInterval: {start: new Date("today"), modulus: 2},
+				dayNrInWeek: null,
+				dayNrInMonth: 5,
+				dayNrInYear: null
+			}
+	Errors cause -1 to be returned
+	'''
+	
+	formattedInterval = "{"
+	
+	# interval
+	intervalFormat = "{}: {{start: new Date(\"{}\"), modulus: {}}},"
+	if "form_task_interval_year" in intervalData:
+		formattedInterval += intervalFormat.format(
+			"yearInterval",
+			datetime.datetime.now().isoformat(),
+			intervalData["form_task_interval_year"]
+		)
+	elif "form_task_interval_month" in intervalData:
+		formattedInterval += intervalFormat.format(
+			"monthInterval",
+			datetime.datetime.now().isoformat(),
+			intervalData["form_task_interval_month"]
+		)
+	elif "form_task_interval_week" in intervalData:
+		formattedInterval += intervalFormat.format(
+			"weekInterval",
+			datetime.datetime.now().isoformat(),
+			intervalData["form_task_interval_week"]
+		)
+	elif "form_task_interval_day" in intervalData:
+		formattedInterval += intervalFormat.format(
+			"dayInterval",
+			datetime.datetime.now().isoformat(),
+			intervalData["form_task_interval_day"]
+		)
+	else:
+		return -1
+	
+	# month
+	if "form_task_interval_month_year" in intervalData:
+		months = ["January", "February", "March", "April", "May", "June",
+				  "July", "August", "September", "October", "November", "December"]
+		if intervalData["form_task_interval_month_year"] not in months:
+			printError("ERROR: Did not recognize month.")
+			return -1
+		m = months.index(intervalData["form_task_interval_month_year"])
+		
+		formattedInterval += "monthNrInYear: " + str(m) + ","
+	
+	# week
+	if "form_task_interval_week_year" in intervalData:
+		formattedInterval += "weekNrInYear: " + str(int(intervalData["form_task_interval_week_year"]) - 1) + ","
+	elif "form_task_interval_week_month" in intervalData:
+		formattedInterval += "weekNrInMonth: " + str(int(intervalData["form_task_interval_week_month"]) - 1) + ","
+	
+	# day
+	if "form_task_interval_day_year" in intervalData:
+		formattedInterval += "dayNrInYear: " + str(int(intervalData["form_task_interval_day_year"]) - 1) + ","
+	elif "form_task_interval_day_month" in intervalData:
+		formattedInterval += "dayNrInMonth: " + str(int(intervalData["form_task_interval_day_month"]) - 1) + ","
+	elif "form_task_interval_day_week" in intervalData:
+		days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+		if not intervalData["form_task_interval_day_week"] in days:
+			return -1
+		d = days.index(intervalData["form_task_interval_day_week"])
+		
+		formattedInterval += "dayNrInWeek: " + str(d) + ","
+	
+	formattedInterval = formattedInterval[:-1] + "}" # remove last comma and add end curly bracket
+	
+	return formattedInterval
 
 """ Default """  # ------------------------------------------------------------
 
