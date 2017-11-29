@@ -80,6 +80,9 @@ router
     'task/new': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_task_new");
     },
+    'task/list': function () {
+        mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_task_list");
+    },
 
 // DEFAULT
     '*': function () {

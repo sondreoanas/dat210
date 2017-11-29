@@ -31,6 +31,7 @@ cb.prototype.newuser = function(response){
 		//router.navigate('welcome');
 	}else{
 		console.log(response.data);
+		console.log("failed")
 	}	
 }
 

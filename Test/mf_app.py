@@ -479,6 +479,7 @@ def login():
 	result = mf_database.getUserIdPassword(email)
 	
 	if result == -1: # -1 means error, False means user does not exist.
+		notifications.append(notifications.notification(1))
 		return formatJsonWithNotifications(returnData)
 	
 	(userId, hashedPasswordFromDatabase) = result
@@ -663,7 +664,10 @@ def home_focus(start, zoom):
 @app.route("/event/new")
 @app.route("/event/list")
 @app.route("/task/new")
+@app.route("/task/list")
 def index():
+	if "notifList" not in session:
+		session["notifList"] = []
 	return render_template('index.html')
 
 

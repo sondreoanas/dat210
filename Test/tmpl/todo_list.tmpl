@@ -1,4 +1,11 @@
-<li id="todo_li_nr_<%this.pos%>">
+<li id="todo_li_nr_<%this.pos%>" class="row">
+    <input type="checkbox" id="row_<%this.pos%>">
+    <label for="row_<%this.pos%>"></label>
+    <div class="cell prio" data-label="Todo name">
+        <%this.name%>
+    </div>
+    <div class="cell tight" data-label="Action">
+        <button onclick="main_task_new_remove_todo(<%this.pos%>);" type="button">Remove todo</button>
+    </div>   
     <input type="hidden" id="todo_nr_<%this.pos%>" name="todos" value="<%this.name%>">
-    <%this.name%><button onclick="main_task_new_remove_todo(<%this.pos%>);" type="button">Remove todo</button>
 </li>

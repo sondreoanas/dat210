@@ -174,6 +174,64 @@ def getTasksOfUser(userId):
 	
 	return tasks
 
+
+
+
+
+
+
+
+
+
+
+def getTask(taskId):
+
+	# load root task
+	attributes = "TaskId, Name, task.Interval, Deleted, IsDone, ParentId, CalendarId, Timestamp"
+	cursor = getCursor()
+	try:
+
+		sql = "select {} from task where TaskId = %s or ParentId = %s;"
+		sql = sql.format(attributes)
+		cursor.execute(sql, (taskId,taskId))
+		result = cursor.fetchall()
+
+		taskObject = {}
+		taskObject["task"] = {}
+		taskObject["todos"] = []
+
+		for r in result:
+			if r[0] == taskId:
+				taskObject["task"] = {"id": r[0], "name": r[1], "interval": r[2], "deleted": r[3],\
+						  "isDone": r[4], "parentId": r[5], "calendarId": r[6], "timestamp": r[7]}
+			if r[5] == taskId:
+				taskObject["todos"].append({"id": r[0], "name": r[1], "interval": r[2], "deleted": r[3],\
+						  "isDone": r[4], "parentId": r[5], "calendarId": r[6], "timestamp": r[7]})
+
+		cursor.close()
+
+	except mysql.connector.Error as err:
+		printError(err)
+		cursor.close()
+		return -1
+	except BaseException as err:
+		printError(err)
+		cursor.close()
+		return -1
+
+
+	return taskObject
+
+
+
+
+
+
+
+
+
+
+
 def editCalendar(newCalendarName, newIsPublic, calendarId, userId):
 	database = getDatabase()
 	cursor = getCursor()
