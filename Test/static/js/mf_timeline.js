@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.5.1
-	last updated	: 18.11.2017
+	version			: 0.5.2
+	last updated	: 29.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?

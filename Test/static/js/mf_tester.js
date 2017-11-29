@@ -408,7 +408,16 @@ mf_TestHandeler.prototype.addTestListener = function(element){
 			}
 			thisHandeler.recordedCommands += "\ttype, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
 		});
-	}else if(element.tagName == "SELECT" || element.tagName == "INPUT"){
+	}else if(element.tagName == "INPUT" && element.type == "checkbox"){
+		element.addEventListener("change", function(){
+			thisHandeler.checkTimelineChange();
+			var data = thisHandeler.getIdPath(this);
+			if(data == -1){
+				return -1;
+			}
+			thisHandeler.recordedCommands += "\tdropDown, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
+		});
+	}else if(element.tagName == "SELECT" /*|| element.tagName == "INPUT"*/){
 		element.addEventListener("change", function(){
 			thisHandeler.checkTimelineChange();
 			var data = thisHandeler.getIdPath(this);
@@ -421,7 +430,7 @@ mf_TestHandeler.prototype.addTestListener = function(element){
 		element.addEventListener("mousedown", function(){
 			thisHandeler.checkTimelineChange();
 		});
-	}
+	}else if(element.tagName == "INPUT"){console.log("INPUT not assigned.");}
 }
 mf_TestHandeler.prototype.checkTimelineChange = function(){
 	for(var i=0; i<this.timelines.length; i++){
