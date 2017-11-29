@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.0.0
-	last updated	: 18.11.2017
+	version			: 0.1.0
+	last updated	: 29.11.2017
 	name			:
 	description		:
 		What does this do?
@@ -51,7 +51,7 @@ def checkEmailInUse(email):
 	finally:
 		cursor.close()
 
-def getUserIdPassword(email): # TODO: make more general?
+def getUserIdPassword(email):
 	# If the user exists, (userId, hashedPasswordFromDatabase) is returned,
 	# if the username does not exist, False is returned,
 	# if an error occurs, -1 is returned
@@ -137,7 +137,7 @@ def getTasksOfUser(userId):
 	cursor = getCursor()
 	try:
 		for calendarId in ids:
-			sql = "select {} from task where calendarId = %s;"
+			sql = "select {} from task where calendarId = %s and task.Deleted = 0;"
 			sql = sql.format(attributes)
 			cursor.execute(sql, (calendarId,))
 			result += cursor.fetchall()
@@ -145,6 +145,23 @@ def getTasksOfUser(userId):
 		for r in result:
 			newList.append({"id": r[0], "name": r[1], "interval": r[2], "deleted": r[3],\
 						  "isDone": r[4], "parentId": r[5], "calendarId": r[6], "timestamp": r[7]})
+		
+		# load children of root tasks
+		tasks = newList[:]
+		while True:
+			temp = []
+			for t in newList:
+				sql = "select {} from task where parentId = {};"
+				sql = sql.format(attributes, t["id"])
+				cursor.execute(sql)
+				result = cursor.fetchall()
+				for r in result:
+					temp.append({"id": r[0], "name": r[1], "interval": r[2], "deleted": r[3],\
+						"isDone": r[4], "parentId": r[5], "calendarId": t["calendarId"], "timestamp": r[7]})
+			if len(temp) == 0:
+				break
+			tasks += temp
+			newList = temp
 	except mysql.connector.Error as err:
 		printError(err)
 		cursor.close()
@@ -154,25 +171,58 @@ def getTasksOfUser(userId):
 		cursor.close()
 		return -1
 	
-	# load children of root tasks
-	tasks = newList[:]
-	while True:
-		temp = []
-		for t in newList:
-			sql = "select {} from task where parentId = {};"
-			sql = sql.format(attributes, t["id"])
-			cursor.execute(sql)
-			result = cursor.fetchall()
-			for r in result:
-				temp.append({"id": r[0], "name": r[1], "interval": r[2], "deleted": r[3],\
-					"isDone": r[4], "parentId": r[5], "calendarId": t["calendarId"], "timestamp": r[7]})
-		if len(temp) == 0:
-			break
-		tasks += temp
-		newList = temp
 	cursor.close()
 	
 	return tasks
+
+def deleteTask(userId, rootTaskId):
+	# load root tasks
+	
+	ids = [rootTaskId]
+	
+	cursor = getCursor()
+	database = getDatabase()
+	try:
+		# get calendarId of root task
+		sql = "SELECT task.calendarId, usercalendars.UserId FROM task " \
+				"JOIN usercalendars ON task.CalendarId = usercalendars.CalendarId " \
+				"WHERE task.taskId = %s;"
+		cursor.execute(sql, (rootTaskId,))
+		result = cursor.fetchall()
+		calendarId = result[0][0]
+		tasksUserId = result[0][1]
+		# correct user?
+		if userId != tasksUserId:
+			printError("Cannot delete task, userId not authorized. UserId = {}. TaskId = {}.".format(userId, rootTaskId))
+			cursor.close()
+			return -1
+		
+		# get Ids of sub-tasks
+		for parentId in ids:
+			sql = "select TaskId from task where parentId = %s;"
+			cursor.execute(sql, (parentId,))
+			result = cursor.fetchall()
+			ids += [childTupple[0] for childTupple in result]
+		# set deleted flag
+		for delTaskId in ids:
+			'''sql = "UPDATE task " \
+				"join usercalendars on usercalendars.CalendarId = %s " \
+				"join `user` on usercalendars.UserId = `user`.UserId = usercalendars.UserId " \
+				"SET task.`Deleted` = 1 WHERE `TaskId` = %s and `user`.UserId = %s;"'''
+			sql = "UPDATE task SET task.`Deleted` = 1 WHERE TaskId = %s"
+			cursor.execute(sql, (delTaskId,))
+		database.commit()
+		
+		
+	except mysql.connector.Error as err:
+		printError(err)
+		cursor.close()
+		return -1
+	except BaseException as err:
+		printError(err)
+		cursor.close()
+		return -1
+	return True
 
 def editCalendar(newCalendarName, newIsPublic, calendarId, userId):
 	database = getDatabase()
@@ -298,7 +348,7 @@ def getAllEventsOfUser(userId, start, end):
 	finally:
 		cursor.close()
 
-def addNewTaskToDatabase(userId, name, description, interval, timestamp, calendarId, parentId): # TODO: rename, add -> create and remove ToDatabase
+def createNewTask(userId, name, description, interval, timestamp, calendarId, parentId):
 	database = getDatabase()
 	cursor = getCursor()
 	try:
@@ -315,7 +365,7 @@ def addNewTaskToDatabase(userId, name, description, interval, timestamp, calenda
 	finally:
 		cursor.close()
 
-def addNewEventToDatabase(name, startTime, endTime, calendarId): #TODO: remove ToDatabase from name, also add->create
+def createNewEvent(name, startTime, endTime, calendarId): #TODO: remove ToDatabase from name, also add->create
 	# TODO: security, does this user have access to this calendar?
 	# startTime and endTime is given in iso format
 	database = getDatabase()
@@ -355,7 +405,7 @@ def addNewEventToDatabase(name, startTime, endTime, calendarId): #TODO: remove T
 		cursor.close()
 	return True
 
-def addNewCalendarToDatabase(userId, calendarName, isPublic):
+def createNewCalendar(userId, calendarName, isPublic):
 	database = getDatabase()
 	cursor = getCursor()
 	try:

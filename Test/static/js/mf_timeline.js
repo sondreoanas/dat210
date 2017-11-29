@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.5.1
-	last updated	: 18.11.2017
+	version			: 0.5.2
+	last updated	: 29.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -508,7 +508,7 @@ Timeline.prototype.loadTasks = function(){
 	}.bind(this));
 }
 Timeline.prototype.loadEvents = function(){
-	mf_AjaxHandler.ajaxPost({start: 0, end: 1000 * 60 * 60 * 24 * 365 * 1000}, "/loadViewEvents", function(responseText){
+	mf_AjaxHandler.ajaxPost({start: 86400000, end: 1000 * 60 * 60 * 24 * 365 * 1000}, "/loadViewEvents", function(responseText){
 		// {events:[{start, end, name, repeatData},{start,...},...]}
 		
 		//repeatdata = \{
