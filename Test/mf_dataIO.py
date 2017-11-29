@@ -133,6 +133,7 @@ def frontmenu(request):
                                 }
                             ]
             }
+
 def calendar_edit(request):
 	if not mf_app.isLoggedIn():
 		# TODO: add notification
