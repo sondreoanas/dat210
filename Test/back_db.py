@@ -185,7 +185,7 @@ def get_calendar_db(user_id, calendar_id):
     finally:
         cur.close()
 
-def get_all_calendar_events_db(calendar_id):
+def get_all_calendar_events_db(user_id, calendar_id):
     db = get_db() 
     cur = db.cursor()
     try:
@@ -200,7 +200,7 @@ def get_all_calendar_events_db(calendar_id):
     finally:
         cur.close()
 
-def get_event_db(event_id):
+def get_event_db(user_id, event_id):
     db = get_db() 
     cur = db.cursor()
     try:

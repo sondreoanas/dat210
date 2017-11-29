@@ -85,36 +85,125 @@ def load_view(request):
 # Used to get the format of the navigation bar when a user IS logged in
 
 def nav(params):
-    return {
-        "items": {
-            "Home" : [0,"/home"],
-            "Calendar" : [1,{
-                "New Calendar" : [0,"calendar/new"],
-                "My Calendars" : [0,"calendar/list"],
-            }],
-            "Event" : [1,{
-                "New Event" : [0,"event/new"],
-                "My Events" : [0,"event/list"]
-            }],
-            "Tasks" : [1,{
-                "New Task" : [0,"task/new"],
-                "My Tasks" : [0,"task/list"]
-            }],
-            "Loggout" : [0,"/loggedout"]
+
+    if 'login' in session:
+        if session['login']:
+            return  {
+                        "items":
+                        [
+                            {
+                                "title": "Home",
+                                "isparent": 0,
+                                "link": "home",
+                                "children": []
+                            },{
+                                "title": "Calendar",
+                                "isparent": 1,
+                                "link": "calendar",
+                                "children": [
+                                    {
+                                        "title": "New Calendar",
+                                        "isparent": 0,
+                                        "link": "calendar/new",
+                                        "children": []
+                                    },{
+                                        "title": "My Calendars",
+                                        "isparent": 0,
+                                        "link": "calendar/list",
+                                        "children": []
+                                    }
+                                ]
+                            },{
+                                "title": "Event",
+                                "isparent": 1,
+                                "link": "/event",
+                                "children": [
+                                    {
+                                        "title": "New Event",
+                                        "isparent": 0,
+                                        "link": "event/new",
+                                        "children": []
+                                    },{
+                                        "title": "My Events",
+                                        "isparent": 0,
+                                        "link": "event/list",
+                                        "children": []
+                                    }
+                                ]
+                            },{
+                                "title": "Tasks",
+                                "isparent": 1,
+                                "link": "/task",
+                                "children": [
+                                    {
+                                        "title": "New Task",
+                                        "isparent": 0,
+                                        "link": "task/new",
+                                        "children": []
+                                    },{
+                                        "title": "My Tasks",
+                                        "isparent": 0,
+                                        "link": "task/list",
+                                        "children": []
+                                    }
+                                ]
+                            },{
+                                "title": "Loggout",
+                                "isparent": 0,
+                                "link": "/loggedout",
+                                "children": []
+                            }
+                        ]
+                }
+    else:
+        return  {
+            "items":
+                        [
+                            {
+                                "title": "Login",
+                                "isparent": 0,
+                                "link": "login",
+                                "children": []
+                            },{
+                                "title": "New user",
+                                "isparent": 0,
+                                "link": "newuser",
+                                "children": []
+                            },{
+                                "title": "Forgot password?",
+                                "isparent": 0,
+                                "link": "forgotpass",
+                                "children": []
+                            }
+                        ]
         }
-    }
+
 
 # Front Menu
 # Used to get the format of the navigation bar when a user IS NOT logged in
 
 def frontmenu(params):
-    return {
-        "items": {
-            "Login" : [0,"/login"],
-            "New user" : [0,"/newuser"],
-            "Forgot password?" : [0,"/forgotpass"]
-        }
-    }
+    return  {
+                "items":
+                            [
+                                {
+                                    "title": "Login",
+                                    "isparent": 0,
+                                    "link": "login",
+                                    "children": []
+                                },{
+                                    "title": "New user",
+                                    "isparent": 0,
+                                    "link": "newuser",
+                                    "children": []
+                                },{
+                                    "title": "Forgot password?",
+                                    "isparent": 0,
+                                    "link": "forgotpass",
+                                    "children": []
+                                }
+                            ]
+            }
 
 """ USER """    #----------------------------------------------
 
@@ -233,7 +322,6 @@ def calendar_list(request):
         #notification
         return [[]]
 
-
 def calendar_new(request):
     try:
         name = request.get('form_calendar_name',0)
@@ -267,7 +355,6 @@ def calendar_edit(params):
     }
     return calendar
 
-
 def calendar_edit_form(request):
     id = request.get('form_calendar_id',0)
     name = request.get('form_calendar_name',0)
@@ -276,7 +363,7 @@ def calendar_edit_form(request):
     else:
         public = False
     calendar = {
-      "success": db.edit_calendar_db(id, name, public),
+      "success": db.edit_calendar_db(session['id'], id, name, public),
       "data": {
           "id" : id,
           "name" : name,
@@ -295,13 +382,12 @@ def calendar_edit_form(request):
 def event_calendar(params):
     return {"calendar_id": params["args"].get("calendar_id", 0)}
 
-
 def event_calendar_list(params):
     calendar_id = params["args"].get("calendar_id", 0)
-    calendar_events = db.get_all_calendar_events_db(calendar_id)
+    calendar_events = db.get_all_calendar_events_db(session['id'], calendar_id)
     returner = []
     for event_id, _ in calendar_events:
-        event = db.get_event_db(event_id)
+        event = db.get_event_db(session['id'], event_id)
         event = {
             "id": event_id,
             "calendar_id": calendar_id,
@@ -321,7 +407,7 @@ def event_list(request):
         for cal_id, cal_name, cal_rights, cal_public in cal_db:
             events_db = db.get_all_calendar_events_db(cal_id)
             for event_id,cal_id in events_db:
-                id,name,des,start,end = db.get_event_db(event_id)
+                id,name,des,start,end = db.get_event_db(session['id'], event_id)
                 event = {
                     'id': event_id,
                     'name': name,
@@ -378,7 +464,7 @@ def event_edit_form(request):
         end = request.form.get('form_event_end', 0)
 
         event_form = {
-            "success": db.edit_event_db(id, name, None, start, end, None, None),
+            "success": db.edit_event_db(session['id'], calendar_id, calendar_id, id, name, None, start, end, None),
             #event description mangler + intervall + terminate_date
             "data": {
                 "id" : id,
@@ -395,7 +481,7 @@ def event_edit_form(request):
         return {"success":False}
 
 def event_edit(params):
-    result = db.get_event_db(params["args"].get("event_id", 0))
+    result = db.get_event_db(session['id'], params["args"].get("event_id", 0))
     event = {
         "notifications":n.flush(),
         "success": True,

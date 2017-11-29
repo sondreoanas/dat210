@@ -4,26 +4,34 @@
         <label for="navcheck"></label>
         <ul class="ffix">
             <%for(var i in this.items) {%>
-                <%if(this.items[i][0]) {%>
-                    <li>
-                        <button id="<%i%>" onclick="javascript:void();" class="button_nav"><%i%></button>
-                        <ul>
+                <%if(this.items[i].isparent) {%>
+                    <li class="root isparent">
+                        <button class="button_nav"><%this.items[i].title%></button>
 
-                            <%for(var k in this.items[i][1]) {%>
+                        <ul>
+                            <%for(var k in this.items[i].children) {%>
                                 <li>
-                                    <button id="<%k%>" onclick="javascript:router.navigate('<%this.items[i][1][k][1]%>');" class="button_nav"><%k%></button>
+
+                                    <button onclick="javascript:router.navigate('<%this.items[i].children[k].link%>');" class="button_nav"><%this.items[i].children[k].title%></button>
+
                                 </li>
                             <%}%>
 
                         </ul>
                     </li>
                 <%} else {%>
-                    <li>
-                        <button id="<%i%>" onclick="javascript:router.navigate('<%this.items[i][1]%>');" class="button_nav"><%i%></button>
+
+                    <li class="root <%if(i==0) {%>selected<%}%>">
+                        <button onclick="javascript:router.navigate('<%this.items[i].link%>');" class="button_nav"><%this.items[i].title%></button>
+
                     </li>
                 <%}%>
             <%}%>
         </ul>
     </div>
 </nav>
+
+<script data-run>
+    navSelect();
+</script>
 

@@ -1,0 +1,20 @@
+<div id="int-type-year-special" class="ffix">
+    <label for="form_task_interval_year">
+        Happens every
+        <input type="number" id="form_task_interval_year" name="form_task_interval_year" value="1">
+        year
+    </label>
+</div>
+<div id="int_type-further">
+    <label for="int_type-year-spec-date">
+        <input type="radio" id="int_type-year-spec-date" name="int_type-year-spec" value="int_type-year-spec-date" onchange="main_task_new_pick_interval(this)" checked>
+        Date:
+    </label>
+
+    <label for="int_type-year-spec-every">
+        <input type="radio" id="int_type-year-spec-every" name="int_type-year-spec" value="int_type-year-spec-every" onchange="main_task_new_pick_interval(this)">
+        Every
+    </label>
+</div>
+
+<div id="int_type-further-spec" data-load="/getHTML?html=int_type-year-spec-date"></div>

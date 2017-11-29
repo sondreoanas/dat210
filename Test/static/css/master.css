@@ -8,10 +8,8 @@
 	
 */
 
-
-/*	FONTS INCLUDED THAT ICON THING ( I LIKE TO MAKE MY OWN CLASSES )
+/*	FONTS
 ------------------------------------------------------------------------------------------------------------------------------------*/
-
 @font-face {
     font-family: 'FontAwesome';
     src: url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?v=4.3.0');
@@ -20,8 +18,6 @@
     font-style: normal;
 }
 
-@import url('http://fonts.googleapis.com/css?family=Montserrat');
-@import url('http://fonts.googleapis.com/css?family=Raleway');
 
 /*	BASELINE  ( LETS ZERO OUT EVERYTHING AND GET A HOLD ON WIDTHS )
 ------------------------------------------------------------------------------------------------------------------------------------*/
@@ -42,12 +38,12 @@
 html {
     min-height: 100%;
     position: relative;
-    background: orange;
+    background: url('../img/bg.png');
 }
 
 body {
-    font: 1.2em/1.5em 'Raleway', sans-serif;
-    background-color: #fff;
+    font: 1.2em/1.5em 'Arial', sans-serif;
+    xbackground-color: #fff;
     height: 100%;
     -webkit-animation: bugfix infinite 1s;
     margin: 0 0 200px 0;
@@ -123,7 +119,7 @@ main {
 
 ul {
     list-style: disc;
-    padding: 0.5em 0 0.5em 30px;
+    padding: 0;
     margin: 0;
 }
 
@@ -145,9 +141,10 @@ h5 {
     font-weight: 100;
     line-height: 1em;
     color: #404040;
-    margin: 0;
-    padding: 0 0 0.5em 0;
+    margin: 0 0 0.25em 0;
+    padding: 0 0 0.25em 0;
     font-family: 'Montserrat', sans-serif;
+    border-bottom: 1px solid #404040;
 }
 
 h1 a,
@@ -208,9 +205,6 @@ img {
     height: auto;
 }
 
-figure {}
-
-figure figcaption {}
 
 
 /*	FORMS
@@ -227,16 +221,14 @@ fieldset {
     padding: 5px 0;
 }
 
-legend {
-    font-weight: bold;
-    color: #454545;
-    text-transform: uppercase;
-    padding: 20px 0 0 0;
-}
-
 label {
     display: block;
     line-height: 40px;
+    margin:5px 0;
+    width: 20%;
+    float:left;
+    clear:left;
+    white-space: nowrap;
 }
 
 input[type="text"],
@@ -244,15 +236,17 @@ input[type="email"],
 input[type="password"],
 input[type="file"],
 input[type="number"],
-input[type="url"] {
+input[type="url"]{
     border: 0;
     -webkit-appearance: none;
     line-height: 40px;
     border-radius: 10px;
     height: 40px;
     padding: 0 0 0 10px;
-    width: 100%;
+    width: 80%;
     background-color: #fff;
+    margin:5px 0;
+    float:left;
 }
 
 input[type="file"] {
@@ -265,34 +259,18 @@ textarea {
     border: 0;
     -webkit-appearance: none;
     height: 140px;
-    width: 100%;
+    width: 80%;
     padding: 10px;
     font-size: 0.75em;
     border-radius: 10px;
-}
-
-input[type="button"],
-input[type="submit"] {
-    border: 0;
-    -webkit-appearance: none;
-    cursor: pointer;
-    line-height: 40px;
-    border-radius: 10px;
-    height: 40px;
-    padding: 0 20px;
-    background: #00264d;
-    color: #fff;
+    float:left;
 }
 
 select {
-    width: 100%;
-    margin: 0;
+    height:40px;
+    border-radius: 10px;
     padding: 5px;
-    vertical-align: top;
-    min-width: 100px;
 }
-
-options {}
 
 input[type="radio"],
 input[type="checkbox"] {
@@ -309,10 +287,26 @@ input[type="checkbox"] {
 }
 
 
+@media(max-width:480px) {
+    label,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="file"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select{
+        width:100%;
+        float:none;
+    }
+}
+
+
 /*	BUTTONS
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
-button {
+button{
     border: 0;
     -webkit-appearance: none;
     cursor: pointer;
@@ -320,14 +314,11 @@ button {
     border-radius: 10px;
     height: 40px;
     padding: 0 20px;
-    background: #333;
+    background: #0284a8;
     color: #fff;
 }
-
-.button_underline {
-    background: none;
-    color: #000;
-    text-decoration: underline;
+button:hover{
+    background-color: #ff3d2e;
 }
 
 
@@ -351,9 +342,9 @@ button {
 
 .table .row>label {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 3em;
+    bottom: -5px;
+    right: 0px;
+    font-size: 40px;
     color: #fff;
     background: #ccc;
     line-height: 40px;
@@ -364,7 +355,7 @@ button {
     overflow: hidden;
 }
 
-#cart .table .row label:after {
+.table .row label:after {
     content: "+";
 }
 
@@ -377,7 +368,7 @@ button {
 }
 
 .tableheader {
-    background: #dadada;
+    background: #dae9ee;
     color: #5e5e5e;
     font-style: italic;
     font-size: 0.778em;
@@ -388,14 +379,15 @@ button {
     display: table-cell;
     padding: 5px 10px;
     vertical-align: middle;
+    min-height: 40px;
 }
 
 .row:nth-child(2n+3) {
-    background: #e2f1f8;
+    background: #e5e8ea;
 }
 
 .rowgroup>.row:nth-child(2n) {
-    background: #e2f1f8;
+    background: #e5e8ea;
 }
 
 .rowgroup>.row:nth-child(2n+3) {
@@ -455,11 +447,6 @@ button {
 }
 
 
-/*	GENERAL CLASSES
-------------------------------------------------------------------------------------------------------------------------------------*/
-
-
-
 /*	BOXES
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -472,8 +459,6 @@ button {
     padding: 10px;
     background-color: #eee;
 }
-
-.box.form_login {}
 
 
 /*	NOTIFICATIONS

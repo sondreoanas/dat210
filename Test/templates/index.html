@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <title>Wiel</title>
 
-
-    <link rel="stylesheet" href="{{ url_for("static", filename="css/style.css") }}">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/master.css") }}">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/sections.css") }}">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/elements.css") }}">
@@ -41,28 +39,13 @@
 
     <header>
         <div class="page">
-            <h1>Wiel</h1>
+            <h1>Annual Cycle</h1>
         </div>
     </header>
 
     <nav id="mainmenu">
 
-        <div class="page">
-            <input type="checkbox" id="navcheck">
-            <label for="navcheck"></label>
-            <ul class="ffix">
-                <li>
-                    <button onclick="javascript:router.navigate('login');" class="button_nav">Login</button>
-                </li>
-                <li>
-                    <button onclick="javascript:router.navigate('newuser');" class="button_nav">New user</button>
-                </li>
-                <li>
-                    <button onclick="javascript:router.navigate('forgotpass');" class="button_nav">Forgot password?</button>
-                </li>
-                
-            </ul>
-        </div>
+
 
     </nav>
     
@@ -74,20 +57,12 @@
     <footer>
         <div class="page">
     
-            <section id="contact">
-                <h2>Customer service</h2>
-                <p>+47 40 40 40 40</p>
-                <a href="mailto:customer@service.com" title="Customer service email">customer@service.com</a>
+            <section id="support">
+                <h2>Support</h2>
+                <p>This service is delivered as is and there is absolutely no support.</p>
+                <a href="mailto:customer@support.com" title="Contact creators">2017 &copy; Gruppe E</a>
             </section>
     
-            <section id="social">
-                <h2>Social media</h2>
-                <ul>
-                    <li><a href="http://www.facebook.com/" title="Facebook link" class="facebook">Facebook</a></li>
-                    <li><a href="http://www.twitter.com/" title="Twitter link" class="twitter">Twitter</a></li>
-                    <li><a href="http://www.linkedin.com/" title="LinkedIn link" class="linkedin">LinkedIn</a></li>
-                </ul>
-            </section>
     
         </div>
     </footer>

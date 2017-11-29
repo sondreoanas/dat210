@@ -10,7 +10,15 @@ cb.prototype.login = function(response){
 
 cb.prototype.forgotpass = function(response){	
 	if(response.success){
+		router.navigate('/forgotpass_sent');
+	}else{
 		router.navigate();
+	}	
+}
+
+cb.prototype.reset_pass = function(response){	
+	if(response.success){
+		mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_welcome", data = response.data);
 	}else{
 		router.navigate();
 	}	
@@ -20,7 +28,7 @@ cb.prototype.newuser = function(response){
 	if(response.success){
 		console.log(response.data)
 		mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_welcome", data = response.data);
-		router.navigate('welcome');
+		//router.navigate('welcome');
 	}else{
 		console.log(response.data);
 	}	
