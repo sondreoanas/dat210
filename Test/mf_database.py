@@ -175,6 +175,7 @@ def getTasksOfUser(userId):
 	
 	return tasks
 
+
 def deleteTask(userId, rootTaskId):
 	# load root tasks
 	
@@ -222,7 +223,9 @@ def deleteTask(userId, rootTaskId):
 		printError(err)
 		cursor.close()
 		return -1
+
 	return True
+
 
 def editCalendar(newCalendarName, newIsPublic, calendarId, userId):
 	database = getDatabase()

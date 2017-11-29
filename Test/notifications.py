@@ -1,4 +1,5 @@
 import time
+from flask import session
 
 
 
@@ -16,26 +17,14 @@ action = {
         "action": "calendar/new"
     }
 }
-global notif
 
-def notif_append(id):
-    pass
-
-
-
-#def notif():
-#    temp = notif.copy()
-#    notif=[]
-#    return temp
-
-notifList = []
 
 def append(notif):
-    notifList.append(notif)
+    session["notifList"].append(notif)
 
 def flush():
-    returner = list(notifList)
-    del notifList[:]
+    returner = list(session["notifList"])
+    #del session["notifList"][:]
     return returner
 
 
