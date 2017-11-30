@@ -22,6 +22,8 @@ def getData(data, request=None, ):
 
         'login':login,
         'forgotpass':forgotpass,
+        'reset_pass': reset_pass,
+        'reset_pass_form': reset_pass_form,
         'newuser':newuser,
         'edituser':edit_user,
         'loggout':loggout,
@@ -78,8 +80,11 @@ def load_view(request):
                 continue
         return events
     except IOError as err:
-            # Create Notification with error
-            return {'events':[]}
+        # Create Notification with error
+        return {'events':[]}
+    except KeyError as err:
+        return {'events':[]}
+
 
 # Nav
 # Used to get the format of the navigation bar when a user IS logged in
@@ -157,7 +162,7 @@ def newuser(request):
         "email": email,
         "nickname": nickname
     }
-    if security.check_equal(password,repeat_password):
+    if password == repeat_password:
         result = back_user.register_user(email, password, nickname)
         user["success"] = result
         if not result:
@@ -170,17 +175,53 @@ def newuser(request):
 
 def forgotpass(request):
     try:
-        email = db.get_username_db(request.get('form_userid', 0))
+        email = request.get('form_userid',0)
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)  # Enter SSL configuration for domain
         server.ehlo()
         server.login(sender_user, sender_password)
-        server.sendmail(sender_user, email, "TEST")
+        link = security.create_pass_link(email)
+        subject = "Annual Cyclel Password"
+        text = "Did you forget your password?\nHerese the link to reset it\n\n" + link + "\n\nBest Regards\n\tSondre from the Annual Cycle team"
+        message = 'Subject: {}\n\n{}'.format(subject, text)
+        server.sendmail(sender_user, email, message)
         server.close()
         #notification
         return {"success":True}
     except IOError as err:
         print(err)
         return
+
+def reset_pass(id):
+    try:
+        # get already visited from database
+        id,active,user_id = db.get_forgot_pass(id)
+        if active == 1:
+            return {
+                'success':True,
+                'data': {
+                    'id':id,
+                    'user_id':user_id
+                }
+            }
+        else: return {'success': False}
+    except:
+        return {'success':False}
+
+def reset_pass_form(params):
+    try:
+        id = params['id']
+        active, user_id = db.get_forgot_pass(id)
+        if active == 1:
+            if params['password_repeat'] == params['password']:
+                password_hash, salt = security.create_password(params['password'])
+                db.edit_user_password(user_id,password_hash,salt)
+                db.delete_forgot_password(id)
+                #notification
+            else: return {'success':False}
+        else: return {'succes':False}
+    except KeyError:
+        return {'success':False}
+
 
 def edit_user(request):
     try:
@@ -209,9 +250,9 @@ def loggout(params):
             }
         }
         return user
-    except IOError as err:
+    except KeyError as err:
         #notification
-        return {"success":False}
+        return {'success':False}
 
 
 """ CALENDAR """    #----------------------------------------------
@@ -463,3 +504,5 @@ def task_new(params):
     }
 
     return returner
+
+

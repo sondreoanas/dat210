@@ -136,6 +136,71 @@ def set_new_user_db(username, password_hash, salt, name):
     finally:
         cur.close()
 
+def insert_forgot_pass(id, active, user_id):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql2 = "INSERT INTO forgot_pass_link " \
+               "(link, active, user_id) " \
+               "VALUES (%s, %s, %s) "
+        cur.execute(sql2, (id, active, user_id))
+        db.commit()
+        print("successfull creation")
+        return cur.lastrowid
+    except mysql.connector.Error as err:
+        print(err)
+        return False
+    finally:
+        cur.close()
+
+def delete_forgot_password(id):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE forgot_pass_link " \
+            "SET active = %s " \
+            "WHERE link = %s "
+        cur.execute(sql, (0,id))
+        db.commit()
+        return cur.lastrowid
+    except mysql.connector.Error as err:
+        print(err)
+        return False
+    finally:
+        cur.close()
+
+def edit_user_password(user_id,password_hash, salt):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "UPDATE user " \
+            "SET Password = %s, Salt = %s " \
+            "WHERE UserId = %s "
+        cur.execute(sql, (password_hash,salt,user_id))
+        db.commit()
+        return cur.lastrowid
+    except mysql.connector.Error as err:
+        print(err)
+        return False
+    finally:
+        cur.close()
+
+
+def get_forgot_pass(id):
+    db = get_db()
+    cur = db.cursor()
+    try:
+        sql = "SELECT active, user_id " \
+            "FROM forgot_pass_link " \
+            "WHERE link = %s "
+        cur.execute(sql, (id,))
+        return cur.fetchone()
+    except mysql.connector.Error as err:
+        print(err)
+        return False
+    finally:
+        cur.close()
+
 def edit_user_db(user_id, username_old, username_new, password_hash, salt, name):
     db = get_db()
     cur = db.cursor()

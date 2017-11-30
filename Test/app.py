@@ -16,11 +16,25 @@ import notifications as n
 app = Flask(__name__)
 app.secret_key = "any random string"
 
+
+def logged_in(func,login):
+    def f(*args,**kwargs):
+        try:
+            if login:
+                return func(*args,**kwargs)
+            else:
+                print('You are not logged in')
+                return index(*args,**kwargs)
+        except KeyError as err:
+            print(err)
+            return index(*args,**kwargs)
+    return f()
+
+
 """ HOME """ #------------------------------------------------------------
 
 @app.route("/loadViewEvents", methods=["POST"])
 def loadViewEvents():
-    if not session['login']: return render_template('index.html')
     return json.dumps(io.getData("loadview",request.get_json()))
 
 @app.route("/getHTML")
@@ -35,10 +49,12 @@ def getHTML():
     }
     return json.dumps(data)
 
+
 @app.route("/getTMPL")
 def getTMPL():
     tmpl = request.args.get("tmpl", None)
     data = request.args.get("data", None)
+    print(data)
     params = {
         "id": request.args.get("id", None),
         "args": request.args
@@ -59,7 +75,7 @@ def login():
     return json.dumps(io.getData("login", request.form))
 
 @app.route("/forgotpass_form", methods=["POST"])
-def forgotpass():
+def forgotpass_form():
     return json.dumps(io.getData("forgotpass", request.form))
 
 @app.route("/edituser_form", methods=["POST"])
@@ -73,6 +89,20 @@ def newuser():
 @app.route("/loggout")
 def loggout():
     return json.dumps(io.getData('loggout'),None)
+
+@app.route("/reset_pass/<string:id>", methods=["GET"])
+def reset_pass(id):
+    return render_template('index.html')
+
+@app.route("/reset_pass_form", methods=["POST"])
+def reset_pass_form():
+    params = {
+        'id':request.form.get('id',0),
+        'password':request.form.get('password', 0),
+        'password_repeat':request.form.get('password_repeat', 0)
+    }
+    return json.dumps(io.getData("reset_pass_form",params))
+
 
 """ CALENDAR """ #------------------------------------------------------------
 
@@ -98,7 +128,6 @@ def event_new_form():
 
 @app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
 def event_edit_form(calendar_id):
-    old_calendar = calendar_id
     return json.dumps(io.getData("event_edit_form", request.form))
 
 

@@ -24,6 +24,7 @@ cb.prototype.reset_pass = function(response){
 	}	
 }
 
+
 cb.prototype.newuser = function(response){	
 	if(response.success){
 		console.log(response.data)
