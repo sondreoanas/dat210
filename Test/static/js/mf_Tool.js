@@ -1,16 +1,12 @@
 /*
 	mf_Tool.js
 	
-	version			: 0.2.1
-	last updated	: 18.11.2017
+	version			: 0.2.3
+	last updated	: 30.11.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
 			This is various tools used multiple places in other files
-		How to use it?
-			TODO: ...
-		What is new?
-			...
 */
 
 // Tool
@@ -398,7 +394,34 @@ Tool.copyArray = function(array){
 	}
 	return newArray;
 }
-
+// Color
+function Color(r, g, b, a = 1){ // TODO: integrate random color here
+	this.r = r;
+	this.g = g;
+	this.b = b;
+	this.a = a;
+}
+Color.prototype.toString = function(){
+	return "rgba(" + Math.floor(Math.min(Math.max(this.r, 0), 255)) + "," +
+		Math.floor(Math.min(Math.max(this.g, 0), 255)) + "," +
+		Math.floor(Math.min(Math.max(this.b, 0), 255)) + "," +
+		Math.min(Math.max(this.a, 0), 1) + ")";
+}
+Color.add = function(c1, c2){
+	return new Color(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b, c1.a + c2.a);
+}
+Color.sub = function(c1, c2){
+	return new Color(c1.r - c2.r, c1.g - c2.g, c1.b - c2.b, c1.a - c2.a);
+}
+Color.addRGB = function(c1, c2){
+	return new Color(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b, (c1.a + c2.a) * 0.5);
+}
+Color.subRGB = function(c1, c2){
+	return new Color(c1.r - c2.r, c1.g - c2.g, c1.b - c2.b, (c1.a + c2.a) * 0.5);
+}
+Color.mulRGB = function(c, m){
+	return new Color(c.r * m, c.g * m, c.b * m, c.a);
+}
 
 
 

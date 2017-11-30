@@ -1,16 +1,12 @@
 /*
-	mf_ajax.js
+	mf_control.js
 	
 	version			: 0.0.0
 	last updated	: 23.10.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
-			This will manage ajax calls from the html
-		How to use it?
-			TODO: ...
-		What is new?
-			...
+			This manages keyboard inputs from the user.
 */
 
 function mf_Control(){
