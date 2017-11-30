@@ -17,23 +17,72 @@ import notifications
 
 def nav(request):
 	return {
-		"items": {
-			"Home" : [0,"/home"],
-			"Calendar" : [1,{
-				"New Calendar" : [0,"calendar/new"],
-				"My Calendars" : [0,"calendar/list"],
-			}],
-			"Event" : [1,{
-				"New Event" : [0,"event/new"],
-				"My Events" : [0,"event/list"]
-			}],
-			"Tasks" : [1,{
-				"New Task" : [0,"task/new"],
-				"My Tasks" : [0,"task/list"]
-			}],
-			"Loggout" : [0,"/loggedout"]
+				"items":
+				[
+					{
+						"title": "Home",
+						"isparent": 0,
+						"link": "home",
+						"children": []
+					},{
+						"title": "Calendar",
+						"isparent": 1,
+						"link": "calendar",
+						"children": [
+							{
+								"title": "New Calendar",
+								"isparent": 0,
+								"link": "calendar/new",
+								"children": []
+							},{
+								"title": "My Calendars",
+								"isparent": 0,
+								"link": "calendar/list",
+								"children": []
+							}
+						]
+					},{
+						"title": "Event",
+						"isparent": 1,
+						"link": "/event",
+						"children": [
+							{
+								"title": "New Event",
+								"isparent": 0,
+								"link": "event/new",
+								"children": []
+							},{
+								"title": "My Events",
+								"isparent": 0,
+								"link": "event/list",
+								"children": []
+							}
+						]
+					},{
+						"title": "Tasks",
+						"isparent": 1,
+						"link": "/task",
+						"children": [
+							{
+								"title": "New Task",
+								"isparent": 0,
+								"link": "task/new",
+								"children": []
+							},{
+								"title": "My Tasks",
+								"isparent": 0,
+								"link": "task/list",
+								"children": []
+							}
+						]
+					},{
+						"title": "Loggout",
+						"isparent": 0,
+						"link": "/loggedout",
+						"children": []
+					}
+				]
 		}
-	}
 
 def calendar_list(request):
 	if not mf_app.isLoggedIn():
@@ -64,12 +113,27 @@ def loggout(request):
 	}
 def frontmenu(request):
 	return {
-		"items": {
-			"Login" : [0,"/login"],
-			"New user" : [0,"/newuser"],
-			"Forgot password?" : [0,"/forgotpass"]
-		}
-	}
+                "items":
+                            [
+                                {
+                                    "title": "Login",
+                                    "isparent": 0,
+                                    "link": "login",
+                                    "children": []
+                                },{
+                                    "title": "New user",
+                                    "isparent": 0,
+                                    "link": "newuser",
+                                    "children": []
+                                },{
+                                    "title": "Forgot password?",
+                                    "isparent": 0,
+                                    "link": "forgotpass",
+                                    "children": []
+                                }
+                            ]
+            }
+
 def calendar_edit(request):
 	if not mf_app.isLoggedIn():
 		# TODO: add notification
@@ -155,6 +219,41 @@ def event_edit(request):
 		}
 	}
 	return returnData
+
+def task_list(request):
+	if not mf_app.isLoggedIn():
+		return -1
+	userId = session["id"]
+
+	tasks = mf_database.getTasksOfUser(userId)
+	if tasks == -1:
+		# TODO: add notification stuff
+		return -1
+
+	return [{
+		  "id": t["id"],
+		  "name": t["name"]
+						  } for t in tasks if t["parentId"] == None]
+
+
+
+def task_edit(request):
+	if not mf_app.isLoggedIn():
+		return -1
+
+	taskId = request.args.get("id", None)
+	if taskId is None:
+		# TODO: add notification
+		return -1
+
+	taskObject = mf_database.getTask(taskId)
+	if taskObject == -1:
+		# TODO: add notification stuff
+		return -1
+
+	taskObject["calendars"] = calendar_list(request)
+
+	return taskObject
 
 
 

@@ -1,0 +1,16 @@
+<li class="row tableheader">
+    <div class="cell">Task name</div>
+    <div class="cell">Action</div>
+</li>
+<%for(var i in this) {%>
+    <li class="row">
+        <input type="checkbox" id="row_<%i%>">
+        <label for="row_<%i%>"></label>
+        <div class="cell prio">
+            <%this[i]["name"]%>
+        </div>
+        <div class="cell tight">
+            <button onclick="javascript:router.navigate('task/edit/<%this[i]["id"]%>');" class="button_edit">Edit</button>
+        </div>
+    </li>
+<%}%>

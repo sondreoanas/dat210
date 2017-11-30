@@ -24,6 +24,7 @@ cb.prototype.reset_pass = function(response){
 	}	
 }
 
+
 cb.prototype.newuser = function(response){	
 	if(response.success){
 		console.log(response.data)
@@ -31,6 +32,7 @@ cb.prototype.newuser = function(response){
 		//router.navigate('welcome');
 	}else{
 		console.log(response.data);
+		console.log("failed")
 	}	
 }
 
@@ -81,6 +83,16 @@ cb.prototype.event_edit = function(response){
 }
 
 cb.prototype.task_new = function(response){	
+	if(response.success){
+		//console.log(response.data)
+		router.navigate('task/edit/'+response.data.id);
+		//mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=newuser");
+	}else{
+		//mf_ajaxHandler.replaceElement(elementid = "login", url = "/getHTML?html=form_login");
+	}	
+}
+
+cb.prototype.task_edit = function(response){	
 	if(response.success){
 		console.log(response.data)
 		//router.navigate('event/edit/'+response.data.id);

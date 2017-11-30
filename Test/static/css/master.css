@@ -457,7 +457,7 @@ button:hover{
     -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
     padding: 10px;
-    background-color: #eee;
+    background: #eee url(../img/white-fade.png) repeat-x;
 }
 
 

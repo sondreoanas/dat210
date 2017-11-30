@@ -4,78 +4,6 @@
 */
 
 
-/*	FORM_LOGIN
-------------------------------------------------------------------------------------------------------------------------------------*/
-#login label{
-    width:40%;
-}
-#login input{
-    width:60%;
-}
-
-
-/*	FORM_NEWUSER
-------------------------------------------------------------------------------------------------------------------------------------*/
-#newuser label{
-    width:40%;
-}
-#newuser input{
-    width:60%;
-}
-
-/*	FORM_FORGOTPASS
-------------------------------------------------------------------------------------------------------------------------------------*/
-#forgotpass label{
-    width:40%;
-}
-#forgotpass input{
-    width:60%;
-}
-
-
-/*	INTERVAL_CONTAINER
-------------------------------------------------------------------------------------------------------------------------------------*/
-#interval_container{
-    border:1px solid #aaa;
-    border-radius: 10px;
-    background-color: #e5e5e5;
-}
-#interval_container input{
-    float:none;
-    display: inline-block;
-    width:60px;
-    padding:0;
-    text-align: center;
-}
-#interval_type{
-    float:left;
-    width:30%;
-    border-right:1px solid #aaa;
-}
-#int_type-spec{
-    float:left;
-    width:70%;
-}
-#int-type-year-special{
-    float:none;
-    width:100%;
-    clear: both;
-    padding:0 0 0 60px;
-    border-bottom:1px solid #aaa;
-}
-#int_type-further{
-    float:left;
-    width:30%;
-    border-right:1px solid #aaa;
-}
-#int_type-further-spec{
-    float:left;
-    width:70%;
-    padding:0 0 0 60px;
-}
-
-
-
 /*	HEADER
 ------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -211,6 +139,117 @@ header h1 {
     #mainmenu li.open > ul{
         display: block;
     }
+}
+
+
+
+/*	FORM_LOGIN
+------------------------------------------------------------------------------------------------------------------------------------*/
+#login label{
+    width:40%;
+}
+#login input{
+    width:60%;
+}
+
+
+/*	FORM_NEWUSER
+------------------------------------------------------------------------------------------------------------------------------------*/
+#newuser label{
+    width:40%;
+}
+#newuser input{
+    width:60%;
+}
+
+/*	FORM_FORGOTPASS
+------------------------------------------------------------------------------------------------------------------------------------*/
+#forgotpass label{
+    width:40%;
+}
+#forgotpass input{
+    width:60%;
+}
+
+
+
+/*	INTERVAL_CONTAINER
+------------------------------------------------------------------------------------------------------------------------------------*/
+#interval_container{
+    border:1px solid #aaa;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+    padding:10px;
+}
+#interval_container input{
+    float:none;
+    display: inline-block;
+    width:60px;
+    padding:0;
+    text-align: center;
+}
+#interval_type{
+    float:left;
+    width:30%;
+    border-right:1px solid #aaa;
+}
+#int_type-spec{
+    float:left;
+    width:70%;
+    padding:0 0 0 30px;
+}
+#int-type-year-special{
+    float:none;
+    width:100%;
+    clear: both; 
+    border-bottom:1px solid #aaa;
+}
+#int_type-further{
+    float:left;
+    width:30%;
+    border-right:1px solid #aaa;
+}
+#int_type-further-spec{
+    float:left;
+    width:70%;
+    padding:10px 0 0 30px;
+}
+
+@media(max-width:480px) {
+    #interval_type,
+    #int_type-further{
+        float:none;
+        width:100%;
+        border-right:0;
+        border-bottom:1px solid #aaa;
+    }
+    #int_type-spec,
+    #int_type-further-spec{
+        float:none;
+        width:100%;
+        padding:10px;
+    }
+    #int-type-year-special{
+        float:none;
+        width:100%;
+        clear: both;
+        padding:0;
+        border-bottom:1px solid #aaa;
+    }
+}
+
+
+/*	TODO_CONTAINER
+------------------------------------------------------------------------------------------------------------------------------------*/
+#todo_container{
+    border:1px solid #aaa;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+    padding:10px;
+    margin: 20px 0;
+}
+#todo_container h3{
+    padding:10px 0;
 }
 
 

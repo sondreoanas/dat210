@@ -21,9 +21,8 @@
                     </fieldset>
 
                     <fieldset id="interval_container" data-step="0">
-                        <legend>Pattern of reccurrence</legend>
-
-                        
+                        <legend>Pattern of recurrence</legend>
+    
                         <div id="interval_type">
                             <label for="int_type-year">
                                 <input type="radio" id="int_type-year" name="form_task_interval_type" value="year" onchange="main_task_new_pick_interval(this)">
@@ -42,35 +41,21 @@
                                 Daily
                             </label>
                         </div>
-
-
                         <div id="int_type-spec" data-load="/getHTML?html=int_type-month-spec"></div>
-
-
-
-
-<!--                         
-                        <label for="form_task_interval_type">Pick type of interval:</label>
-                        <select id="form_task_interval_type" name="form_task_interval_type" onchange="main_task_new_pick_interval(this)">
-                            <option value="0" selected>_pick interval</option>
-                            <option value="year">Year</option>
-                            <option value="month">Month</option>
-                            <option value="week">Week</option>
-                            <option value="day">Day</option>
-                        </select> -->
-
-
                     </fieldset>
 
-                    <fieldset>
+                    <fieldset id="todo_container">
+                        <legend>Additional Todos</legend>
+
                         <label for="form_todo_name">Todo name:</label>
                         <input type="text" id="form_todo_name" name="form_todo_name" placeholder="todo name_">
                         <button onclick="main_task_new_add_todo();" type="button">Add new todo</button>
-                    </fieldset>
-
-                    <fieldset>
                         <h3>My todos:</h3>
-                        <ul id="task_new_todo_list" data-pos="1">
+                        <ul id="task_new_todo_list" class="table" data-pos="1">
+                            <li class="row tableheader">
+                                <div class="cell">Todo name</div>
+                                <div class="cell tight">Action</div>
+                            </li>
                         </ul>  
                     </fieldset>
 
