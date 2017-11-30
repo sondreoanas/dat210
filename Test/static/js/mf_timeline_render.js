@@ -210,7 +210,11 @@ Timeline.prototype.renderTasksInTimeline = function(){
 		var atLeastOneIsInView = false;
 		var t = this.tasks[i];
 		var time = this.canvasCoordsToTime(0);
+		var counter = 0;
 		while(true){
+			if(counter == 100000){
+				debugger;
+			}
 			var range = t.getRange(time);
 			if(this.timeToCanvasCoords(range.start) > this.canvas.width){
 				break;
