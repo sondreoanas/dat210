@@ -8,15 +8,16 @@
 """
 
 import os
-from werkzeug.security import pbkdf2_hex
+import werkzeug.security as w
 import re
+import back_db as db
 
 
 # Password Check:
 # Checks if a password is valid
 
 def check_password(user_password, client_password, salt):
-    user_password = pbkdf2_hex(user_password,salt,iterations=50000, keylen=None, hashfunc=None) # Default hashfunc SHA-256
+    user_password = w.pbkdf2_hex(user_password,salt,iterations=50000, keylen=None, hashfunc=None) # Default hashfunc SHA-256
     if user_password == client_password: return True
     else: return False
 
@@ -27,7 +28,7 @@ def create_password(user_password):
     # Oppdatering: hvis ikke oppdatert i databasen
     #salt = os.urandom(10)
     salt = os.urandom(10).hex()
-    client_password = pbkdf2_hex(user_password, salt, iterations=50000, keylen=None, hashfunc=None)
+    client_password = w.pbkdf2_hex(user_password, salt, iterations=50000, keylen=None, hashfunc=None)
     return [client_password, salt]
 
 # Email Check:
@@ -39,6 +40,12 @@ def check_email(email):
     if EMAIL_REGEX.match(email): return True
     else: return False
 
+def create_pass_link(email):
+    id = os.urandom(10).hex()
+    start_link = "http://127.0.0.1:5000/reset_pass/" + id
+    user_id = db.get_userid_db(email)[0]
+    db.insert_forgot_pass(id, 1,user_id)
+    return start_link
 
 
 # Inputtype Check:
@@ -51,15 +58,6 @@ def check_input(input):
     for injection in INJECTIONS:
         if input in injection: return NameError
         return input.strip('"\'')
-
-def check_equal(string_1, string_2):
-    if string_1 == string_2:return True
-    else: return False
-
-
-
-
-
 
 
 
