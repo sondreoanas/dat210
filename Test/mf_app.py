@@ -641,35 +641,27 @@ def intervalFormToString(intervalData):
 			}
 	Errors cause -1 to be returned
 	'''
-	
-	formattedInterval = "{"
-	
-	# interval
-	intervalFormat = "{}: {{start: new Date(\"{}\"), modulus: {}}},"
+
+	intervalDict = {}
 	if "form_task_interval_year" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"yearInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_year"]
-		)
+		intervalDict["yearInterval"] = {}
+		intervalDict["yearInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["yearInterval"]["modulus"] = int(intervalData["form_task_interval_year"])
+
 	elif "form_task_interval_month" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"monthInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_month"]
-		)
+		intervalDict["monthInterval"] = {}
+		intervalDict["monthInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["monthInterval"]["modulus"] = int(intervalData["form_task_interval_month"])
+
 	elif "form_task_interval_week" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"weekInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_week"]
-		)
+		intervalDict["weekInterval"] = {}
+		intervalDict["weekInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["weekInterval"]["modulus"] = int(intervalData["form_task_interval_week"])
+
 	elif "form_task_interval_day" in intervalData:
-		formattedInterval += intervalFormat.format(
-			"dayInterval",
-			datetime.datetime.now().isoformat(),
-			intervalData["form_task_interval_day"]
-		)
+		intervalDict["dayInterval"] = {}
+		intervalDict["dayInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["dayInterval"]["modulus"] = int(intervalData["form_task_interval_day"])
 	else:
 		return -1
 	
@@ -681,31 +673,30 @@ def intervalFormToString(intervalData):
 			printError("ERROR: Did not recognize month.")
 			return -1
 		m = months.index(intervalData["form_task_interval_month_year"])
-		
-		formattedInterval += "monthNrInYear: " + str(m) + ","
+		intervalDict["monthNrInYear"] = m
 	
 	# week
 	if "form_task_interval_week_year" in intervalData:
-		formattedInterval += "weekNrInYear: " + str(int(intervalData["form_task_interval_week_year"]) - 1) + ","
+		intervalDict["weekNrInYear"] = int(intervalData["form_task_interval_week_year"]) - 1
+
 	elif "form_task_interval_week_month" in intervalData:
-		formattedInterval += "weekNrInMonth: " + str(int(intervalData["form_task_interval_week_month"]) - 1) + ","
+		intervalDict["weekNrInMonth"] = int(intervalData["form_task_interval_week_month"]) - 1
 	
 	# day
 	if "form_task_interval_day_year" in intervalData:
-		formattedInterval += "dayNrInYear: " + str(int(intervalData["form_task_interval_day_year"]) - 1) + ","
+		intervalDict["dayNrInYear"] = int(intervalData["form_task_interval_day_year"]) - 1
+
 	elif "form_task_interval_day_month" in intervalData:
-		formattedInterval += "dayNrInMonth: " + str(int(intervalData["form_task_interval_day_month"]) - 1) + ","
+		intervalDict["dayNrInMonth"] = int(intervalData["form_task_interval_day_month"]) - 1
+
 	elif "form_task_interval_day_week" in intervalData:
 		days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 		if not intervalData["form_task_interval_day_week"] in days:
 			return -1
 		d = days.index(intervalData["form_task_interval_day_week"])
-		
-		formattedInterval += "dayNrInWeek: " + str(d) + ","
-	
-	formattedInterval = formattedInterval[:-1] + "}" # remove last comma and add end curly bracket
-	
-	return formattedInterval
+		intervalDict["dayNrInWeek"] = d
+
+	return json.dumps(intervalDict)
 
 """ Default """  # ------------------------------------------------------------
 
@@ -716,6 +707,11 @@ def calendar_edit(id):
 
 @app.route("/event/edit/<int:calendar_id>/<int:event_id>")  # TODO: check can be merged with default? (below)
 def event_edit(calendar_id, event_id):
+	return render_template('index.html')
+
+
+@app.route("/task/edit/<int:task_id>")  # TODO: check can be merged with default? (below)
+def task_edit(task_id):
 	return render_template('index.html')
 
 

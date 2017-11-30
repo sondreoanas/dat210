@@ -133,6 +133,7 @@ def frontmenu(request):
                                 }
                             ]
             }
+
 def calendar_edit(request):
 	if not mf_app.isLoggedIn():
 		# TODO: add notification
@@ -239,23 +240,20 @@ def task_list(request):
 def task_edit(request):
 	if not mf_app.isLoggedIn():
 		return -1
-	userId = session["id"]
 
 	taskId = request.args.get("id", None)
 	if taskId is None:
 		# TODO: add notification
 		return -1
 
-	tasks = mf_database.getTask(userId)
-	if tasks == -1:
+	taskObject = mf_database.getTask(taskId)
+	if taskObject == -1:
 		# TODO: add notification stuff
 		return -1
 
+	taskObject["calendars"] = calendar_list(request)
 
-	return [{
-		  "id": t["id"],
-		  "name": t["name"]
-						  } for t in tasks if t["parentId"] == None]
+	return taskObject
 
 
 
