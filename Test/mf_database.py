@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.1.0
-	last updated	: 29.11.2017
+	version			: 0.1.1
+	last updated	: 01.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -77,7 +77,7 @@ def getUserIdPassword(email):
 	finally:
 		cursor.close()
 
-def resetTask(taskId):
+def resetTask(taskId, newTimeStamp):
 	# Will reset isDone and timestamp of task with id taskId and all children of that task
 	database = getDatabase()
 	cursor = getCursor()
@@ -90,12 +90,12 @@ def resetTask(taskId):
 			result = cursor.fetchall()
 			ids += [t[0] for t in result]
 		# # update timestamp and reset IsDone
-		timestamp = int(time.time() * 1000)
+		#timestamp = int(time.time() * 1000)
 		for toBeResetId in ids:
 			sql = "update annualcycle.task set IsDone = 0 where TaskId=%s;"
 			cursor.execute(sql, (toBeResetId,))
 			sql = "update annualcycle.task set timestamp = {} where TaskId=%s;"
-			sql = sql.format(timestamp)
+			sql = sql.format(newTimeStamp)
 			cursor.execute(sql, (toBeResetId,))
 	except mysql.connector.Error as err:
 		printError(err)
