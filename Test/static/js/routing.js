@@ -35,6 +35,7 @@ router
 
     },
     'loggedout': function () {
+		mf_AjaxHandler.ajaxGet("/logout", function(){}, function(){});
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_login");    
         //mf_ajaxHandler.replaceElement(elementid = "main", url = "/getTMPL?tmpl=main_loggedout&data=loggout");
         mf_ajaxHandler.replaceElement(elementid = "mainmenu", url = "/getTMPL?tmpl=nav&data=frontmenu");
@@ -90,6 +91,7 @@ router
 // DEFAULT
     '*': function () {
         mf_ajaxHandler.replaceElement(elementid = "main", url = "/getHTML?html=main_login");
+		mf_ajaxHandler.replaceElement(elementid = "mainmenu", url = "/getTMPL?tmpl=nav&data=frontmenu");
     }
     })
 .resolve();

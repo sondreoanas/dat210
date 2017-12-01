@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.1.0
-	last updated	: 29.11.2017
+	version			: 0.1.1
+	last updated	: 01.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -27,7 +27,7 @@ import random
 
 app = Flask(__name__)
 #app.register_blueprint(mf_page)
-app.secret_key = "any random string"
+app.secret_key = "any random string2"
 #app.secret_key = str(random.randint(0,9999999999999999999))
 
 @app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
@@ -180,8 +180,12 @@ def createNewEventFromForm():
 	if calendarId is None or startPicker is None or endPicker is None or eventName is None:
 		return formatJsonWithNotifications(returnData)
 	
-	start = datetime.datetime.strptime(startPicker,"%Y-%m-%dT%H:%M:%S.%fZ")
-	end = datetime.datetime.strptime(endPicker,"%Y-%m-%dT%H:%M:%S.%fZ")
+	try:
+		start = datetime.datetime.strptime(startPicker,"%Y-%m-%dT%H:%M:%S.%fZ")
+		end = datetime.datetime.strptime(endPicker,"%Y-%m-%dT%H:%M:%S.%fZ")
+	except BaseException as err:
+		# TODO: notification
+		return formatJsonWithNotifications(returnData)
 	
 	eventId = mf_database.createNewEvent(eventName, start.isoformat(), end.isoformat(), calendarId)
 	
@@ -232,7 +236,7 @@ def createNewTask():
 	
 	# get and format interval
 	intervalData = {name:value for name, value in request.form.items()} # convert from multiDict to dict
-	formattedInterval = intervalFormToString(intervalData)
+	formattedInterval = intervalDataToString(intervalData)
 	if formattedInterval == -1:
 		formatJsonWithNotifications(returnData)
 	
@@ -257,8 +261,8 @@ def createNewTask():
 	
 	return formatJsonWithNotifications(returnData)
 
-@app.route("/editTasks", methods=["POST"])
 @app.route("/editTask", methods=["POST"])
+@app.route("/task/edit/editTask", methods=["POST"])
 def editTask():
 	returnData = {
 		"success": False,
@@ -277,7 +281,7 @@ def editTask():
 		return formatJsonWithNotifications(returnData)
 	
 	intervalData = {name:value for name, value in request.form.items()} # converting from multiDict to dict
-	formattedNewInterval = intervalFormToString(intervalData)
+	formattedNewInterval = intervalDataToString(intervalData)
 	if formattedNewInterval == -1:
 		formatJsonWithNotifications(returnData)
 	
@@ -333,7 +337,7 @@ def setTaskDone():
 	if taskId is None:
 		return formatJsonWithNotifications(returnData)
 	
-	wasSuccessful = setTaskDone(taskId)
+	wasSuccessful = mf_database.setTaskDone(taskId)
 	
 	if wasSuccessful == -1: # -1 is not successful
 		return formatJsonWithNotifications(returnData)
@@ -379,11 +383,12 @@ def resetTasks():
 	}
 	
 	taskId = request.get_json().get("taskId", None)
+	newTimeStamp = request.get_json().get("newTimeStamp", None)
 	
-	if taskId is None:
+	if taskId is None or newTimeStamp is None:
 		return formatJsonWithNotifications(returnData)
 	
-	wasSuccessful = mf_database.resetTask(taskId)
+	wasSuccessful = mf_database.resetTask(taskId, newTimeStamp)
 	
 	if wasSuccessful == -1: # -1 is not successful
 		return formatJsonWithNotifications(returnData)
@@ -612,7 +617,7 @@ def isLoggedIn():
 	else:
 		return False
 
-def intervalFormToString(intervalData):
+def intervalDataToString(intervalData):
 	'''
 	This function takes in a dictionary following attributes:
 		"form_task_interval_year", "form_task_interval_month",
@@ -645,22 +650,22 @@ def intervalFormToString(intervalData):
 	intervalDict = {}
 	if "form_task_interval_year" in intervalData:
 		intervalDict["yearInterval"] = {}
-		intervalDict["yearInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["yearInterval"]["start"] = datetime.datetime.now().isoformat()
 		intervalDict["yearInterval"]["modulus"] = int(intervalData["form_task_interval_year"])
 
 	elif "form_task_interval_month" in intervalData:
 		intervalDict["monthInterval"] = {}
-		intervalDict["monthInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["monthInterval"]["start"] = datetime.datetime.now().isoformat()
 		intervalDict["monthInterval"]["modulus"] = int(intervalData["form_task_interval_month"])
 
 	elif "form_task_interval_week" in intervalData:
 		intervalDict["weekInterval"] = {}
-		intervalDict["weekInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["weekInterval"]["start"] = datetime.datetime.now().isoformat()
 		intervalDict["weekInterval"]["modulus"] = int(intervalData["form_task_interval_week"])
 
 	elif "form_task_interval_day" in intervalData:
 		intervalDict["dayInterval"] = {}
-		intervalDict["dayInterval"]["start"] = "new Date('"+datetime.datetime.now().isoformat()+"')"
+		intervalDict["dayInterval"]["start"] = datetime.datetime.now().isoformat()
 		intervalDict["dayInterval"]["modulus"] = int(intervalData["form_task_interval_day"])
 	else:
 		return -1

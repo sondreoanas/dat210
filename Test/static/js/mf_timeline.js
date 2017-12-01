@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.5.3
-	last updated	: 30.11.2017
+	version			: 0.5.4
+	last updated	: 01.12.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -304,7 +304,6 @@ Timeline.prototype.setTaskView = function(){
 	this.loadTasks();
 }
 Timeline.prototype.reSizeToContainer = function(){
-	
 	var oldWidth = this.canvas.width;
 	var oldHeight = this.canvas.height;
 	// resize canvas
@@ -317,6 +316,10 @@ Timeline.prototype.reSizeToContainer = function(){
 	for(var i=0; i<this.buttons.length; i++){
 		this.buttons[i].pos.x *= this.canvas.width / oldWidth;
 		this.buttons[i].pos.y *= this.canvas.height / oldHeight;
+	}
+	
+	if(this.tick > 0){
+		this.render();
 	}
 }
 Timeline.prototype.loadTasks = function(){
@@ -412,7 +415,7 @@ Timeline.prototype.loadTasks = function(){
 			var t = this.tasks[i];
 			var range = t.getRange();
 			if(t.timestamp < range.start){
-				mf_AjaxHandler.ajaxPost({taskId:t.id}, "/resetTasks", function(task){
+				mf_AjaxHandler.ajaxPost({taskId:t.id, newTimeStamp: range.start}, "/resetTasks", function(task){
 					task.isDone = false;
 					resetChildren(task);
 					function resetChildren(task){

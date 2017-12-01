@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.0.0
-	last updated	: 18.11.2017
+	version			: 0.0.1
+	last updated	: 01.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -16,73 +16,76 @@ from flask import session
 import notifications
 
 def nav(request):
-	return {
-				"items":
-				[
-					{
-						"title": "Home",
-						"isparent": 0,
-						"link": "home",
-						"children": []
-					},{
-						"title": "Calendar",
-						"isparent": 1,
-						"link": "calendar",
-						"children": [
-							{
-								"title": "New Calendar",
-								"isparent": 0,
-								"link": "calendar/new",
-								"children": []
-							},{
-								"title": "My Calendars",
-								"isparent": 0,
-								"link": "calendar/list",
-								"children": []
-							}
-						]
-					},{
-						"title": "Event",
-						"isparent": 1,
-						"link": "/event",
-						"children": [
-							{
-								"title": "New Event",
-								"isparent": 0,
-								"link": "event/new",
-								"children": []
-							},{
-								"title": "My Events",
-								"isparent": 0,
-								"link": "event/list",
-								"children": []
-							}
-						]
-					},{
-						"title": "Tasks",
-						"isparent": 1,
-						"link": "/task",
-						"children": [
-							{
-								"title": "New Task",
-								"isparent": 0,
-								"link": "task/new",
-								"children": []
-							},{
-								"title": "My Tasks",
-								"isparent": 0,
-								"link": "task/list",
-								"children": []
-							}
-						]
-					},{
-						"title": "Loggout",
-						"isparent": 0,
-						"link": "/loggedout",
-						"children": []
-					}
-				]
-		}
+	if mf_app.isLoggedIn():
+		return {
+					"items":
+					[
+						{
+							"title": "Home",
+							"isparent": 0,
+							"link": "home",
+							"children": []
+						},{
+							"title": "Calendar",
+							"isparent": 1,
+							"link": "calendar",
+							"children": [
+								{
+									"title": "New Calendar",
+									"isparent": 0,
+									"link": "calendar/new",
+									"children": []
+								},{
+									"title": "My Calendars",
+									"isparent": 0,
+									"link": "calendar/list",
+									"children": []
+								}
+							]
+						},{
+							"title": "Event",
+							"isparent": 1,
+							"link": "/event",
+							"children": [
+								{
+									"title": "New Event",
+									"isparent": 0,
+									"link": "event/new",
+									"children": []
+								},{
+									"title": "My Events",
+									"isparent": 0,
+									"link": "event/list",
+									"children": []
+								}
+							]
+						},{
+							"title": "Tasks",
+							"isparent": 1,
+							"link": "/task",
+							"children": [
+								{
+									"title": "New Task",
+									"isparent": 0,
+									"link": "task/new",
+									"children": []
+								},{
+									"title": "My Tasks",
+									"isparent": 0,
+									"link": "task/list",
+									"children": []
+								}
+							]
+						},{
+							"title": "Loggout",
+							"isparent": 0,
+							"link": "/loggedout",
+							"children": []
+						}
+					]
+			}
+	else:
+		return frontmenu(request)
 
 def calendar_list(request):
 	if not mf_app.isLoggedIn():

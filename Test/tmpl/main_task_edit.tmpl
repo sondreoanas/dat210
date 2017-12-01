@@ -7,7 +7,7 @@
     
                 <h2>Edit task: <%this.task.name%></h2>
     
-                <form id="forms_task_new" action="new_form">
+                <form id="forms_task_new" action="editTask">
                     <fieldset>
 
                         <label for="form_task_calendar">Calendar:</label>
@@ -245,7 +245,7 @@
                     </fieldset>
 
     
-                    <button data-formid="forms_task_edit" data-callback="cb.task_edit">Save Task</button>
+                    <button data-formid="forms_task_new" data-callback="cb.task_edit">Save Task</button>
             
                 </form>
     

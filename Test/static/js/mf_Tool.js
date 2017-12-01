@@ -1,8 +1,8 @@
 /*
 	mf_Tool.js
 	
-	version			: 0.2.3
-	last updated	: 30.11.2017
+	version			: 0.2.4
+	last updated	: 01.12.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -278,14 +278,14 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 		var correctYear;
 		if(interval.yearInterval != null){
 			var startOfYear = Tool.resetDateTo(new Date(fromTime), Tool.year);
-			var restYear = Tool.modulus(interval.yearInterval.start.getFullYear() - startOfYear.getFullYear(), interval.yearInterval.modulus);
+			var restYear = Tool.modulus(new Data(interval.yearInterval.start).getFullYear() - startOfYear.getFullYear(), interval.yearInterval.modulus);
 			correctYear = Tool.getIncrementDateOf(startOfYear, Tool.year, restYear);
 		}
 		// make the month correct
 		var correctMonth;
 		if(interval.monthInterval != null){
 			var startOfMonth = Tool.resetDateTo(new Date(fromTime), Tool.month);
-			var restMonth = Tool.modulus(Tool.monthsSinceEpoch(interval.monthInterval.start) - Tool.monthsSinceEpoch(fromTime), interval.monthInterval.modulus);
+			var restMonth = Tool.modulus(Tool.monthsSinceEpoch(new Date(interval.monthInterval.start)) - Tool.monthsSinceEpoch(fromTime), interval.monthInterval.modulus);
 			correctMonth = Tool.getIncrementDateOf(startOfMonth, Tool.month, restMonth);
 		}else if(interval.monthNrInYear != null){
 			correctMonth = Tool.getIncrementDateOf(correctYear, Tool.month, interval.monthNrInYear);
@@ -294,7 +294,7 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 		var correctWeek;
 		if(interval.weekInterval != null){
 			var startOfWeek = Tool.resetDateTo(new Date(fromTime), Tool.week);
-			var restWeek = Tool.modulus(Tool.weeksSinceEpoch(interval.weekInterval.start) - Tool.weeksSinceEpoch(fromTime), interval.weekInterval.modulus);
+			var restWeek = Tool.modulus(Tool.weeksSinceEpoch(new Date(interval.weekInterval.start)) - Tool.weeksSinceEpoch(fromTime), interval.weekInterval.modulus);
 			correctWeek = Tool.getIncrementDateOf(startOfWeek, Tool.week, restWeek);
 		}else if(interval.weekNrInMonth != null){
 			correctWeek = Tool.getResetDateOf(correctMonth, Tool.week);
@@ -314,7 +314,7 @@ Tool.getNextInterval = function(fromTime, detectInProgress, interval){
 		var correctDay;
 		if(interval.dayInterval != null){
 			var startOfDay = Tool.resetDateTo(new Date(fromTime), Tool.day);
-			var restDay = Tool.modulus(Tool.daysSinceEpoch(interval.dayInterval.start) - Tool.daysSinceEpoch(fromTime), interval.dayInterval.modulus);
+			var restDay = Tool.modulus(Tool.daysSinceEpoch(new Date(interval.dayInterval.start)) - Tool.daysSinceEpoch(fromTime), interval.dayInterval.modulus);
 			correctDay = Tool.getIncrementDateOf(startOfDay, Tool.day, restDay);
 		}else if(interval.dayNrInWeek != null){
 			if(interval.weekNrInMonth != null){

@@ -1,8 +1,8 @@
 /*
 	mf_tester.js
 	
-	version			: 0.1.3
-	last updated	: 18.11.2017
+	version			: 0.2.0
+	last updated	: 01.12.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -145,6 +145,8 @@ mf_TestHandeler.prototype.init = function(){
 	this.timelineZoom = 3;
 	this.timelineIsActive = 4;
 	this.dropDown = 5;
+	this.radio = 6;
+	this.checkBox = 7;
 	
 	// load data
 	this.getData();
@@ -244,22 +246,18 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 		}
 	}else if(this.currentCommand.action == this.type){
 		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
-			if(this.currentCommand.data == targetElement.value){ // the text is the same. Is done
-				if(!targetElement.classList.contains("flatpickr-input")){
-					if ("createEvent" in document) {
-						var event = document.createEvent("HTMLEvents");
-						event.initEvent("change", false, true);
-						targetElement.dispatchEvent(event);
-					}
-					else{
-						targetElement.fireEvent("onchange");
-					}
-				}
+			if(targetElement.classList.contains("flatpickr-input")){ // this targetElement is a flatpickr and should be instantly filled
+				targetElement.value = this.currentCommand.data;
 				this.currentCommandIndex++;
-			}else if(this.currentCommand.data.substr(0, targetElement.value.length) != targetElement.value){ // the element text is wrong. Erase
-				targetElement.value = targetElement.value.substr(0, targetElement.value.length - 1);
-			}else{ // the text is unfinished. Append next character
-				targetElement.value += this.currentCommand.data[targetElement.value.length];
+			}else{ // this targetElement is a textfield and should be filled letter by letter
+				if(this.currentCommand.data == targetElement.value){ // the text is the same. Is done
+					mf_TestHandeler.dispatchOnChange(targetElement);
+					this.currentCommandIndex++;
+				}else if(this.currentCommand.data.substr(0, targetElement.value.length) != targetElement.value){ // the element text is wrong. Erase
+					targetElement.value = targetElement.value.substr(0, targetElement.value.length - 1);
+				}else{ // the text is unfinished. Append next character
+					targetElement.value += this.currentCommand.data[targetElement.value.length];
+				}
 			}
 		}else{
 			this.inactivity = 0;
@@ -267,20 +265,20 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 	}else if(this.currentCommand.action == this.dropDown){
 		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
 			if(this.currentCommand.data == targetElement.value){
-				if ("createEvent" in document) {
-					var event = document.createEvent("HTMLEvents");
-					event.initEvent("change", false, true);
-					targetElement.dispatchEvent(event);
-				}
-				else{
-					targetElement.fireEvent("onchange");
-				}
+				mf_TestHandeler.dispatchOnChange(targetElement);
 				this.currentCommandIndex++;
 			}else{
 				targetElement.value = this.currentCommand.data;
 			}
 		}else{
 			this.inactivity = 0;
+		}
+	}else if(this.currentCommand.action == this.radio || this.currentCommand.action == this.checkBox){
+		if(Vec.lgth(Vec.sub(this.cursor.pos, this.cursor.targetPos)) < 1 && this.tick % 1 == 0){ // is closer than 1px from target
+			targetElement.value = this.currentCommand.data;
+			targetElement.checked = true;
+			mf_TestHandeler.dispatchOnChange(targetElement);
+			this.currentCommandIndex++;
 		}
 	}else if(this.currentCommand.action == this.timelineScroll || this.currentCommand.action == this.timelineZoom ||
 		this.currentCommand.action == this.timelineIsActive){
@@ -314,6 +312,16 @@ mf_TestHandeler.prototype.calculateCursorBehaviour = function(){
 		}
 	}else if(this.currentCommand.action == this.timelineClick){
 		
+	}
+}
+mf_TestHandeler.dispatchOnChange = function(element){
+	if ("createEvent" in document) {
+		var event = document.createEvent("HTMLEvents");
+		event.initEvent("change", false, true);
+		element.dispatchEvent(event);
+	}
+	else{
+		element.fireEvent("onchange");
 	}
 }
 mf_TestHandeler.prototype.animate = function(){
@@ -371,6 +379,8 @@ mf_TestHandeler.prototype.getData = function(){
 		var timelineZoom = this.timelineZoom;
 		var timelineIsActive = this.timelineIsActive;
 		var dropDown = this.dropDown;
+		var radio = this.radio;
+		var checkBox = this.checkBox;
 		var dataList;
 		eval(responseText); // define dataList
 		if(dataList.length % 4 != 0){
@@ -415,7 +425,16 @@ mf_TestHandeler.prototype.addTestListener = function(element){
 			if(data == -1){
 				return -1;
 			}
-			thisHandeler.recordedCommands += "\tdropDown, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
+			thisHandeler.recordedCommands += "\tcheckBox, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
+		});
+	}else if(element.tagName == "INPUT" && element.type == "radio"){
+		element.addEventListener("change", function(){
+			thisHandeler.checkTimelineChange();
+			var data = thisHandeler.getIdPath(this);
+			if(data == -1){
+				return -1;
+			}
+			thisHandeler.recordedCommands += "\tradio, \"" + data.id + "\", [" + data.path.toString() + "], \"" + this.value + "\",\n";
 		});
 	}else if(element.tagName == "SELECT" /*|| element.tagName == "INPUT"*/){
 		element.addEventListener("change", function(){

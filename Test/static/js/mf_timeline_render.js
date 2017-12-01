@@ -1,7 +1,7 @@
 /*
 	mf_timeline_render.js
-	version			: 0.5.2
-	last updated	: 30.11.2017
+	version			: 0.5.3
+	last updated	: 01.12.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -212,6 +212,7 @@ Timeline.prototype.renderTasksInTimeline = function(){
 		var time = this.canvasCoordsToTime(0);
 		var counter = 0;
 		while(true){
+			counter ++;
 			if(counter == 100000){
 				debugger;
 			}
