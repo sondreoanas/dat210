@@ -24,10 +24,13 @@ notifications.prototype.check = function(){
         
     }
 }
-
+var totalNumberOfNotifications = 0;
 notifications.prototype.add = function(notification){
     
     console.log("add");
+    // hotfix
+    notification.id = "notif_" + totalNumberOfNotifications++;
+    //
     mf_ajaxHandler.addLastChild(elementId="notifications", url = "/getTMPL?tmpl=notification", data=notification);
     
 }

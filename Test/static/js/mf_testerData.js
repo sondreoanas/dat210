@@ -75,11 +75,12 @@ var dataList = [
 	timelineScroll, "home_view", [0,0,1,0], 1512551597825.9019,
 	timelineZoom, "home_view", [0,0,1,0], 420062371.33724356,
 	timelineIsActive, "home_view", [0,0,1,0], false,
+	click, "mainmenu", [0,2,4,0], "",
 	type, "username", [], "test@test.com",
 	type, "password", [], "test",
 	type, "username", [], "wrong@test.com",
 	click, "forms_login", [1], "",
-	click, "notif_1512089010973", [2], "",
+	click, "notif_0", [2], "",
 	type, "username", [], "test@test.com",
 	type, "password", [], "test",
 	click, "forms_login", [1], ""

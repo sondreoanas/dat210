@@ -104,4 +104,3 @@ cb.prototype.task_edit = function(response){
 
 var cb = new cb();
 
-

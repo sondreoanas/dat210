@@ -1,8 +1,8 @@
 /*
 	htmlAjaxInstructions.txt
 	
-	version			: 1.0.0
-	last updated	: 28.10.2017
+	version			: 1.0.1
+	last updated	: 02.12.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -114,25 +114,25 @@ Javascript
 	In static/js/nm_callbacks.js:
 		function callBackExample(response){ // responce is an object recieved from python
 			// to fill an element
-			mf_ajaxHandler.fillElement(elementid = "someId", url = "/getHTML?html=someFile", data = someTemplateData /*optional*/);
+			mf_ajaxHandler.fillElement("someId", "/getHTML?html=someFile", someTemplateData /*optional*/);
 			// to replace an element
-			mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile", data = someTemplateData /*optional*/);
+			mf_ajaxHandler.replaceElement("someId", "/getHTML?html=someFile", someTemplateData /*optional*/);
 			// to place before
-			mf_ajaxHandler.placeBeforeElement(elementid = "someId", url = "/getHTML?html=someFile", data = someTemplateData /*optional*/);
+			mf_ajaxHandler.placeBeforeElement("someId", "/getHTML?html=someFile", someTemplateData /*optional*/);
 			// to place after
-			mf_ajaxHandler.placeAfterElement(elementid = "someId", url = "/getHTML?html=someFile", data = someTemplateData /*optional*/);
+			mf_ajaxHandler.placeAfterElement("someId", "/getHTML?html=someFile", someTemplateData /*optional*/);
 			// to remove
-			mf_ajaxHandler.removeElement(elementid = "someId");
+			mf_ajaxHandler.removeElement("someId");
 			// to append at the start of the element with id "someId"
-			mf_ajaxHandler.addFirstChild(elementId = "someId", url = "/getHTML?html=someFile", data = someTemplateData /*optional*/);
+			mf_ajaxHandler.addFirstChild("someId", "/getHTML?html=someFile", someTemplateData /*optional*/);
 			// to append at the end of the element with id "someId"
-			mf_ajaxHandler.addLastChild(elementId = "someId", url = "/getHTML?html=someFile", data = someTemplateData /*optional*/);
+			mf_ajaxHandler.addLastChild("someId", "/getHTML?html=someFile", someTemplateData /*optional*/);
 		}
 	Custom data in nm_callbacks. All above functions have an optional parameter "data" that will override the data recieved from the server and used in
 	the template engine. Example:
 		function callBackExample(response){ // responce is an object recieved from python
 			// to replace an element
-			mf_ajaxHandler.replaceElement(elementid = "someId", url = "/getHTML?html=someFile", data = someData);
+			mf_ajaxHandler.replaceElement("someId", "/getHTML?html=someFile", someData);
 		}
 	
 

@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.1.1
-	last updated	: 01.12.2017
+	version			: 0.1.2
+	last updated	: 02.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -16,6 +16,23 @@ import time
 import mf_passwordTester
 from mf_app import isLoggedIn, printError
 import json
+
+def createResetPassworLink(ending, active, userId):
+	cursor = getCursor()
+	database = getDatabase()
+	try:
+		sql = "INSERT INTO forgot_pass_link " \
+			"(link, active, user_id) " \
+			"VALUES(%s, %s, %s);"
+		cursor.execute(sql, (ending, active, userId))
+		database.commit()
+		return cursor.lastrowid
+	except mysql.connector.Error as err:
+		printError(err)
+		return -1
+	finally:
+		cursor.close()
+	
 
 def createUser(email, hashedPassword, salt, nickname):
 	database = getDatabase()
