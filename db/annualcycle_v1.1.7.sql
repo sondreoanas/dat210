@@ -117,7 +117,7 @@ CREATE TABLE `eventcalendar` (
 
 LOCK TABLES `eventcalendar` WRITE;
 /*!40000 ALTER TABLE `eventcalendar` DISABLE KEYS */;
-INSERT INTO `eventcalendar` VALUES (2,1,0,1,0),(3,1,0,1,0),(6,1,0,1,0),(7,1,0,1,0),(9,1,0,1,0),(10,1,0,1,0);
+INSERT INTO `eventcalendar` VALUES (3,1,0,1,0),(4,1,0,1,0),(7,1,0,1,0),(8,1,0,1,0),(9,1,0,1,0),(10,1,0,1,0);
 /*!40000 ALTER TABLE `eventcalendar` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -164,7 +164,7 @@ CREATE TABLE `eventfiles` (
 
 LOCK TABLES `eventfiles` WRITE;
 /*!40000 ALTER TABLE `eventfiles` DISABLE KEYS */;
-INSERT INTO `eventfiles` VALUES (7,1,0);
+INSERT INTO `eventfiles` VALUES (9,1,0);
 /*!40000 ALTER TABLE `eventfiles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -212,51 +212,9 @@ CREATE TABLE `eventn` (
 
 LOCK TABLES `eventn` WRITE;
 /*!40000 ALTER TABLE `eventn` DISABLE KEYS */;
-INSERT INTO `eventn` VALUES (1,'event #0',NULL,'2017-11-09 16:00:00','2017-11-09 20:00:00',NULL,0),(2,'event #1',NULL,'2017-11-10 09:30:00','2017-11-10 15:15:00',NULL,0),(3,'event #2',NULL,'2017-11-11 08:00:00','2017-11-11 20:00:00',NULL,0),(4,'event #3',NULL,'2017-11-12 10:00:00','2017-11-12 18:00:00',NULL,0),(5,'event #4',NULL,'2017-11-13 16:00:00','2017-11-13 20:00:00',NULL,0),(6,'event #5',NULL,'2017-11-15 13:00:00','2017-11-16 00:00:00',NULL,0),(7,'event #6',NULL,'2017-11-23 12:00:00','2017-11-24 00:00:00',NULL,0),(8,'event #7',NULL,'2017-11-25 03:00:00','2017-11-25 06:00:00',NULL,0),(9,'event #8',NULL,'2017-11-27 08:00:00','2017-11-27 18:00:00',NULL,0),(10,'event #9',NULL,'2017-11-28 06:00:00','2017-11-28 20:00:00',NULL,0);
+INSERT INTO `eventn` VALUES (1,'event #0',NULL,'2018-02-25 00:00:00','2018-05-11 00:00:00',NULL,0),(2,'event #1',NULL,'2018-01-13 00:00:00','2018-09-05 00:00:00',NULL,0),(3,'event #2',NULL,'2017-06-20 00:00:00','2017-09-18 00:00:00',NULL,0),(4,'event #3',NULL,'2018-07-02 00:00:00','2018-09-13 00:00:00',NULL,0),(5,'event #4',NULL,'2017-04-13 00:00:00','2017-10-16 00:00:00',NULL,0),(6,'event #5',NULL,'2019-05-05 00:00:00','2019-07-04 00:00:00',NULL,0),(7,'event #6',NULL,'2017-09-01 00:00:00','2017-09-14 00:00:00',NULL,0),(8,'event #7',NULL,'2017-08-11 00:00:00','2017-11-29 00:00:00',NULL,0),(9,'event #8',NULL,'2019-02-21 00:00:00','2019-10-28 00:00:00',NULL,0),(10,'event #9',NULL,'2019-04-05 00:00:00','2019-10-07 00:00:00',NULL,0);
 /*!40000 ALTER TABLE `eventn` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER checkstartendinsert BEFORE INSERT ON Eventn
-FOR EACH ROW
-BEGIN
-	IF New.Start > New.End THEN
-		CALL raise_application_error(-10001, "Start date has to be before end date");
-    END IF;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER checkstartendupdate BEFORE UPDATE ON Eventn
-FOR EACH ROW
-BEGIN
-	IF New.Start > New.End THEN
-		CALL raise_application_error(-10001, "Start date has to be before end date");
-    END IF;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -334,7 +292,7 @@ CREATE TABLE `eventtask` (
 
 LOCK TABLES `eventtask` WRITE;
 /*!40000 ALTER TABLE `eventtask` DISABLE KEYS */;
-INSERT INTO `eventtask` VALUES (5,3,0),(7,1,0),(7,3,0),(8,4,0),(10,2,0);
+INSERT INTO `eventtask` VALUES (2,4,0),(6,1,0),(7,2,0),(9,1,0),(10,1,0);
 /*!40000 ALTER TABLE `eventtask` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -379,7 +337,7 @@ CREATE TABLE `files` (
 
 LOCK TABLES `files` WRITE;
 /*!40000 ALTER TABLE `files` DISABLE KEYS */;
-INSERT INTO `files` VALUES (1,'tmple013j4m','\\data',0);
+INSERT INTO `files` VALUES (1,'tmpkv3vj7tp','\\data',0);
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -429,6 +387,31 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `forgot_pass_link`
+--
+
+DROP TABLE IF EXISTS `forgot_pass_link`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `forgot_pass_link` (
+  `UserId` int(11) NOT NULL,
+  `link` varchar(256) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `Deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`UserId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `forgot_pass_link`
+--
+
+LOCK TABLES `forgot_pass_link` WRITE;
+/*!40000 ALTER TABLE `forgot_pass_link` DISABLE KEYS */;
+/*!40000 ALTER TABLE `forgot_pass_link` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `task`
 --
 
@@ -460,7 +443,7 @@ CREATE TABLE `task` (
 
 LOCK TABLES `task` WRITE;
 /*!40000 ALTER TABLE `task` DISABLE KEYS */;
-INSERT INTO `task` VALUES (1,'task #0',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0),(2,'task #1',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0),(3,'task #2',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0),(4,'task #3',NULL,'2017-11-08 09:30:41',' ',NULL,1,NULL,0,0);
+INSERT INTO `task` VALUES (1,'task #0',NULL,'2017-12-02 08:05:56',' ',NULL,1,NULL,0,0),(2,'task #1',NULL,'2017-12-02 08:05:56',' ',NULL,1,NULL,0,0),(3,'task #2',NULL,'2017-12-02 08:05:56',' ',NULL,1,NULL,0,0),(4,'task #3',NULL,'2017-12-02 08:05:56',' ',NULL,1,NULL,0,0);
 /*!40000 ALTER TABLE `task` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -535,7 +518,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'ola@nordmann.no','pbkdf2:sha1:1000$iyOwn4gm$874e825936cc02eee0e30b8619979691f6112034','salt','Ola Nordmann','2017-11-08',0);
+INSERT INTO `user` VALUES (1,'ola@nordmann.no','pbkdf2:sha1:1000$9oPbM84r$0c4e6cf3c45cd7c6545b272a98272dde9d768195','e8dc523dbe392a497ea4','Ola Nordmann','2017-12-02',0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -741,4 +724,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-08  9:35:24
+-- Dump completed on 2017-12-02  8:07:05
