@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.1.1
-	last updated	: 01.12.2017
+	version			: 0.1.2
+	last updated	: 02.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -23,12 +23,58 @@ import mysql.connector
 import re
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
+import smtplib
 import random
 
 app = Flask(__name__)
 #app.register_blueprint(mf_page)
 app.secret_key = "any random string2"
 #app.secret_key = str(random.randint(0,9999999999999999999))
+
+@app.route("/forgotpass_form", methods=["POST"])
+def sendResetPassworEmail():
+	returnData = {
+			"success": False,
+			"notifications": None
+		}
+	
+	email = request.form.get("form_userid",None)
+	
+	if email is None:
+		return formatJsonWithNotifications(returnData)
+	
+	# login to sender email
+	server = smtplib.SMTP_SSL('smtp.gmail.com', 465)  # Enter SSL configuration for domain
+	server.ehlo()
+	senderEmail = "dat210.calendar@gmail.com"
+	senderPassword = "Dat210calendar"
+	server.login(senderEmail, senderPassword)
+	
+	# create link
+	ending = os.urandom(10).hex()
+	link = "http://127.0.0.1:5000/reset_pass/" + ending
+	
+	# generate reset passwor link
+	result = mf_database.getUserIdPassword(email)
+	if result == -1:
+		return formatJsonWithNotifications(returnData)
+	(userId, _) = result
+	
+	wasSuccessful = mf_database.createResetPassworLink(ending, True, userId)
+	if wasSuccessful == -1: # -1 is not successful
+		return formatJsonWithNotifications(returnData)
+	
+	# send mail with password link
+	subject = "Annual Cyclel Password"
+	text = "Did you forget your password?\nHerese the link to reset it\n\n" + link + "\n\nBest Regards\n\tSondre from the Annual Cycle team"
+	message = 'Subject: {}\n\n{}'.format(subject, text)
+	
+	server.sendmail(senderEmail, email, message)
+	server.close()
+	
+	#
+	returnData["success"] = True
+	return formatJsonWithNotifications(returnData)
 
 @app.route("/event/edit/<int:calendar_id>/edit_form", methods=["POST"])
 def editEventForm(calendar_id):
@@ -459,7 +505,7 @@ def login():
 	# get password
 	result = mf_database.getUserIdPassword(email)
 	
-	if result == -1: # -1 means error, False means user does not exist.
+	if result == -1:
 		notifications.append(notifications.notification(1))
 		return formatJsonWithNotifications(returnData)
 	
