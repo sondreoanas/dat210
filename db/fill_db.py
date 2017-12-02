@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash
 import datetime
 import calendar
 import tempfile
+import os
 
 connection = pymysql.connect(host='localhost',
                              user='root',
@@ -21,7 +22,7 @@ connection = pymysql.connect(host='localhost',
                              cursorclass=pymysql.cursors.DictCursor)
 
 password = "Password123"  # Used as password for users
-salt = "salt"  # Used as salt for users
+salt = os.urandom(10).hex()  # Used as salt for users
 
 def make_email(name):
     email = ""
