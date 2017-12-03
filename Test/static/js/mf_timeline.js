@@ -1,7 +1,7 @@
 /*
 	mf_timeline.js
-	version			: 0.5.4
-	last updated	: 01.12.2017
+	version			: 0.5.5
+	last updated	: 03.12.2017
 	name			: Markus Fjellheim
 	description		:
 		What does this do?
@@ -637,6 +637,12 @@ Timeline.prototype.calcuateEventCollisions = function(event){
 			}
 		}
 	}
+}
+Timeline.prototype.canvasCoordsToTime = function(coords){ // TODO: rename to 'pixels to time'
+	return this.zoom * (coords / this.canvas.width - 0.5) + this.position;
+}
+Timeline.prototype.timeToCanvasCoords = function(time){ // TODO: rename to 'time to pixels'
+	return (time - this.position) / this.zoom * this.canvas.width + this.canvas.width * 0.5;
 }
 var mf_timeManipulator;
 Timeline.getTimeNow = function(){
