@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.1.2
-	last updated	: 02.12.2017
+	version			: 0.1.3
+	last updated	: 03.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -31,6 +31,35 @@ app = Flask(__name__)
 app.secret_key = "any random string2"
 #app.secret_key = str(random.randint(0,9999999999999999999))
 
+@app.route("/reset_pass_form", methods=["POST"])
+def reset_pass_form():
+	returnData = {
+			"success": False,
+			"notifications": None
+		}
+	
+	#newPassword = os.urandom(5).hex()
+	
+	urlEnding = request.form.get('id', None)
+	newPassword = request.form.get('password', None)
+	newPasswordRepeat = request.form.get('password_repeat', None)
+	
+	if urlEnding is None or newPassword is None or newPasswordRepeat is None or newPassword != newPasswordRepeat:
+		return formatJsonWithNotifications(returnData)
+	
+	newHashedPassword = generate_password_hash(newPassword, method='pbkdf2:sha256',salt_length=8)
+	
+	wasSuccessful = mf_database.resetPasswordOfUser(urlEnding, newHashedPassword)
+	if wasSuccessful == -1: # -1 is not successful
+		return formatJsonWithNotifications(returnData)
+	
+	returnData["success"] = True
+	return formatJsonWithNotifications(returnData)
+
+@app.route("/reset_pass/<string:urlEnding>", methods=["GET"])
+def reset_pass(urlEnding):
+	return render_template('index.html')
+
 @app.route("/forgotpass_form", methods=["POST"])
 def sendResetPassworEmail():
 	returnData = {
@@ -43,16 +72,9 @@ def sendResetPassworEmail():
 	if email is None:
 		return formatJsonWithNotifications(returnData)
 	
-	# login to sender email
-	server = smtplib.SMTP_SSL('smtp.gmail.com', 465)  # Enter SSL configuration for domain
-	server.ehlo()
-	senderEmail = "dat210.calendar@gmail.com"
-	senderPassword = "Dat210calendar"
-	server.login(senderEmail, senderPassword)
-	
 	# create link
-	ending = os.urandom(10).hex()
-	link = "http://127.0.0.1:5000/reset_pass/" + ending
+	urlEnding = os.urandom(10).hex()
+	link = "http://127.0.0.1:5000/reset_pass/" + urlEnding
 	
 	# generate reset passwor link
 	result = mf_database.getUserIdPassword(email)
@@ -60,17 +82,15 @@ def sendResetPassworEmail():
 		return formatJsonWithNotifications(returnData)
 	(userId, _) = result
 	
-	wasSuccessful = mf_database.createResetPassworLink(ending, True, userId)
+	wasSuccessful = mf_database.createResetPassworLink(userId, urlEnding)
 	if wasSuccessful == -1: # -1 is not successful
 		return formatJsonWithNotifications(returnData)
 	
 	# send mail with password link
-	subject = "Annual Cyclel Password"
-	text = "Did you forget your password?\nHerese the link to reset it\n\n" + link + "\n\nBest Regards\n\tSondre from the Annual Cycle team"
-	message = 'Subject: {}\n\n{}'.format(subject, text)
-	
-	server.sendmail(senderEmail, email, message)
-	server.close()
+	subject = "Annual Cycle: reset password"
+	text = "Did you forget your password?\nClick this link to reset your password: " + link + "\n" \
+		"The new password will be sent to your email."
+	sendMail(subject, text, email)
 	
 	#
 	returnData["success"] = True
@@ -549,7 +569,7 @@ def createNewUser():
 	# # usename already in use?
 	uniqueUsername = mf_database.checkEmailInUse(email)
 	
-	if uniqueUsername == -1:
+	if uniqueUsername == -1: # error happened
 		return formatJsonWithNotifications(returnData)
 	
 	if not uniqueUsername:
@@ -662,6 +682,20 @@ def isLoggedIn():
 		return True
 	else:
 		return False
+
+def sendMail(subject, text, email):
+	#format
+	message = 'Subject: {}\n\n{}'.format(subject, text)
+	
+	# login
+	server = smtplib.SMTP_SSL('smtp.gmail.com', 465)  # Enter SSL configuration for domain
+	server.ehlo()
+	senderEmail = "dat210.calendar@gmail.com"
+	senderPassword = "Dat210calendar"
+	server.login(senderEmail, senderPassword)
+	# # send
+	server.sendmail(senderEmail, email, message)
+	server.close()
 
 def intervalDataToString(intervalData):
 	'''

@@ -1,7 +1,7 @@
 '''
 	mf_app.py
-	version			: 0.1.2
-	last updated	: 02.12.2017
+	version			: 0.1.3
+	last updated	: 03.12.2017
 	name			:
 	description		:
 		What does this do?
@@ -17,14 +17,58 @@ import mf_passwordTester
 from mf_app import isLoggedIn, printError
 import json
 
-def createResetPassworLink(ending, active, userId):
+def getUserEmail(userId):
 	cursor = getCursor()
 	database = getDatabase()
 	try:
-		sql = "INSERT INTO forgot_pass_link " \
-			"(link, active, user_id) " \
-			"VALUES(%s, %s, %s);"
-		cursor.execute(sql, (ending, active, userId))
+		# get userId of user to reset password to
+		sql = "SELECT Email FROM annualcycle.user WHERE UserId = %s;"
+		cursor.execute(sql, (userId,))
+		email = cursor.fetchall()[0][0]
+		
+		return email
+	except mysql.connector.Error as err:
+		printError(err)
+		return -1
+	finally:
+		cursor.close()
+
+def resetPasswordOfUser(urlEnding, newHashedPassword):
+	cursor = getCursor()
+	database = getDatabase()
+	try:
+		# get userId of user to reset password to
+		sql = "SELECT UserId FROM annualcycle.forgot_pass_link WHERE Url = %s and Deleted = 0;"
+		cursor.execute(sql, (urlEnding,))
+		result = cursor.fetchall()
+		if len(result) != 1:
+			return -1
+		userId = result[0][0]
+		# de-activate old link
+		sql = "UPDATE `annualcycle`.`forgot_pass_link` SET `Deleted` = '1' WHERE UserId = %s;"
+		cursor.execute(sql, (userId,))
+		# reset password
+		sql = "UPDATE `annualcycle`.`user` SET `Password` = %s WHERE `UserId` = %s;"
+		cursor.execute(sql, (newHashedPassword, userId))
+		
+		database.commit()
+		return True
+	except mysql.connector.Error as err:
+		printError(err)
+		return -1
+	except BaseException as err:
+		printError(err)
+		return -1
+	finally:
+		cursor.close()
+
+def createResetPassworLink(userId, urlEnding):
+	cursor = getCursor()
+	database = getDatabase()
+	try:
+		sql = "INSERT INTO `annualcycle`.`forgot_pass_link` " \
+			"(`UserId`, `Url`, `Deleted`) VALUES (%s, %s, %s);"
+		cursor.execute(sql, (userId, urlEnding, 0))
 		database.commit()
 		return cursor.lastrowid
 	except mysql.connector.Error as err:
@@ -32,7 +76,6 @@ def createResetPassworLink(ending, active, userId):
 		return -1
 	finally:
 		cursor.close()
-	
 
 def createUser(email, hashedPassword, salt, nickname):
 	database = getDatabase()
@@ -192,7 +235,6 @@ def getTasksOfUser(userId):
 	cursor.close()
 	
 	return tasks
-
 
 def deleteTask(userId, rootTaskId):
 	# load root tasks
