@@ -7,23 +7,14 @@ from datetime import datetime, timedelta
 from email.utils import formatdate
 import notification_db as db
 
-def convert_seconds(seconds, nowdate):
-    minutes, seconds = divmod(seconds, 60)
-    hours, minutes = divmod(minutes, 60)
-    days, hours = divmod(hours, 24)
-    newdate = nowdate + timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
-    return newdate
-
-
 def check_time(time, diff):
+    diff = diff * 60 # Converts diff to seconds
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S") # To prevent milliseconds
     nowd = datetime.strptime(now, "%Y-%m-%d %H:%M:%S")
+    time = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
     timediff = time - nowd
 
-    timediff = convert_seconds(timediff.total_seconds(), nowd)
-    tdelta = nowd + timedelta(minutes=-diff)
-
-    if timediff < tdelta:
+    if timediff.total_seconds() <= diff:
         return True
     else:
         return False
