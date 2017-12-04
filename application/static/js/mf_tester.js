@@ -14,6 +14,8 @@
 */
 
 function mf_Cursor(){
+	// this is the cursor object used for animation
+	
 	this.pos = new Vec();
 	this.targetPos = new Vec();
 	
@@ -25,8 +27,11 @@ function mf_Cursor(){
 	
 	this.img = document.createElement("img");
 	this.hide();
+	
 	//this.img.src = "https://images.vexels.com/media/users/3/131771/isolated/preview/052dd0c023d9db3d5244875791c71c54-pixilated-arrow-cursor-by-vexels.png";
 	//this.img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAASCAYAAABvqT8MAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAAAb0lEQVQ4T5WLAQ7AIAjE/P+nmXVCkCmyJrfM49o6Qjp8rhkCVCUToCItAtykjwCZtBXgJB0F2EmpAFG6CuClkgAqlQVgmwpzELMK/j3/+VgWQQe7TmNHf9AOfP8+exHLeaAb+LsNYn4LhKEfi0h7AGpTdKhdEGymAAAAAElFTkSuQmCC";
+	
+	// this is the image of the cursor as text
 	this.img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAABMCAYAAAAr4jQ9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAACi0lEQVRoQ+2PQW7DQAwD+/9Pp+YlMMeEFop3bbfIAJPDWqKYn43X3g39/BnF9w/cqfhff4By4WmKQ+m9XHia4lB6LxeepjiU3suFpylY2AjfLeBuBQsa4bsF3K1gQSN8t4C7FSxohO8WcLeCBUvCvAVerWChkjBvgVcrWKgkzFvg1QoWKgnzFni1goVahH07sFrBAi3Cvh1YrWCBFmHfDqxWsECLsG8HVitY4BQhzw7OVvDgKUKeHZyt4MFThDw7OFvBg6cIeXZwtoIHpxLyrcBZBQ9MJeRbgbMKHphKyLcCZxU8MJWQbwXOKnhgKeGeFeoqGLiUcM8KdRUMXEq4Z4W6CgYuJdyzQl0FAy8l3LeCIwUDLiXct4IjBQMuJdy3giMFAy4l3LeCIwUDbiX0scJUcOFWQh8rTAUXbiX0scJUcOFWQh8rTAUXHkXo9/0DlxL6ff/ArbDvpj88Hfbd9Ienw76b/vB02HfTH1bDexP0h9Xw3gT9YTW8N0F/WA3vTdAfunT3w7x+PlYwsEV3P8y/y3yiYGCL7n6Yf5f5RMHAFt39MP8u84mCgSVhnoH8XhLmLW+kYEBJmGcgv5eEecsbKRhQEuYZyO8lYd7yRgoGlIR5BvJ7SZi3vJGCAUb4bgE0zJeEecsbKRhghO8WQMN8SZi3vJGCAUb4bgE0zJeEecsbKRhghO8WQMN8SZi3vJHiELKXC11DXkmYtzwqDkt7udA15JWEecuj4rC0lwtdQ15JmLc8Kg5Le7nQNeSVhHnLo/FxpqFQSZi3PBofZxoKlYR5y6PxcaahUEmYtzwaH2caCpWEecuj8XGlLEg5PzI+rpSFKedHxseVsjDl/Mj4uFIWppyvff38AkkwaNigN9HtAAAAAElFTkSuQmCC";
 	
 	this.width = 48 * 0.5;
@@ -55,6 +60,8 @@ mf_Cursor.prototype.setGraphicCoords = function(x, y){
 }
 
 function mf_TestHandeler(){
+	
+	
 	this.tick;
 	this.fps;
 	this.loop;
@@ -84,20 +91,24 @@ function mf_TestHandeler(){
 	this.dropDown;
 }
 mf_TestHandeler.prototype.init = function(){
-	this.tick = -1;
-	this.fps = 30;
+	// This object manages testing. Both recording and playback of recordings.
+	
+	this.tick = -1; // time variable
+	this.fps = 30; // the frames per second to playback the animation of the cursor
+	
+	this.loop; // integer reference to the interval used for animation
 	
 	this.cursor = new mf_Cursor();
 	
-	this.commands = [];
-	this.currentCommandIndex = 0;
+	this.commands = []; // all commands to be played
+	this.currentCommandIndex = 0; // current command in action
 	this.currentCommand;
 	
-	this.inactivity = 0;
+	this.inactivity = 0; // for how long has the playback been unable to perform an action?
 	
 	this.recordedCommands = "var dataList = [\n";
 	
-	this.timelines = [];
+	this.timelines = []; // timelines to record
 	
 	this.control = new mf_Control();
 	this.control.addKeyDownEventListener(function(){
@@ -109,7 +120,7 @@ mf_TestHandeler.prototype.init = function(){
 			}
 			var speed
 			while(true){
-				speed = prompt("Set playspeed. Nothing will default to 10");
+				speed = prompt("Set playspeed. Nothing will default to 1");
 				if(parseFloat(speed)){
 					this.start(parseFloat(speed));
 					break;
@@ -152,6 +163,8 @@ mf_TestHandeler.prototype.init = function(){
 	this.getData();
 }
 mf_TestHandeler.prototype.addRecordTimeline = function(timeline){
+	// add another timeline to record actions of
+	
 	this.timelines.push({
 		timeline: timeline,
 		position: timeline.targetPosition,
@@ -159,7 +172,9 @@ mf_TestHandeler.prototype.addRecordTimeline = function(timeline){
 		isActive: timeline.isActive
 	});
 }
-mf_TestHandeler.prototype.start = function(acceleration = 10, noiseFactor = 0){
+mf_TestHandeler.prototype.start = function(acceleration = 1, noiseFactor = 0){
+	// start the playback
+	
 	if(this.isRunning){
 		var s;
 		var message = "A test is already in progress. Do you want to cancel it? \"y\"/\"n\".\n(No input means yes, cancel means no)";
@@ -181,7 +196,7 @@ mf_TestHandeler.prototype.start = function(acceleration = 10, noiseFactor = 0){
 	this.cursor.acc = acceleration;
 	this.cursor.noiseFactor = noiseFactor;
 	this.cursor.show();
-	this.loop = setInterval(this.intervalLoop.bind(this), 1000 / this.fps);
+	this.loop = setInterval(this.intervalLoop.bind(this), 1000 / this.fps); // integer reference to the interval used for animation
 }
 mf_TestHandeler.prototype.intervalLoop = function(){
 	this.tick++;
@@ -372,6 +387,8 @@ mf_TestHandeler.prototype.endTest = function(){
 	this.waitTime = 0;
 }
 mf_TestHandeler.prototype.getData = function(){
+	// read mf_testerData for commands to execute
+	
 	mf_AjaxHandler.ajaxGet("/static/js/mf_testerData.js", function(responseText){
 		var click = this.click;
 		var type = this.type;

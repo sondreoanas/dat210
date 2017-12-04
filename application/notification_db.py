@@ -1,15 +1,18 @@
 import mf_passwordTester
 import pymysql
+import sys
 
 (loadedUsername, loadedPassword) = mf_passwordTester.getUsernamePassword()
 
-connection = pymysql.connect(host='localhost',
-                             user=loadedUsername,
-                             password=loadedPassword, # enter you db password
-                             db='annualcycle',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
-
+try:
+    connection = pymysql.connect(host='localhost',
+                                 user=loadedUsername,
+                                 password=loadedPassword, # enter you db password
+                                 db='annualcycle',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+except:
+    sys.exit("Wrong username or password, change it in ../../password.txt and ../../username.txt")
 
 def get_notification_details():
     cur = connection.cursor()

@@ -114,7 +114,7 @@ def editEventForm(calendar_id):
 	
 	eventId = request.form.get('form_event_id', None)
 	newCalendarId = request.form.get('form_event_calendar', None)
-	newName = request.form.get('form_event_name', None)
+	newName = request.form.get('form_event_name', "")
 	newStartPicker = request.form.get('form_event_start', None)
 	newEndPicker = request.form.get('form_event_end', None)
 	
@@ -128,7 +128,7 @@ def editEventForm(calendar_id):
 		return formatJsonWithNotifications(returnData)
 	returnData["data"]["calendars"] = calendars
 	
-	if eventId is None or newCalendarId is None or newName is None or newStartPicker is None or newEndPicker is None:
+	if eventId is None or newCalendarId is None or newName == "" or newStartPicker is None or newEndPicker is None:
 		return formatJsonWithNotifications(returnData)
 	
 	if not isLoggedIn():
@@ -520,6 +520,7 @@ def login():
 	returnData["data"]["username"] = email
 	
 	if email is None or passwordFromClient is None:
+		notifications.append(notifications.notification(1))
 		return formatJsonWithNotifications(returnData)
 	
 	# get password
@@ -535,8 +536,10 @@ def login():
 		session["id"] = userId
 		session["username"] = email
 		returnData["success"] = True
-	
-	return formatJsonWithNotifications(returnData)
+		return formatJsonWithNotifications(returnData)
+	else:
+		notifications.append(notifications.notification(1))
+		return formatJsonWithNotifications(returnData)
 
 @app.route("/newuser_form", methods = ["POST"])  # old
 @app.route("/createNewUser", methods = ["POST"])
@@ -558,21 +561,28 @@ def createNewUser():
 	returnData["data"]["email"] = email
 	returnData["data"]["nickname"] = nickname
 	
-	if email == "" or nickname == "" or password == "" or repeat_password == "" or password != repeat_password:
+	if email == "" or nickname == "" or password == "" or repeat_password == "":
+		notifications.append(notifications.notification(3))
+		return formatJsonWithNotifications(returnData)
+	if password != repeat_password:
+		notifications.append(notifications.notification(2))
 		return formatJsonWithNotifications(returnData)
 	
 	# valid username and password
 	# # proper username?
 	match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email)
 	if match is None:
+		notifications.append(notifications.notification(3)) # TODO: replace with better notifications
 		return formatJsonWithNotifications(returnData)
 	# # usename already in use?
 	uniqueUsername = mf_database.checkEmailInUse(email)
 	
 	if uniqueUsername == -1: # error happened
+		notifications.append(notifications.notification(3))
 		return formatJsonWithNotifications(returnData)
 	
 	if not uniqueUsername:
+		notifications.append(notifications.notification(3))
 		return formatJsonWithNotifications(returnData)
 	
 	# # proper password?
@@ -586,6 +596,7 @@ def createNewUser():
 	userId = mf_database.createUser(email, hashedPassword, salt, nickname)
 	
 	if userId == -1:
+		notifications.append(notifications.notification(3))
 		return formatJsonWithNotifications(returnData)
 	
 	# create standard calendar
@@ -594,6 +605,7 @@ def createNewUser():
 	result = mf_database.createNewCalendar(userId, calendarName, False)
 	
 	if result == -1:
+		notifications.append(notifications.notification(3))
 		return formatJsonWithNotifications(returnData)
 	
 	#

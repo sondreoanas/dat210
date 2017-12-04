@@ -37,7 +37,7 @@ Timeline.prototype.loop = function(){
 	
 	// render
 	// // if the sceene is pretty much the same, don't re-render again
-	if(this.status != Timeline.standard || this.mouseData.isDown || (this.mouseData.timeUp < 10 && !this.mouseData.isDown) ||
+	if(this.zoom < 8000000 || this.status != Timeline.standard || this.mouseData.isDown || (this.mouseData.timeUp < 10 && !this.mouseData.isDown) ||
 			this.tick == 1 || this.mode != Timeline.timelineView || Math.abs(this.position - this.targetPosition) > 1){
 		this.render();
 	}

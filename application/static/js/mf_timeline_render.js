@@ -80,6 +80,7 @@ Timeline.prototype.render = function(){ // TODO: abstract better
 				], color, false, 5);
 		}
 	}
+	
 	// cursor text
 	var font = "24px Arial";
 	var width = Tool.widthOfString(this.cursorInfo, font);
@@ -108,6 +109,7 @@ Timeline.prototype.renderTaskView = function(){
 	calcPosition(this.canvas, null, this.tasks);
 	function calcPosition(canvas, parent, tasks){
 		var offset = -1;
+		var parentDisplacement = 0;
 		for(var i=0; i<tasks.length; i++){
 			var t = tasks[i];
 			if(!t.visibility){
@@ -119,7 +121,9 @@ Timeline.prototype.renderTaskView = function(){
 				t.targetPosition1 = new Vec(parent.targetPosition1.x + parent.width * 0.5 + t.width * 0.5,
 					parent.targetPosition1.y + parent.height * 0.5 - t.height * 0.5 - t.height * offset);
 			}else{
-				t.targetPosition1 = new Vec(canvas.width * 0.05 + t.width * 0.5, (canvas.height - t.height * 1.5) - t.height * offset);
+				//t.targetPosition1 = new Vec(canvas.width * 0.05 + t.width * 0.5, (canvas.height - t.height * 1.5) - t.height * offset);
+				t.targetPosition1 = new Vec(canvas.width * 0.05 + t.width * 0.5, (canvas.height * 0.9 - t.height * 0.5) - parentDisplacement);
+				parentDisplacement += t.height;
 			}
 			calcPosition(canvas, t, t.children);
 		}
@@ -186,13 +190,10 @@ Timeline.prototype.renderTaskView = function(){
 	};
 }
 Timeline.prototype.renderTimeline = function(){
-	
-	// debug
-	for(var i=0; i<this.touchList.length; i++){
-		var t = this.touchList[i];
-		this.drawText ("id: " + t.id + " yPos: " + t.y, t.x, t.y);
-		this.drawText ("x", t.x, t.y);
-	}
+	// render now bar
+	var nowTime = new Date().getTime();
+	var pixelNow = this.timeToCanvasCoords(nowTime);
+	this.drawLine(pixelNow, 0, pixelNow, this.canvas.height, new Color(255,0,0, 0.5), 3);
 	
 	// render events
 	this.renderEvents(this.verticalRulerHeight + (this.canvas.height - this.verticalRulerHeight) * 0.5, this.verticalRulerHeight);
@@ -210,11 +211,16 @@ Timeline.prototype.renderTasksInTimeline = function(){
 		var atLeastOneIsInView = false;
 		var t = this.tasks[i];
 		var time = this.canvasCoordsToTime(0);
+		if(time == -1){
+			alert("!");
+			continue;
+		}
 		var counter = 0;
 		while(true){
 			counter ++;
-			if(counter == 100000){
+			if(counter == 10000){
 				debugger;
+				break;
 			}
 			var range = t.getRange(time);
 			if(this.timeToCanvasCoords(range.start) > this.canvas.width){
@@ -424,6 +430,12 @@ Timeline.prototype.renderEvents = function(eventSpaceTop, eventSpaceBottom){
 	}
 }
 Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, verticalOffset, getNameFunction, resetTimeFuntion, incrementTimeFunction){
+	// This function will render one time-unit, for example a month. height is height of the unit label, in this case "MONTH".
+	// unitName is the name of the unit, for example "MONTH". VerticalOffset is how hight up from the bottom of the canvas the unit name will
+	// be rendered. GetNameFunction(date) will take a date object and gives the value of that moment in time according to some time unit,
+	// if the time unit is month, the value could be "january". ResetTimeFuntion resets the time back to for example the beginning of the month.
+	// IncrementTimeFunction increments time by for example one month.
+	
 	// calculate fading
 	// // calcuate approximate interval width
 	var date = new Date(Timeline.getTimeNow());
@@ -486,7 +498,9 @@ Timeline.prototype.drawUnit = function(height, unitName, unitNameWidth, vertical
 	this.drawLine(this.canvas.width, verticalOffset + height, 0, verticalOffset + height, "black", 1);
 }
 Timeline.prototype.drawIntervall = function(drawFunction, resetTimeFuntion, incrementTimeFunction){
-	// function to call to print a block, function that floor a time object to desired unit, increment function that will add a desiret time unit
+	// The arguments are:
+	// (function to call to print a block, function that floor a time unit for example month -> beginning of february,
+	// increment function that will increment a date object by one timeunit)
 	// Example: Months
 	/* TODO: update this example for horizontal view
 	this.drawIntervall(
