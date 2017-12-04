@@ -1,0 +1,485 @@
+/*
+
+	I USUALLY HAVE A FILE HIERARCHY FOR CSS WICH IS AS
+	FOLLOWS:
+	master.css - STYLE FOR GENERAL ELEMENTS
+	sections.css - STYLE FOR LAYOUT RELATED ELEMENTS
+	elemenst.css - STYLE FOR INDIVIDUAL ELEMENTS
+	
+*/
+
+/*	FONTS
+------------------------------------------------------------------------------------------------------------------------------------*/
+@font-face {
+    font-family: 'FontAwesome';
+    src: url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?v=4.3.0');
+    src: url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'), url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'), url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff?v=4.3.0') format('woff'), url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'), url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/*	BASELINE  ( LETS ZERO OUT EVERYTHING AND GET A HOLD ON WIDTHS )
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+* {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+
+/*	HTML AND BODY  ( AND WEBKIT PSEUDO CLASSES FIX )
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+html {
+    min-height: 100%;
+    position: relative;
+    background: url('../img/bg.png');
+}
+
+body {
+    font: 1.2em/1.5em 'Arial', sans-serif;
+    xbackground-color: #fff;
+    height: 100%;
+    -webkit-animation: bugfix infinite 1s;
+    margin: 0 0 200px 0;
+}
+
+@-webkit-keyframes bugfix {
+    from {
+        padding: 0;
+    }
+    to {
+        padding: 0;
+    }
+}
+
+
+/*	HTML5 BLOCK ELEMENTS FOR IE8 ( FOR THE OLD SCHOOL )
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+header,
+footer,
+nav,
+section,
+article,
+aside,
+figure,
+figcaption,
+main {
+    display: block;
+}
+
+
+/*	FLOAT FIX ( BECAUSE OVERFLOW:HIDDEN SOMTEIMES HIDE ELEMENTS YOU DONT WANT TO HIDE )
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+.ffix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+
+/*	HIDE IN PLAIN SIGHT ( BECAUSE SCREEN READERS DONT READ DISPLAY:NONE )
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+.hips {
+    border: 0 none;
+    clip: rect(0px, 0px, 0px, 0px);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.hips:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    width: auto;
+    padding: 20px;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+
+/*	LISTS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+ul {
+    list-style: disc;
+    padding: 0;
+    margin: 0;
+}
+
+ol {
+    list-style: decimal;
+    padding: 0.5em 0 0.5em 30px;
+    margin: 0;
+}
+
+
+/*	HEADERS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-weight: 100;
+    line-height: 1em;
+    color: #404040;
+    margin: 0 0 0.25em 0;
+    padding: 0 0 0.25em 0;
+    font-family: 'Montserrat', sans-serif;
+    border-bottom: 1px solid #404040;
+}
+
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a {
+    text-decoration: none;
+}
+
+h1 {
+    font-size: 2.0em;
+}
+
+h2 {
+    font-size: 1.625em;
+}
+
+h3 {
+    font-size: 1.250em;
+}
+
+h4 {
+    font-size: 1em;
+}
+
+h5 {
+    font-size: 0.750em;
+}
+
+
+/*	GENERAL TAGS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+p {
+    margin: 0;
+    padding: 0 0 1em 0;
+}
+
+a {
+    color: #2b528e;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #000;
+}
+
+a:focus {
+    background: #ccc!important;
+    color: #000!important;
+    position: relative;
+}
+
+img {
+    border: 0;
+    max-width: 100%;
+    height: auto;
+}
+
+
+
+/*	FORMS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+form {}
+
+form button {
+    clear:both;
+}
+
+fieldset {
+    border: 0;
+    padding: 5px 0;
+}
+
+label {
+    display: block;
+    line-height: 40px;
+    margin:5px 0;
+    width: 20%;
+    float:left;
+    clear:left;
+    white-space: nowrap;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+input[type="number"],
+input[type="url"]{
+    border: 0;
+    -webkit-appearance: none;
+    line-height: 40px;
+    border-radius: 10px;
+    height: 40px;
+    padding: 0 0 0 10px;
+    width: 80%;
+    background-color: #fff;
+    margin:5px 0;
+    float:left;
+}
+
+input[type="file"] {
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+
+textarea {
+    border: 0;
+    -webkit-appearance: none;
+    height: 140px;
+    width: 80%;
+    padding: 10px;
+    font-size: 0.75em;
+    border-radius: 10px;
+    float:left;
+}
+
+select {
+    height:40px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    display: inline-block;
+}
+
+.reqLabel:before {
+    content: '\002A';
+    color: #f00;
+}
+
+.reqFill {
+    border: 1px solid #f00!important;
+}
+
+
+@media(max-width:480px) {
+    label,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="file"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select{
+        width:100%;
+        float:none;
+    }
+}
+
+
+/*	BUTTONS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+button{
+    border: 0;
+    -webkit-appearance: none;
+    cursor: pointer;
+    line-height: 40px;
+    border-radius: 10px;
+    height: 40px;
+    padding: 0 20px;
+    background: #0284a8;
+    color: #fff;
+}
+button:hover{
+    background-color: #ff3d2e;
+}
+
+
+/*	TABLES CLASS ( BECAUSE REAL TABLES ARE IMPOSSIBRUU TO STACK RESPONSIVELY )
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+.table {
+    display: table;
+    width: 100%;
+}
+
+.row {
+    display: table-row;
+    position: relative;
+}
+
+.table .row>input,
+.table .row>label {
+    display: none;
+}
+
+.table .row>label {
+    position: absolute;
+    bottom: -5px;
+    right: 0px;
+    font-size: 40px;
+    color: #fff;
+    background: #ccc;
+    line-height: 40px;
+    border-radius: 10px;
+    text-align: center;
+    height: 40px;
+    width: 40px;
+    overflow: hidden;
+}
+
+.table .row label:after {
+    content: "+";
+}
+
+.table input[type="checkbox"]:checked+label:after {
+    content: "-";
+}
+
+.rowgroup {
+    display: table-row-group;
+}
+
+.tableheader {
+    background: #dae9ee;
+    color: #5e5e5e;
+    font-style: italic;
+    font-size: 0.778em;
+    text-transform: uppercase;
+}
+
+.cell {
+    display: table-cell;
+    padding: 5px 10px;
+    vertical-align: middle;
+    min-height: 40px;
+}
+
+.row:nth-child(2n+3) {
+    background: #e5e8ea;
+}
+
+.rowgroup>.row:nth-child(2n) {
+    background: #e5e8ea;
+}
+
+.rowgroup>.row:nth-child(2n+3) {
+    background: none;
+}
+
+.table .tight {
+    width: 1%;
+    white-space: nowrap;
+}
+
+@media(max-width:480px) {
+    .table {
+        display: block;
+        background-color: #eee;
+    }
+    .table .row {
+        display: block;
+    }
+    .table .row label {
+        display: block;
+    }
+    .table .rowgroup {
+        display: block;
+    }
+    .table .cell {
+        display: none;
+        clear: both;
+    }
+    .table input[type="checkbox"]:checked~.cell {
+        display: block!important;
+    }
+    .table .cell.prio {
+        display: block;
+    }
+    .table .row.hover {
+        border: 1px solid red;
+    }
+    .table .row.hover>.cell {
+        display: block;
+    }
+    .table .row>.cell:before {
+        content: attr(data-label);
+        color: #5e5e5e;
+        font-style: italic;
+        font-size: 0.778em;
+        text-transform: uppercase;
+        display: block;
+    }
+    .table .tight {
+        width: auto;
+        white-space: normal;
+    }
+    .table .tableheader {
+        display: none;
+    }
+}
+
+
+/*	BOXES
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+.box {
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(102, 50, 50, 0.2);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    background: #eee url(../img/white-fade.png) repeat-x;
+}
+
+
+/*	NOTIFICATIONS
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+#notifications{
+    position:fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    z-index: 9;
+    list-style: none;
+    padding:0;
+}
+#notifications > li{
+    padding:10px;
+    margin:1px 0;
+}
+#notifications > li > h2{
+
+}
+#notifications > li.form{
+    background-color:rgba(255,0,0,0.8);
+}

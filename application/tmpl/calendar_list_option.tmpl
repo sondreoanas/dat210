@@ -1,0 +1,9 @@
+<option value="0" selected>Pick calendar_</option>
+<%for(var i in this) {%>
+    <option value="<%this[i].id%>">
+        <%this[i].name%>
+        <%if(this[i].public) {%>
+            - public
+        <%}%>
+    </option>
+<%}%>

@@ -1,0 +1,12 @@
+<li id="<%this.id%>" class="<%this.type%>">
+    <h2><%this.title%></h2>
+    <p><%this.body%></p>
+    <%for(var i in this.actions) {%>
+
+        <%if(this.actions[i].action == "close") {%>
+            <button data-target="<%this.id%>" data-remove=""><%this.actions[i].title%></button>
+        <%}%>
+
+
+    <%}%>
+</li>

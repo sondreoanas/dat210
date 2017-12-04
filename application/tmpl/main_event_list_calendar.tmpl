@@ -1,0 +1,25 @@
+<main id="main" data-location="event_list">
+
+    <section id="event_list" class="ffix page">
+            
+        <div class="ghost">
+            <div class="box ffix">
+    
+                <h2>Your events</h2>
+
+                <label for="event_list_calendar">Pick calendar:</label>
+                <select id="event_list_calendar" data-load="/getTMPL?tmpl=calendar_list_option&data=calendar_list" onchange="router.navigate('event/list/'+this.value)">
+                        
+                </select>
+
+                <ul class="table" data-load="/getTMPL?tmpl=event_list&data=event_calendar_list&calendar_id=<%this.calendar_id%>">
+                    
+                </ul>
+    
+            </div>
+        </div>
+    
+    </section>
+
+
+</main>

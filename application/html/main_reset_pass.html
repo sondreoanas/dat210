@@ -1,0 +1,29 @@
+<main id="main" data-location="forgotpass">
+
+    <section id="forgotpass" class="ffix">
+        
+        <div class="ghost">
+            <div class="box form_forgotpass ffix">
+
+                <h2>Reset your password</h2>
+                
+                <form id="forms_reset_pass" action="/reset_pass_form">
+                    
+                    <fieldset>
+                        <label for="form_new_pass">New password:</label>
+                        <input type="password" id="form_new_pass" name="password" placeholder="your password_">
+
+                        <label for="form_new_pass_repeat">Repeat password:</label>
+                        <input type="password" id="form_new_pass_repeat" name="password_repeat" placeholder="repeat password_">
+                    </fieldset>
+
+                    <button data-formid="forms_reset_pass" data-callback="cb.reset_pass" class="button_newpass">Make new password</button>
+
+                </form>
+                
+            </div>
+        </div>
+
+    </section>
+
+</main>

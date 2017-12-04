@@ -1,0 +1,72 @@
+<main id="main" data-location="task_new">
+
+    <section id="task_new" class="ffix page">
+            
+        <div class="ghost">
+            <div class="box form_task_new ffix">
+    
+                <h2>Create new task</h2>
+    
+                <form id="forms_task_new" action="new_form">
+                    <fieldset>
+
+                        <label for="form_task_calendar">Calendar:</label>
+                        <select id="form_task_calendar" name="form_task_calendar" data-load="/getTMPL?tmpl=calendar_list_option&data=calendar_list">
+
+                        </select>
+
+                        <label for="form_task_name">Task name:</label>
+                        <input type="text" id="form_task_name" name="form_task_name" placeholder="task name_">
+
+                    </fieldset>
+
+                    <fieldset id="interval_container" data-step="0">
+                        <legend>Pattern of recurrence</legend>
+    
+                        <div id="interval_type">
+                            <label for="int_type-year">
+                                <input type="radio" id="int_type-year" name="form_task_interval_type" value="year" onchange="main_task_new_pick_interval(this)">
+                                Yearly
+                            </label>
+                            <label for="int_type-month">
+                                <input type="radio" id="int_type-month" name="form_task_interval_type" value="month" onchange="main_task_new_pick_interval(this)" checked>
+                                Monthly
+                            </label>
+                            <label for="int_type-week">
+                                <input type="radio" id="int_type-week" name="form_task_interval_type" value="week" onchange="main_task_new_pick_interval(this)">
+                                Weekly
+                            </label>
+                            <label for="int_type-day">
+                                <input type="radio" id="int_type-day" name="form_task_interval_type" value="day" onchange="main_task_new_pick_interval(this)">
+                                Daily
+                            </label>
+                        </div>
+                        <div id="int_type-spec" data-load="/getHTML?html=int_type-month-spec"></div>
+                    </fieldset>
+
+                    <fieldset id="todo_container">
+                        <legend>Additional Todos</legend>
+
+                        <label for="form_todo_name">Todo name:</label>
+                        <input type="text" id="form_todo_name" name="form_todo_name" placeholder="todo name_">
+                        <button onclick="main_task_new_add_todo();" type="button">Add new todo</button>
+                        <h3>My todos:</h3>
+                        <ul id="task_new_todo_list" class="table" data-pos="1">
+                            <li class="row tableheader">
+                                <div class="cell">Todo name</div>
+                                <div class="cell tight">Action</div>
+                            </li>
+                        </ul>  
+                    </fieldset>
+
+    
+                    <button data-formid="forms_task_new" data-callback="cb.task_new">Create new Task</button>
+            
+                </form>
+    
+            </div>
+        </div>
+    
+    </section>
+
+</main>

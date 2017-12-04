@@ -1,0 +1,269 @@
+/*
+	ELEMENTS.CSS - HERE I TRY TO KEEP ALL INDIVIDUALLY
+	STYLED ELEMENTS, IDs CLASSES ETC...
+*/
+
+
+/*	HEADER
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+header .page {
+    position: relative;
+    height: 100%;
+}
+
+header h1 {
+    position: absolute;
+    bottom: 10px;
+    left: 0px;
+}
+
+@media(max-width:1280px) {
+    header h1 {
+        left: 10px;
+    }
+}
+
+
+/*	MAIN MENU
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+#mainmenu ul {
+    list-style: none;
+    padding: 0;
+}
+
+#mainmenu input {
+    display: none;
+}
+
+#mainmenu > div > label {
+    display: none;
+    color: #fff;
+    width: 60px;
+    text-align: center;
+}
+#mainmenu > div > label:before {
+    content: "\f0c9";
+    font: 2em/1em FontAwesome;
+    line-height: 60px;
+}
+#navcheck:checked+label:before {
+    content: "\f00d";
+}
+
+#mainmenu li {
+    display: block;
+    float: left;
+    border-right: 1px solid #ccc;
+    position: relative;
+}
+#mainmenu li:nth-child(1) {
+    border-left: 1px solid #ccc;
+}
+
+#mainmenu li.selected > button{
+    background-color: #ff3d2e;
+}
+
+#mainmenu li > ul{
+    display: none;
+    border-bottom: 1px solid #ccc;
+    position: absolute;
+    top:100%;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(102, 50, 50, 0.2);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    width:200px;
+    background: #0284a8;
+}
+#mainmenu li > ul > li,
+#mainmenu li > ul > li:nth-child(1){
+    border:0;
+    border-top: 1px solid #ccc;
+    float:none;
+}
+#mainmenu li > ul > li > button{
+    width:100%;
+}
+#mainmenu li.open > ul{
+    display: block;
+}
+
+#mainmenu button {
+    border-radius: 0;
+}
+
+@media(max-width:480px) {
+    #mainmenu {
+        position: fixed;
+        right: 10px;
+        top: 10px;
+        z-index: 1;
+        border-radius: 10px;
+        border: 0;
+    }
+    #mainmenu > div > label {
+        display: block;
+    }
+    #navcheck:checked+label+ul {
+        display: block;
+    }
+    #mainmenu ul {
+        padding: 0 0 10px 0;
+        display: none;
+    }
+    #mainmenu li {
+        float: none;
+        border-right: 0;
+        border-bottom: 1px solid #ccc;
+    }
+    #mainmenu li:nth-child(1) {
+        border-left: 0;
+        border-top: 1px solid #ccc;
+    }
+    #mainmenu button {
+        width:100%;
+        display: block;
+        padding:0 30px;
+    }
+    #mainmenu li > ul{
+        position: static;
+        -webkit-box-shadow:0;
+        -moz-box-shadow:0;
+        box-shadow:0;
+        width:auto;
+        padding:0 0 0 20px;
+        background: #9dbdc6;
+    }
+    #mainmenu li.open > ul{
+        display: block;
+    }
+}
+
+
+
+/*	FORM_LOGIN
+------------------------------------------------------------------------------------------------------------------------------------*/
+#login label{
+    width:40%;
+}
+#login input{
+    width:60%;
+}
+
+
+/*	FORM_NEWUSER
+------------------------------------------------------------------------------------------------------------------------------------*/
+#newuser label{
+    width:40%;
+}
+#newuser input{
+    width:60%;
+}
+
+/*	FORM_FORGOTPASS
+------------------------------------------------------------------------------------------------------------------------------------*/
+#forgotpass label{
+    width:40%;
+}
+#forgotpass input{
+    width:60%;
+}
+
+
+
+/*	INTERVAL_CONTAINER
+------------------------------------------------------------------------------------------------------------------------------------*/
+#interval_container{
+    border:1px solid #aaa;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+    padding:10px;
+}
+#interval_container input{
+    float:none;
+    display: inline-block;
+    width:60px;
+    padding:0;
+    text-align: center;
+}
+#interval_type{
+    float:left;
+    width:30%;
+    border-right:1px solid #aaa;
+}
+#int_type-spec{
+    float:left;
+    width:70%;
+    padding:0 0 0 30px;
+}
+#int-type-year-special{
+    float:none;
+    width:100%;
+    clear: both; 
+    border-bottom:1px solid #aaa;
+}
+#int_type-further{
+    float:left;
+    width:30%;
+    border-right:1px solid #aaa;
+}
+#int_type-further-spec{
+    float:left;
+    width:70%;
+    padding:10px 0 0 30px;
+}
+
+@media(max-width:480px) {
+    #interval_type,
+    #int_type-further{
+        float:none;
+        width:100%;
+        border-right:0;
+        border-bottom:1px solid #aaa;
+    }
+    #int_type-spec,
+    #int_type-further-spec{
+        float:none;
+        width:100%;
+        padding:10px;
+    }
+    #int-type-year-special{
+        float:none;
+        width:100%;
+        clear: both;
+        padding:0;
+        border-bottom:1px solid #aaa;
+    }
+}
+
+
+/*	TODO_CONTAINER
+------------------------------------------------------------------------------------------------------------------------------------*/
+#todo_container{
+    border:1px solid #aaa;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+    padding:10px;
+    margin: 20px 0;
+}
+#todo_container h3{
+    padding:10px 0;
+}
+
+
+/*	SUPPORT
+------------------------------------------------------------------------------------------------------------------------------------*/
+
+#support p {
+    padding: 0;
+    color:#ccc;
+}
+#support h2{
+    color:#0284a8;
+    border-color: #414649;
+}
+#support a {
+    color:#9dbdc6;
+}

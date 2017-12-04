@@ -1,0 +1,42 @@
+<main id="main" data-location="welcome">
+
+    <section id="welcome" class="ffix">
+        <div class="ghost">
+            <div class="box form_login ffix">
+            
+                <h2>Welcome <%this.nickname%></h2>
+
+                <p>Thank you for registering with us!</p>
+                <p>You registered with this email: <%this.email%></p>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="login" class="ffix">
+            
+        <div class="ghost">
+            <div class="box form_login ffix">
+    
+                <h2>Login</h2>
+    
+                <form id="forms_login" action="login_form">
+                    
+                    <fieldset>
+                        
+                        <label for="username">Enter email:</label>
+                        <input type="text" id="username" name="username" placeholder="your@email.com" value="<%this.email%>">
+                        <label for="password">Enter password:</label>
+                        <input type="password" id="password" name="password" placeholder="*****">
+
+                    </fieldset>
+                    
+                    <button data-formid="forms_login" data-callback="cb.login" class="button_login">Login</button>
+    
+                </form>
+            </div>
+        </div>
+    
+    </section>
+    
+</main>

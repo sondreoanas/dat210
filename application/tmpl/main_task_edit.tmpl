@@ -1,0 +1,257 @@
+<main id="main" data-location="task_edit">
+
+    <section id="task_new" class="ffix page">
+            
+        <div class="ghost">
+            <div class="box form_task_new ffix">
+    
+                <h2>Edit task: <%this.task.name%></h2>
+    
+                <form id="forms_task_new" action="editTask">
+                    <fieldset>
+
+                        <label for="form_task_calendar">Calendar:</label>
+                        <select id="form_task_calendar" name="form_task_calendar">
+                            <%for(var i in this.calendars) {%>
+                                <option value="<%this.calendars[i].id%>" <%if(this.calendars[i].id == this.task.calendarId) {%>selected<%}%>>
+                                    <%this.calendars[i].name%>
+                                    <%if(this.calendars[i].public) {%>
+                                     - public
+                                    <%}%>
+                                </option>
+                            <%}%>
+                        </select>
+
+                        <label for="form_task_name">Task name:</label>
+                        <input type="text" id="form_task_name" name="form_task_name" placeholder="task name_" value="<%this.task.name%>">
+
+                    </fieldset>
+
+                    <fieldset id="interval_container" data-step="0">
+                        <legend>Pattern of recurrence</legend>
+    
+                        <div id="interval_type">
+                            <label for="int_type-year">
+                                <input type="radio" id="int_type-year" name="form_task_interval_type" value="year" onchange="main_task_new_pick_interval(this)" <%if(this.task.interval.yearInterval) {%>checked<%}%>>
+                                Yearly
+                            </label>
+                            <label for="int_type-month">
+                                <input type="radio" id="int_type-month" name="form_task_interval_type" value="month" onchange="main_task_new_pick_interval(this)" <%if(this.task.interval.monthInterval) {%>checked<%}%>>
+                                Monthly
+                            </label>
+                            <label for="int_type-week">
+                                <input type="radio" id="int_type-week" name="form_task_interval_type" value="week" onchange="main_task_new_pick_interval(this)" <%if(this.task.interval.weekInterval) {%>checked<%}%>>
+                                Weekly
+                            </label>
+                            <label for="int_type-day">
+                                <input type="radio" id="int_type-day" name="form_task_interval_type" value="day" onchange="main_task_new_pick_interval(this)" <%if(this.task.interval.dayInterval) {%>checked<%}%>>
+                                Daily
+                            </label>
+                        </div>
+                        
+                        <%if(typeof this.task.interval.yearInterval !== 'undefined') {%>
+
+                            <div id="int_type-spec">
+                                <div id="int-type-year-special" class="ffix">
+                                    <label for="form_task_interval_year">
+                                        Happens every
+                                        <input type="number" id="form_task_interval_year" name="form_task_interval_year" value="<%this.task.interval.yearInterval.modulus%>">
+                                        year
+                                    </label>
+                                </div>
+                                <div id="int_type-further">
+                                    <label for="int_type-year-spec-date">
+                                        <input type="radio" id="int_type-year-spec-date" name="int_type-year-spec" value="int_type-year-spec-date" onchange="main_task_new_pick_interval(this)" <%if(typeof this.task.interval.dayNrInMonth !== 'undefined') {%>checked<%}%>>
+                                        Date:
+                                    </label>
+                                
+                                    <label for="int_type-year-spec-every">
+                                        <input type="radio" id="int_type-year-spec-every" name="int_type-year-spec" value="int_type-year-spec-every" onchange="main_task_new_pick_interval(this)"  <%if(typeof this.task.interval.weekNrInMonth !== 'undefined') {%>checked<%}%>>
+                                        Every
+                                    </label>
+                                </div>
+                                <%if(typeof this.task.interval.dayNrInMonth !== 'undefined') {%>
+                                    <div id="int_type-further-spec">
+                                        <input type="number" id="form_task_interval_day_month" name="form_task_interval_day_month" min="1" max="31" value="<%this.task.interval.dayNrInMonth + 1%>">
+                                        
+                                        <select id="form_task_interval_month_year" name="form_task_interval_month_year">
+                                            <option value="January" <%if(this.task.interval.monthNrInYear == 0) {%>selected<%}%>>January</option>
+                                            <option value="February" <%if(this.task.interval.monthNrInYear == 1) {%>selected<%}%>>February</option>
+                                            <option value="March" <%if(this.task.interval.monthNrInYear == 2) {%>selected<%}%>>March</option>
+                                            <option value="April" <%if(this.task.interval.monthNrInYear == 3) {%>selected<%}%>>April</option>
+                                            <option value="May" <%if(this.task.interval.monthNrInYear == 4) {%>selected<%}%>>May</option>
+                                            <option value="June" <%if(this.task.interval.monthNrInYear == 5) {%>selected<%}%>>June</option>
+                                            <option value="July" <%if(this.task.interval.monthNrInYear == 6) {%>selected<%}%>>July</option>
+                                            <option value="August" <%if(this.task.interval.monthNrInYear == 7) {%>selected<%}%>>August</option>
+                                            <option value="September" <%if(this.task.interval.monthNrInYear == 8) {%>selected<%}%>>September</option>
+                                            <option value="October" <%if(this.task.interval.monthNrInYear == 9) {%>selected<%}%>>October</option>
+                                            <option value="November" <%if(this.task.interval.monthNrInYear == 10) {%>selected<%}%>>November</option>
+                                            <option value="December" <%if(this.task.interval.monthNrInYear == 11) {%>selected<%}%>>December</option>
+                                        </select>
+                                    </div>
+                                <%}%>
+                                <%if(typeof this.task.interval.weekNrInMonth !== 'undefined') {%>
+                                    <div id="int_type-further-spec">
+                                        <select id="form_task_interval_week_month" name="form_task_interval_week_month">
+                                            <option value="1" <%if(this.task.interval.weekNrInMonth == 0) {%>selected<%}%>>First</option>
+                                            <option value="2" <%if(this.task.interval.weekNrInMonth == 1) {%>selected<%}%>>Second</option>
+                                            <option value="3" <%if(this.task.interval.weekNrInMonth == 2) {%>selected<%}%>>Third</option>
+                                            <option value="4" <%if(this.task.interval.weekNrInMonth == 3) {%>selected<%}%>>Fourth</option>
+                                            <option value="5" <%if(this.task.interval.weekNrInMonth == 4) {%>selected<%}%>>Fifth</option>
+                                        </select>
+                                        
+                                        <select id="form_task_interval_day_week" name="form_task_interval_day_week">
+                                            <option value="Monday" <%if(this.task.interval.dayNrInWeek == 0) {%>selected<%}%>>Monday</option>
+                                            <option value="Tuesday" <%if(this.task.interval.dayNrInWeek == 1) {%>selected<%}%>>Tuesday</option>
+                                            <option value="Wednesday" <%if(this.task.interval.dayNrInWeek == 2) {%>selected<%}%>>Wednesday</option>
+                                            <option value="Thursday" <%if(this.task.interval.dayNrInWeek == 3) {%>selected<%}%>>Thursday</option>
+                                            <option value="Friday" <%if(this.task.interval.dayNrInWeek == 4) {%>selected<%}%>>Friday</option>
+                                            <option value="Saturday" <%if(this.task.interval.dayNrInWeek == 5) {%>selected<%}%>>Saturday</option>
+                                            <option value="Sunday" <%if(this.task.interval.dayNrInWeek == 6) {%>selected<%}%>>Sunday</option>
+                                        </select>
+                                        
+                                        in
+                                        
+                                        <select id="form_task_interval_month_year" name="form_task_interval_month_year">
+                                            <option value="January" <%if(this.task.interval.monthNrInYear == 0) {%>selected<%}%>>January</option>
+                                            <option value="February" <%if(this.task.interval.monthNrInYear == 1) {%>selected<%}%>>February</option>
+                                            <option value="March" <%if(this.task.interval.monthNrInYear == 2) {%>selected<%}%>>March</option>
+                                            <option value="April" <%if(this.task.interval.monthNrInYear == 3) {%>selected<%}%>>April</option>
+                                            <option value="May" <%if(this.task.interval.monthNrInYear == 4) {%>selected<%}%>>May</option>
+                                            <option value="June" <%if(this.task.interval.monthNrInYear == 5) {%>selected<%}%>>June</option>
+                                            <option value="July" <%if(this.task.interval.monthNrInYear == 6) {%>selected<%}%>>July</option>
+                                            <option value="August" <%if(this.task.interval.monthNrInYear == 7) {%>selected<%}%>>August</option>
+                                            <option value="September" <%if(this.task.interval.monthNrInYear == 8) {%>selected<%}%>>September</option>
+                                            <option value="October" <%if(this.task.interval.monthNrInYear == 9) {%>selected<%}%>>October</option>
+                                            <option value="November" <%if(this.task.interval.monthNrInYear == 10) {%>selected<%}%>>November</option>
+                                            <option value="December" <%if(this.task.interval.monthNrInYear == 11) {%>selected<%}%>>December</option>
+                                        </select>
+                                    </div> 
+                                <%}%>
+                            </div>
+
+                        <%}%>
+
+                        <%if(typeof this.task.interval.monthInterval !== 'undefined') {%>
+
+                            <div id="int_type-spec">
+                                <div id="int_type-further">
+                                    <label for="int_type-month-spec-day">
+                                        <input type="radio" id="int_type-month-spec-day" name="int_type-month-spec" value="int_type-month-spec-day" onchange="main_task_new_pick_interval(this)" <%if(typeof this.task.interval.dayNrInMonth !== 'undefined') {%>checked<%}%>>
+                                        Day:
+                                    </label>
+                                
+                                    <label for="int_type-month-spec-the">
+                                        <input type="radio" id="int_type-month-spec-the" name="int_type-month-spec" value="int_type-month-spec-the" onchange="main_task_new_pick_interval(this)" <%if(typeof this.task.interval.weekNrInMonth !== 'undefined') {%>checked<%}%>>
+                                        The:
+                                    </label>
+                                </div>
+                        
+                                <%if(typeof this.task.interval.dayNrInMonth !== 'undefined') {%>
+                                    <div id="int_type-further-spec">
+                                        <input type="number" id="form_task_interval_day_month" name="form_task_interval_day_month" min="1" max="31" value="<%this.task.interval.dayNrInMonth + 1%>">
+                                        every
+                                        <input type="number" id="form_task_interval_month" name="form_task_interval_month" value="<%this.task.interval.monthInterval.modulus%>">
+                                        month                                    
+                                    </div>
+                                <%}%>
+                                <%if(typeof this.task.interval.weekNrInMonth !== 'undefined') {%>
+                                    <div id="int_type-further-spec" data-load="/getHTML?html=int_type-month-spec-day">
+                                        <select id="form_task_interval_week_month" name="form_task_interval_week_month">
+                                            <option value="1" <%if(this.task.interval.weekNrInMonth == 0) {%>selected<%}%>>First</option>
+                                            <option value="2" <%if(this.task.interval.weekNrInMonth == 1) {%>selected<%}%>>Second</option>
+                                            <option value="3" <%if(this.task.interval.weekNrInMonth == 2) {%>selected<%}%>>Third</option>
+                                            <option value="4" <%if(this.task.interval.weekNrInMonth == 3) {%>selected<%}%>>Fourth</option>
+                                            <option value="5" <%if(this.task.interval.weekNrInMonth == 4) {%>selected<%}%>>Fifth</option>
+                                        </select>
+                                        
+                                        <select id="form_task_interval_day_week" name="form_task_interval_day_week">
+                                            <option value="Monday" <%if(this.task.interval.dayNrInWeek == 0) {%>selected<%}%>>Monday</option>
+                                            <option value="Tuesday" <%if(this.task.interval.dayNrInWeek == 1) {%>selected<%}%>>Tuesday</option>
+                                            <option value="Wednesday" <%if(this.task.interval.dayNrInWeek == 2) {%>selected<%}%>>Wednesday</option>
+                                            <option value="Thursday" <%if(this.task.interval.dayNrInWeek == 3) {%>selected<%}%>>Thursday</option>
+                                            <option value="Friday" <%if(this.task.interval.dayNrInWeek == 4) {%>selected<%}%>>Friday</option>
+                                            <option value="Saturday" <%if(this.task.interval.dayNrInWeek == 5) {%>selected<%}%>>Saturday</option>
+                                            <option value="Sunday" <%if(this.task.interval.dayNrInWeek == 6) {%>selected<%}%>>Sunday</option>
+                                        </select>
+                                        
+                                        every
+                                        <input type="number" id="form_task_interval_month" name="form_task_interval_month" value="<%this.task.interval.monthInterval.modulus%>">
+                                        month(s)
+                                    </div>
+                                <%}%>
+
+                            </div> 
+                        <%}%>
+                        <%if(typeof this.task.interval.weekInterval !== 'undefined') {%>
+                            <div id="int_type-spec">
+                            
+                                Every 
+                                <input type="number" id="form_task_interval_week" name="form_task_interval_week" value="<%this.task.interval.weekInterval.modulus%>">
+                                week on:
+                                
+                                <select id="form_task_interval_day_week" name="form_task_interval_day_week">
+                                    <option value="Monday" <%if(this.task.interval.dayNrInWeek == 0) {%>selected<%}%>>Monday</option>
+                                    <option value="Tuesday" <%if(this.task.interval.dayNrInWeek == 1) {%>selected<%}%>>Tuesday</option>
+                                    <option value="Wednesday" <%if(this.task.interval.dayNrInWeek == 2) {%>selected<%}%>>Wednesday</option>
+                                    <option value="Thursday" <%if(this.task.interval.dayNrInWeek == 3) {%>selected<%}%>>Thursday</option>
+                                    <option value="Friday" <%if(this.task.interval.dayNrInWeek == 4) {%>selected<%}%>>Friday</option>
+                                    <option value="Saturday" <%if(this.task.interval.dayNrInWeek == 5) {%>selected<%}%>>Saturday</option>
+                                    <option value="Sunday" <%if(this.task.interval.dayNrInWeek == 6) {%>selected<%}%>>Sunday</option>
+                                </select>        
+                            
+                            </div> 
+                        <%}%>
+                        <%if(typeof this.task.interval.dayInterval !== 'undefined') {%>
+                            <div id="int_type-spec" data-load="/getHTML?html=int_type-day-spec">
+                            
+                                Every 
+                                <input type="number" id="form_task_interval_day" name="form_task_interval_day" value="<%this.task.interval.dayInterval.modulus%>">
+                                day
+                            
+                            </div> 
+                        <%}%>
+
+                    </fieldset>
+
+                    <fieldset id="todo_container">
+                        <legend>Additional Todos</legend>
+
+                        <label for="form_todo_name">Todo name:</label>
+                        <input type="text" id="form_todo_name" name="form_todo_name" placeholder="todo name_">
+                        <button onclick="main_task_new_add_todo();" type="button">Add new todo</button>
+                        <h3>My todos:</h3>
+                        <ul id="task_new_todo_list" class="table" data-pos="1">
+                            <li class="row tableheader">
+                                <div class="cell">Todo name</div>
+                                <div class="cell tight">Action</div>
+                            </li>
+                            <%for(var i in this.todos) {%>
+
+                                <li id="todo_li_nr_<%i%>" class="row">
+                                    <input type="checkbox" id="row_<%i%>">
+                                    <label for="row_<%i%>"></label>
+                                    <div class="cell prio" data-label="Todo name">
+                                        <%this.todos[i].name%>
+                                    </div>
+                                    <div class="cell tight" data-label="Action">
+                                        <button onclick="main_task_new_remove_todo(<%i%>);" type="button">Remove todo</button>
+                                    </div>   
+                                    <input type="hidden" id="todo_nr_<%i%>" name="todos" value="<%this.todos[i].name%>">
+                                </li>
+
+                            <%}%>
+                        </ul>  
+                    </fieldset>
+
+    
+                    <button data-formid="forms_task_new" data-callback="cb.task_edit">Save Task</button>
+            
+                </form>
+    
+            </div>
+        </div>
+    
+    </section>
+
+</main>
