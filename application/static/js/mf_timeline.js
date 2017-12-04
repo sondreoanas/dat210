@@ -223,7 +223,7 @@ function Timeline(container){
 	//this.loadDummyEvents();
 	this.tasks = [];
 	this.setTaskView();
-	this.taskHeight = this.canvas.height * 0.1;
+	this.taskHeight = this.canvas.height * 0.05;
 	
 	// status
 	this.status = Timeline.standard;
@@ -258,11 +258,6 @@ Timeline.prototype.initializeButtons = function(){
 	this.buttons = [];
 	
 	// addEvent button
-	//this.addButton = new Button(new Vec(this.canvas.width * 0.8, this.canvas.height * 0.9), "Add event", new Color(200,50,50,1));
-	//this.addButton.radius = 60;
-	//this.addButton.shape = Button.circle;
-	//this.addButton.callBack = this.addEventStart.bind(this);
-	//this.buttons.push(this.addButton);
 	this.cancelActivationChange = false;
 	
 	// change to task view button
@@ -454,8 +449,11 @@ Timeline.prototype.loadTasks = function(){
 				adjustHeight(t, t.children, level + 1);
 				
 				if(parent != null){
-					t.height = parent.height / parent.children.length;
+					//t.height = parent.height / parent.children.length;
 					t.level = level;
+				}
+				if(t.children.length > 0){
+					t.height = t.children.length * t.children[0].height;
 				}
 			}
 		}
@@ -621,6 +619,7 @@ Timeline.prototype.calcuateEventCollisions = function(event){
 	}
 	
 	// name boxes
+	// // name boxes are used to calculate where names can be placed on the event
 	for(var i=0; i<this.events.length; i++){
 		var e1 = this.events[i];
 		for(var j=i+1; j<this.events.length; j++){
@@ -639,9 +638,15 @@ Timeline.prototype.calcuateEventCollisions = function(event){
 	}
 }
 Timeline.prototype.canvasCoordsToTime = function(coords){ // TODO: rename to 'pixels to time'
+	if(this.canvas.width == 0){
+		return -1;
+	}
 	return this.zoom * (coords / this.canvas.width - 0.5) + this.position;
 }
 Timeline.prototype.timeToCanvasCoords = function(time){ // TODO: rename to 'time to pixels'
+	if(this.zoom == 0){
+		return -1;
+	}
 	return (time - this.position) / this.zoom * this.canvas.width + this.canvas.width * 0.5;
 }
 var mf_timeManipulator;

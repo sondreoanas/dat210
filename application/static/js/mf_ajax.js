@@ -22,6 +22,8 @@ mf_AjaxHandler.nrOfCallsInProgress = 0;
 mf_AjaxHandler.evaluateScriptQue = [];
 mf_AjaxHandler.root = null;
 mf_AjaxHandler.prototype.initAjax = function(){
+	// this function is initialized when the index page of the application starts for the first time.
+	
 	// root
 	if(root){
 		mf_AjaxHandler.root = root;
@@ -30,16 +32,16 @@ mf_AjaxHandler.prototype.initAjax = function(){
 	}
 	
 	// start recording
-	mf_testHandeler.init();
+	mf_testHandeler.init(); // all elements will be recorded for testing later
 	// load js files
-	mf_init();
+	mf_init(); // the timeline handeler is initilized
 	// scan document for ajax templates
 	var body = document.getElementsByTagName("body")[0];
 	this.searchElement(body);
-	
-
 }
 mf_AjaxHandler.prototype.checkButton = function(button){
+	// The function will add look for dataset attributes on the input element and add eventlisteners for ajax calls.
+	
 	if(button.dataset.formid){ // form
 		if(!button.dataset.callback){
 			Tool.printError("button " + button.id + " is missing 'data-callback' attribute. It needs a callback function to recieve and handle " +
@@ -108,6 +110,8 @@ mf_AjaxHandler.prototype.checkButton = function(button){
 }
 // check Element content
 mf_AjaxHandler.prototype.searchChildren = function(element){
+	// See searchElement() for more information
+	
 	// check children
 	for(var i=0; i<element.children.length; i++){
 		var child = element.children[i];
@@ -116,10 +120,14 @@ mf_AjaxHandler.prototype.searchChildren = function(element){
 }
 // search element and all children for ajax templates
 mf_AjaxHandler.prototype.searchElement = function(element){
-	// search buttons
+	// This function will scan all elements recursively to find html with data-xxx elements
+	
+	// It is important that the tester puts its own listener to html elements first,
+	// or the elements may be removed before a recording is made
 	mf_testHandeler.addTestListener(element);
+	// Search for buttons
 	this.checkButton(element);
-	// search children
+	// Search children
 	if(!this.findAjaxData(element)){
 		for(var i=0; i<element.children.length; i++){
 			var child = element.children[i];
@@ -128,6 +136,9 @@ mf_AjaxHandler.prototype.searchElement = function(element){
 	}
 }
 mf_AjaxHandler.prototype.findAjaxData = function(element){
+	// If element has data-load, ajax calls will be made to fill in more content.
+	// If element has data-timeline, a timeline will fill the element.
+	
 	// not backwards compatability warning
 	if(!element.dataset.target && (element.dataset.fill || element.dataset.replace)){
 		Tool.printError("Element with id \"" + element.id + "\" has a data-fill attribute but no target. " +
@@ -174,6 +185,8 @@ mf_AjaxHandler.prototype.findAjaxData = function(element){
 // Fill element width data.
 // data is of format {template:someTemplate, data:someData}
 mf_AjaxHandler.prototype.addLastChild = function(elementId, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.addLastChild, elementId, url, data)){
 		return;
 	}
@@ -187,6 +200,8 @@ mf_AjaxHandler.prototype.addLastChild = function(elementId, url, data = null){
 	this.addLastChildArgElement(element, url, data);
 }
 mf_AjaxHandler.prototype.addLastChildArgElement = function(element, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.addLastChildArgElement, element, url, data)){
 		return;
 	}
@@ -195,6 +210,8 @@ mf_AjaxHandler.prototype.addLastChildArgElement = function(element, url, data = 
 	this.replaceElementArgElement(dummy, url, data);
 }
 mf_AjaxHandler.prototype.addFirstChild = function(elementId, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.addFirstChild, elementId, url, data)){
 		return;
 	}
@@ -208,6 +225,8 @@ mf_AjaxHandler.prototype.addFirstChild = function(elementId, url, data = null){
 	this.addFirstChildArgElement(element, url, data);
 }
 mf_AjaxHandler.prototype.addFirstChildArgElement = function(element, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.addFirstChildArgElement, element, url, data)){
 		return;
 	}
@@ -216,6 +235,8 @@ mf_AjaxHandler.prototype.addFirstChildArgElement = function(element, url, data =
 	this.replaceElementArgElement(dummy, url, data);
 }
 mf_AjaxHandler.prototype.removeElement = function(elementId){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.removeElement, elementId)){
 		return;
 	}
@@ -228,6 +249,8 @@ mf_AjaxHandler.prototype.removeElement = function(elementId){
 	element.parentElement.removeChild(element);
 }
 mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.placeAfterElement, elementId, url, data)){
 		return;
 	}
@@ -241,6 +264,8 @@ mf_AjaxHandler.prototype.placeAfterElement = function(elementId, url, data = nul
 	this.placeAfterElementArgElement(element, url, data);
 }
 mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.placeAfterElementArgElement, element, url, data)){
 		return;
 	}
@@ -267,6 +292,8 @@ mf_AjaxHandler.prototype.placeAfterElementArgElement = function(element, url, da
 	}.bind(this), data);
 }
 mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.placeBeforeElement, elementId, url, data)){
 		return;
 	}
@@ -280,6 +307,8 @@ mf_AjaxHandler.prototype.placeBeforeElement = function(elementId, url, data = nu
 	this.placeBeforeElementArgElement(element, url, data);
 }
 mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.placeBeforeElementArgElement, element, url, data)){
 		return;
 	}
@@ -306,6 +335,8 @@ mf_AjaxHandler.prototype.placeBeforeElementArgElement = function(element, url, d
 	}.bind(this), data);
 }
 mf_AjaxHandler.prototype.replaceElement = function(elementId, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.replaceElement, elementId, url, data)){
 		return;
 	}
@@ -319,6 +350,8 @@ mf_AjaxHandler.prototype.replaceElement = function(elementId, url, data = null){
 	this.replaceElementArgElement(element, url, data);
 }
 mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.replaceElementArgElement, element, url, data)){
 		return;
 	}
@@ -345,6 +378,8 @@ mf_AjaxHandler.prototype.replaceElementArgElement = function(element, url, data 
 	}.bind(this), data);
 }
 mf_AjaxHandler.prototype.fillElement = function(elementId, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.fillElement, elementId, url, data)){
 		return;
 	}
@@ -358,6 +393,8 @@ mf_AjaxHandler.prototype.fillElement = function(elementId, url, data = null){
 	this.fillElementArgElement(element, url, data);
 }
 mf_AjaxHandler.prototype.fillElementArgElement = function(element, url, data = null){
+	// See html/htmlAjaxInstructions.txt for usecase.
+	
 	if(!this.checkDomLoaded(this.fillElementArgElement, element, url, data)){
 		return;
 	}
@@ -368,6 +405,11 @@ mf_AjaxHandler.prototype.fillElementArgElement = function(element, url, data = n
 	
 }
 mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data = null){
+	// Element will be filled with content in url. Example url = "/getHTML?html=someContent".
+	// In the example above, the element will be filled with someContent.
+	// "data" is optional, if it is provided will data be used in the templater instead of the data
+	// in the server response.
+	
 	//
 	mf_AjaxHandler.nrOfCallsInProgress++;
 	//
@@ -413,6 +455,9 @@ mf_AjaxHandler.prototype.loadInContent = function(element, url, callback, data =
 	element.innerHTML = "loading...";
 }
 mf_AjaxHandler.ajaxGet = function(address, callback, callbackFail){
+	// "address" is the address the http requst is requesting. "Callback" will recieve the response from the server.
+	// "CallbackFail" is called if an error occurs.
+	
 	var xhttp = new XMLHttpRequest();
 
 	xhttp.onreadystatechange = function(){
@@ -430,6 +475,9 @@ mf_AjaxHandler.ajaxGet = function(address, callback, callbackFail){
 	xhttp.send();
 }
 mf_AjaxHandler.ajaxPost = function(data, address, callback){
+	// "data" is a javascript object that will be packed into a json object and sent.
+	// "address" is the address the http requst is requesting. "Callback" will recieve the response from the server.
+	
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
@@ -442,6 +490,9 @@ mf_AjaxHandler.ajaxPost = function(data, address, callback){
 	xhttp.send(JSON.stringify(data));
 }
 mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
+	// "form" is an html form that will be sent as a FormData object.
+	// "address" is the address the http requst is requesting. "Callback" will recieve the response from the server.
+	
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
@@ -454,23 +505,8 @@ mf_AjaxHandler.ajaxPostForm = function(form, address, callback){
 	xhttp.send(formData);
 }
 mf_AjaxHandler.addRoot = function(address){
-	/*if(address[0] !== "/"){
-		address = "/" + address;
-	}*/
-	/*var escRoot = mf_AjaxHandler.root.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"); // https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-	var re = new RegExp("^(" + escRoot + ")");
-	address = address.replace(re,"");*/
-	
-	/*for(var i=mf_AjaxHandler.root.length - 1; i>=0; i++){
-		if(address.charAt(0) === mf_AjaxHandler.root.charAt(i)){
-			address = address.substr(1);
-		}else{
-			break;
-		}
-	}*/
-	
-	
-	//return mf_AjaxHandler.root + address; // TODO: mf_AjaxHandler.root with root when merged with nils
+	// This will add the root to an address if it is missing it.
+	// Example: "/static/js/mf_testerData.js" -> "http://127.0.0.1:5000/static/js/mf_testerData.js"
 	
 	if(mf_AjaxHandler.root == address.substr(0, mf_AjaxHandler.root.length)){
 		return address;
@@ -483,6 +519,10 @@ mf_AjaxHandler.addRoot = function(address){
 	
 }
 mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
+	// It will check if the dom is loaded, if the dom is loaded, it will return true
+	// If the dom is not loaded, it will return false, and call the callback function with additional arguments
+	// when the dom is loaded.
+	
 	if(document.readyState === "complete"){
 		return true;
 	}else{
@@ -495,6 +535,10 @@ mf_AjaxHandler.prototype.checkDomLoaded = function(callback){
 	}
 }
 mf_AjaxHandler.prototype.checkDoneAjaxLoadingAndDecrement = function(){
+	// This function checks will decrement the mf_AjaxHandler.nrOfCallsInProgress counter,
+	// if the counter reaches 0, it will dispatch the custom event "onFullLoad" and call all scripts
+	// loaded with ajax.
+	
 	mf_AjaxHandler.nrOfCallsInProgress--;
 	if(mf_AjaxHandler.nrOfCallsInProgress == 0){
 		window.dispatchEvent(mf_AjaxHandler.loadEvent);

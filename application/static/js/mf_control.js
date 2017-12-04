@@ -7,6 +7,7 @@
 	description		:
 		What does this do?
 			This manages keyboard inputs from the user.
+			By calling the function update() the controls may be synced with some interval.
 */
 
 function mf_Control(){
@@ -140,6 +141,8 @@ mf_Control.prototype.reset = function(){
 	}
 }
 mf_Control.prototype.update = function(){
+	// This function can be used to time for how long a key has been held down or released.
+	
 	for(var i=0; i<this.keys.length; i++){
 		if(this.keys[i].isDown){
 			this.keys[i].timeDown++;
